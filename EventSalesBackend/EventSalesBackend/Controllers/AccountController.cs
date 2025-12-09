@@ -6,8 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EventSalesBackend.Controllers
 {
+    [ApiController]
+    [Route("[controller]")]
     public class AccountController : ControllerBase
     {
+        [HttpGet("login")]
         public async Task Login(string returnUrl = "/app")
         {
             var authenticationProperties = new LoginAuthenticationPropertiesBuilder()
@@ -20,6 +23,7 @@ namespace EventSalesBackend.Controllers
             await HttpContext.ChallengeAsync(Auth0Constants.AuthenticationScheme, authenticationProperties);
         }
         [Authorize]
+        [HttpGet("logout")]
         public async Task Logout(string returnUrl = "/")
         {
             var authenticationProperties = new LogoutAuthenticationPropertiesBuilder()
@@ -31,6 +35,12 @@ namespace EventSalesBackend.Controllers
 
             await HttpContext.SignOutAsync(Auth0Constants.AuthenticationScheme, authenticationProperties);
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        }
+        
+        [HttpGet("/app")]
+        public async Task Callback()
+        {
+            Ok();
         }
     }
 }
