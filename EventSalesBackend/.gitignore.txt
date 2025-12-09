@@ -2,3 +2,6 @@
 **/EventSalesBackend.csproj.user
 **/obj/
 **/bin/
+*.user
+*.suo
+*.sln.docstates
