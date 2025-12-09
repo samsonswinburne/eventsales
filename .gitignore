@@ -1,2 +1,7 @@
 /EventSalesBackend/EventSalesBackend/obj
 /EventSalesBackend/.vs
+EventSalesBackend/EventSalesBackend/appsettings.json
+EventSalesBackend/EventSalesBackend/appsettings.Development.json
+/EventSalesBackend/EventSalesBackend/bin
+EventSalesBackend/EventSalesBackend/Dockerfile
+EventSalesBackend/EventSalesBackend/EventSalesBackend.csproj.user
