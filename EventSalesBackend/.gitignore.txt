@@ -1,0 +1,4 @@
+**/appsettings.json
+**/EventSalesBackend.csproj.user
+**/obj/
+**/bin/
