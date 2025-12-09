@@ -6,3 +6,6 @@
 *.suo
 *.sln.docstates
 /.vs/
+*.tmp
+*.log
+*.bak
