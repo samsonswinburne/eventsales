@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver.GeoJsonObjectModel;
 
 namespace EventSalesBackend.Models
 {
@@ -17,6 +18,13 @@ namespace EventSalesBackend.Models
         public required List<TicketType> TicketTypes { get; set; } = new List<TicketType>();
         public required TicketSummary Summary { get; set; }
         public required string Photo {  get; set; }
+
+        public required string PostCode { get; set; }
+        public required bool InPersonEvent { get; set; }
+        public string? VenueAddress { get; set; }
+        public required int IndividualPurchaseLimit { get; set; } = 0;
+
+        public GeoJsonPoint<GeoJson2DGeographicCoordinates>? VenueLocation { get; set; }
     }
     public class TicketType
     {
@@ -29,7 +37,6 @@ namespace EventSalesBackend.Models
         public required int Sold { get; set; } = 0;
         public required bool Enabled { get; set; } = false;
         public required decimal Price { get; set; }
-        public required int Limit { get; set; } = 0;
 
     }
     public class TicketSummary
