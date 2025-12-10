@@ -1,0 +1,65 @@
+﻿using EventSalesBackend.Models;
+using MongoDB.Driver;
+
+namespace EventSalesBackend.Data
+{
+    public class MongoDbContext : IMongoDbContext
+    {
+        private readonly IMongoDatabase _database;
+        public MongoDbContext(IConfiguration configuration)
+        {
+            var connectionString = configuration.GetConnectionString("MongoDb");
+            var databaseName = configuration["MongoDb:DatabaseName"];
+
+            var client = new MongoClient(connectionString);
+            _database = client.GetDatabase(databaseName);
+
+            CreateIndexes();
+        }
+
+        public IMongoCollection<Event> Events => _database.GetCollection<Event>("events");
+
+        public IMongoCollection<EventHost> Hosts => _database.GetCollection<EventHost>("hosts");
+
+        public IMongoCollection<Company> Companies => _database.GetCollection<Company>("companies");
+
+        public IMongoCollection<Ticket> Tickets => _database.GetCollection<Ticket>("tickets");
+
+        private void CreateIndexes()
+        {
+            var eventIndexes = new[]
+            {
+                new CreateIndexModel<Event>(
+                    Builders<Event>.IndexKeys.Geo2DSphere(e => e.VenueLocation)),
+                new CreateIndexModel<Event>(
+                    Builders<Event>.IndexKeys.Ascending(e => e.StartDate)),
+                new CreateIndexModel<Event>(
+                    Builders<Event>.IndexKeys.Ascending(e => e.Status))
+            };
+            Events.Indexes.CreateMany(eventIndexes);
+
+            //var hostIndexes = new[]
+            //{
+
+            //};
+            var companyIndexes = new[]
+            {
+                new CreateIndexModel<Company>(
+                    Builders<Company>.IndexKeys.Ascending(c => c.PostCode))
+            };
+            Companies.Indexes.CreateMany(companyIndexes);
+
+            var ticketIndexes = new[]
+            {
+                new CreateIndexModel<Ticket>(
+                    Builders<Ticket>.IndexKeys.Ascending(t => t.CustomerEmail)),
+                new CreateIndexModel<Ticket>(
+                    Builders<Ticket>.IndexKeys.Ascending(t => t.EventId)),
+                new CreateIndexModel<Ticket>(
+                    Builders<Ticket>.IndexKeys.Ascending(t => t.CustomerId))
+            };
+            Tickets.Indexes.CreateMany(ticketIndexes);
+            
+        }
+    }
+}

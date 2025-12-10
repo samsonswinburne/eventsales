@@ -11,6 +11,9 @@ namespace EventSalesBackend.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public ObjectId Id { get; set; }
 
+        [BsonElement("companySummary")]
+        public required CompanySummary HostCompanySummary { get; set; }
+
         [BsonElement("name")]
         [BsonRequired]
         public required string Name { get; set; }
@@ -124,5 +127,14 @@ namespace EventSalesBackend.Models
         [BsonRequired]
         [BsonRepresentation(BsonType.Decimal128)]
         public required int TotalSales { get; set; } = 0;
+    }
+    public class CompanySummary
+    {
+        [BsonElement("id")]
+        public required ObjectId CompanyId { get; set; }
+        [BsonElement("name")]
+        public required string CompanyName { get; set; }
+        [BsonElement("image")]
+        public required string CompanyImageUrl { get; set; }
     }
 }

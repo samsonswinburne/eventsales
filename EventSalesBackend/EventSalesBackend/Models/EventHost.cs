@@ -2,7 +2,7 @@
 using MongoDB.Bson.Serialization.Attributes;
 namespace EventSalesBackend.Models
 {
-    public class Host
+    public class EventHost
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
