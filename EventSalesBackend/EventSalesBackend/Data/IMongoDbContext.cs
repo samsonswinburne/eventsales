@@ -8,6 +8,6 @@ namespace EventSalesBackend.Data
         IMongoCollection<Event> Events { get; }
         IMongoCollection<EventHost> Hosts { get; }
         IMongoCollection<Company> Companies { get; }
-        IMongoCollection<Ticket> Ticket { get; }
+        IMongoCollection<Ticket> Tickets { get; }
     }
 }
