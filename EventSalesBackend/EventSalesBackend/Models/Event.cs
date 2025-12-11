@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using EventSalesBackend.Models.DTOs.Response;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver.GeoJsonObjectModel;
 
@@ -71,6 +72,36 @@ namespace EventSalesBackend.Models
         [BsonElement("created")]
         [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
         public DateTime Created { get; set; } = DateTime.UtcNow;
+
+        [BsonElement("admins")]
+        [BsonRequired]
+        public required List<ObjectId> Admins { get; set; }
+
+    }
+
+    public static class EventExtensions
+    {
+        public static GetEventPublicResponse ToPublic(this Event eventToConvert)
+        {
+            return new GetEventPublicResponse
+            {
+                Id = eventToConvert.Id,
+                HostCompanySummary = eventToConvert.HostCompanySummary,
+                Name = eventToConvert.Name,
+                Description = eventToConvert.Description,
+                TicketTypes = eventToConvert.TicketTypes,
+                Summary = eventToConvert.Summary,
+                Photo = eventToConvert.Photo,
+                PostCode = eventToConvert.PostCode,
+                InPersonEvent = eventToConvert.InPersonEvent,
+                VenueAddress = eventToConvert.VenueAddress,
+                IndividualPurchaseLimit = eventToConvert.IndividualPurchaseLimit,
+                VenueLocation = eventToConvert.VenueLocation,
+                Status = eventToConvert.Status,
+                StartDate = eventToConvert.StartDate,
+                EndDate = eventToConvert.EndDate
+            };
+        }
     }
 
     public enum EventStatus
@@ -111,6 +142,9 @@ namespace EventSalesBackend.Models
         [BsonRequired]
         [BsonRepresentation(BsonType.Decimal128)]
         public required decimal Price { get; set; }
+        [BsonElement("discountedPrice")]
+        [BsonRepresentation(BsonType.Decimal128)]
+        public decimal? DiscountedPrice { get; set; }
     }
 
     public class TicketSummary

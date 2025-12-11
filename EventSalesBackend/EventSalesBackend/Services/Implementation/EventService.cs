@@ -1,4 +1,5 @@
 ﻿using EventSalesBackend.Models;
+using EventSalesBackend.Models.DTOs.Response;
 using EventSalesBackend.Repositories.Interfaces;
 using EventSalesBackend.Services.Interfaces;
 using MongoDB.Bson;
@@ -27,9 +28,14 @@ namespace EventSalesBackend.Services.Implementation
             return await _eventRepository.FindInRadiusByStatusAsync(latitude, longitude, radiusMetres, status);
         }
 
-        public async Task<Event> GetByIdAsync(ObjectId id)
+        public async Task<GetEventPublicResponse> GetByIdPublicAsync(ObjectId id, ObjectId userId)
         {
-            return await _eventRepository.GetByIdAsync(id);
+            var @event = await _eventRepository.GetByIdAsync(id);
+            if (@event.Status == EventStatus.Draft && !@event.Admins.Contains(userId))
+            {
+                throw new UnauthorizedAccessException("You don't have permission to view this draft event");
+            }
+            return @event.ToPublic();
         }
 
         public async Task<List<Event>> GetEventsAsync(int page = 0, int pageSize = 10)

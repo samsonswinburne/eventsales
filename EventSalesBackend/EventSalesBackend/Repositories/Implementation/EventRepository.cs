@@ -18,6 +18,7 @@ namespace EventSalesBackend.Repositories.Implementation
         {
             return await _events.Find(e => e.Id == id).FirstOrDefaultAsync();
         }
+        
 
         public async Task<List<Event>> GetEventsAsync(int page = 0, int pageSize = 10)
         {
