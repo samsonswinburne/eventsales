@@ -19,8 +19,9 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
 
 builder.Services.AddAuth0WebAppAuthentication(options =>
 {
-    options.Domain = builder.Configuration["Auth0:Domain"];
-    options.ClientId = builder.Configuration["Auth0:ClientId"];
+    var requiredOptions = builder.Configuration.GetRequiredSection("Auth0");
+    options.Domain = requiredOptions["Domain"];
+    options.ClientId = requiredOptions["ClientId"];
 });
 
 
