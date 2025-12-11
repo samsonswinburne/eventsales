@@ -1,5 +1,7 @@
 using Auth0.AspNetCore.Authentication;
 using EventSalesBackend.Data;
+using EventSalesBackend.Repositories.Implementation;
+using EventSalesBackend.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +25,7 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
 
 
 builder.Services.AddSingleton<IMongoDbContext, MongoDbContext>();
-
+builder.Services.AddScoped<IEventRepository, EventRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
