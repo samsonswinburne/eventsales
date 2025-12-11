@@ -8,8 +8,9 @@ namespace EventSalesBackend.Data
         private readonly IMongoDatabase _database;
         public MongoDbContext(IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("MongoDb");
-            var databaseName = configuration["MongoDb:DatabaseName"];
+            var mongoDbSettings = configuration.GetRequiredSection("MongoDb");
+            var connectionString = mongoDbSettings["ConnectionString"];
+            var databaseName = mongoDbSettings["DatabaseName"];
 
             var client = new MongoClient(connectionString);
             _database = client.GetDatabase(databaseName);

@@ -1,4 +1,5 @@
 using Auth0.AspNetCore.Authentication;
+using EventSalesBackend.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +22,7 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
 });
 
 
-
+builder.Services.AddSingleton<IMongoDbContext, MongoDbContext>();
 
 var app = builder.Build();
 
