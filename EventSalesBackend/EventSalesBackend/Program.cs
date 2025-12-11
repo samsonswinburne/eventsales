@@ -2,6 +2,8 @@ using Auth0.AspNetCore.Authentication;
 using EventSalesBackend.Data;
 using EventSalesBackend.Repositories.Implementation;
 using EventSalesBackend.Repositories.Interfaces;
+using EventSalesBackend.Services.Implementation;
+using EventSalesBackend.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,9 +26,15 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
     options.ClientId = requiredOptions["ClientId"];
 });
 
-
+// data
 builder.Services.AddSingleton<IMongoDbContext, MongoDbContext>();
+
+// repositories
 builder.Services.AddScoped<IEventRepository, EventRepository>();
+
+// services
+builder.Services.AddSingleton<IEventService, EventService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
