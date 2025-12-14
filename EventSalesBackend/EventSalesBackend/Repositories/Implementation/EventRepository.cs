@@ -63,6 +63,9 @@ namespace EventSalesBackend.Repositories.Implementation
             return await _events.Find(statusLocationFilter).ToListAsync();
         }
 
-        
+        public async Task<List<Event>> GetByFilter(FilterDefinition<Event> filter)
+        {
+            return await _events.Find(filter).ToListAsync();
+        }
     }
 }

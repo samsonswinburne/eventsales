@@ -75,7 +75,7 @@ namespace EventSalesBackend.Models
 
         [BsonElement("admins")]
         [BsonRequired]
-        public required List<ObjectId> Admins { get; set; }
+        public required List<string> Admins { get; set; }
 
     }
 

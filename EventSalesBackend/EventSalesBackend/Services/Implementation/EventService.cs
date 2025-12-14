@@ -3,6 +3,7 @@ using EventSalesBackend.Models.DTOs.Response;
 using EventSalesBackend.Repositories.Interfaces;
 using EventSalesBackend.Services.Interfaces;
 using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace EventSalesBackend.Services.Implementation
 {
@@ -28,7 +29,7 @@ namespace EventSalesBackend.Services.Implementation
             return await _eventRepository.FindInRadiusByStatusAsync(latitude, longitude, radiusMetres, status);
         }
 
-        public async Task<GetEventPublicResponse> GetByIdPublicAsync(ObjectId id, ObjectId userId)
+        public async Task<GetEventPublicResponse> GetByIdPublicAsync(ObjectId id, string userId)
         {
             var @event = await _eventRepository.GetByIdAsync(id);
             if (@event.Status == EventStatus.Draft && !@event.Admins.Contains(userId))
@@ -36,6 +37,33 @@ namespace EventSalesBackend.Services.Implementation
                 throw new UnauthorizedAccessException("You don't have permission to view this draft event");
             }
             return @event.ToPublic();
+        }
+        public async Task<Event> GetById(ObjectId id, string userId)
+        {
+            var @event = await _eventRepository.GetByIdAsync(id);
+            if (@event.Status == EventStatus.Draft && !@event.Admins.Contains(userId))
+            {
+                throw new UnauthorizedAccessException("You don't have permission to view this draft event");
+            }
+            return @event;
+        }
+        public async Task<List<Event>> GetByHost(ObjectId hostId, string userId)
+        {
+            var filter = Builders<Event>.Filter.Eq(e => e.HostCompanySummary.CompanyId, hostId);
+            var events = await _eventRepository.GetByFilter(filter);
+            List<Event> eventsToReturn = (from e in events where e.Admins.Contains(userId) select e).ToList();
+            return eventsToReturn;
+        }
+        public async Task<List<GetEventPublicResponse>> GetByHostPublic(ObjectId hostId)
+        {
+            var hostIdFilter = Builders<Event>.Filter.Eq(ev => ev.HostCompanySummary.CompanyId, hostId);
+            var publicFilter = Builders<Event>.Filter.Ne(ev => ev.Status, EventStatus.Draft);
+            var combinedFilter = Builders<Event>.Filter.And(hostIdFilter, publicFilter);
+
+            var events = await _eventRepository.GetByFilter(combinedFilter);
+
+            return events.ConvertAll(e => e.ToPublic());
+            
         }
 
         public async Task<List<Event>> GetEventsAsync(int page = 0, int pageSize = 10)

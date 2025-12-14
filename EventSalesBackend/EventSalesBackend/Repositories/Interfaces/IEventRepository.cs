@@ -1,5 +1,6 @@
 ﻿using EventSalesBackend.Models;
 using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace EventSalesBackend.Repositories.Interfaces
 {
@@ -12,6 +13,6 @@ namespace EventSalesBackend.Repositories.Interfaces
         Task<Event> CreateAsync(Event eventToCreate);
         Task<bool> DeleteAsync(ObjectId id);
         Task<List<Event>> FindInRadiusByStatusAsync(double latitude, double longitude, double radiusMetres, EventStatus? status = null);
-
+        Task<List<Event>> GetByFilter(FilterDefinition<Event> filter);
     }
 }
