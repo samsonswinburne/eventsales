@@ -85,7 +85,7 @@ namespace EventSalesBackend.Models
         {
             return new EventPublic
             {
-                Id = eventToConvert.Id,
+                Id = eventToConvert.Id.ToString(),
                 HostCompanySummary = eventToConvert.HostCompanySummary,
                 Name = eventToConvert.Name,
                 Description = eventToConvert.Description,

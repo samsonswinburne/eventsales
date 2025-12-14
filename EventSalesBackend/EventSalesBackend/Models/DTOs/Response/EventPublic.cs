@@ -9,7 +9,7 @@ namespace EventSalesBackend.Models.DTOs.Response
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public ObjectId Id { get; set; }
+        public string Id { get; set; }
 
         [BsonElement("companySummary")]
         public required CompanySummary HostCompanySummary { get; set; }

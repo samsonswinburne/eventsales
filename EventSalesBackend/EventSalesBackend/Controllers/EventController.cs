@@ -38,5 +38,6 @@ namespace EventSalesBackend.Controllers
             var result = await _eventService.FindInRadiusPublicAsync(request.Latitude, request.Longitude, request.Radius);
             return result;
         }
+        
     }
 }
