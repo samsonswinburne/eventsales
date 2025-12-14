@@ -50,9 +50,10 @@ namespace EventSalesBackend.Repositories.Implementation
             var result = await _events.DeleteOneAsync(e => e.Id == id);
             return result.DeletedCount > 0;
         }
-        public async Task<List<Event>> FindInRadiusByStatusAsync(double latitude, double longitude, double radiusMetres = 2000, EventStatus? status = null)
+        public async Task<List<Event>> FindInRadiusByStatusAsync(double latitude, double longitude, double radiusMetres = 2000, EventStatus? status = null, int limit = 20, int page = 0)
         {
-            var statusFilter = Builders<Event>.Filter.Ne(e => e.Status, EventStatus.Draft);
+            var sort = Builders<Event>.Sort.Descending(e => e.Summary.TotalSold);
+            var statusFilter = Builders<Event>.Filter.Eq(e => e.Status, EventStatus.Published);
             if (status != null)
             {
                 statusFilter = Builders<Event>.Filter.Eq(e => e.Status, status);
@@ -60,12 +61,13 @@ namespace EventSalesBackend.Repositories.Implementation
             var locationFilter = Builders<Event>.Filter.Near(e => e.VenueLocation, latitude, longitude, radiusMetres);
             var statusLocationFilter = Builders<Event>.Filter.And(statusFilter, locationFilter);
 
-            return await _events.Find(statusLocationFilter).ToListAsync();
+            return await _events.Find(statusLocationFilter).Sort(sort).Limit(limit).Skip(page*limit).ToListAsync();
         }
 
-        public async Task<List<Event>> GetByFilter(FilterDefinition<Event> filter)
+        public async Task<List<Event>> GetByFilter(FilterDefinition<Event> filter, int limit = 20, int page = 0)
         {
-            return await _events.Find(filter).ToListAsync();
+            
+            return await _events.Find(filter).Limit(limit).Skip(limit * page).ToListAsync();
         }
     }
 }

@@ -5,7 +5,7 @@ using MongoDB.Driver.GeoJsonObjectModel;
 namespace EventSalesBackend.Models.DTOs.Response
 {
     // not completed, not yet sure if anything needs to be removed from the event
-    public class GetEventPublicResponse
+    public class EventPublic
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

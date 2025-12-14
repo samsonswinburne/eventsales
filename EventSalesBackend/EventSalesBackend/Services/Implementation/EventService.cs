@@ -24,12 +24,13 @@ namespace EventSalesBackend.Services.Implementation
             return await _eventRepository.DeleteAsync(id);
         }
 
-        public async Task<List<Event>> FindInRadiusByStatusAsync(double latitude, double longitude, double radiusMetres, EventStatus? status = null)
+        public async Task<List<EventPublic>> FindInRadiusPublicAsync(double latitude, double longitude, double radiusMetres, EventStatus? status = null)
         {
-            return await _eventRepository.FindInRadiusByStatusAsync(latitude, longitude, radiusMetres, status);
+            var results = await _eventRepository.FindInRadiusByStatusAsync(latitude, longitude, radiusMetres, status);
+            return results.ConvertAll(e => e.ToPublic());
         }
 
-        public async Task<GetEventPublicResponse> GetByIdPublicAsync(ObjectId id, string userId)
+        public async Task<EventPublic> GetByIdPublicAsync(ObjectId id, string userId)
         {
             var @event = await _eventRepository.GetByIdAsync(id);
             if (@event.Status == EventStatus.Draft && !@event.Admins.Contains(userId))
@@ -54,7 +55,7 @@ namespace EventSalesBackend.Services.Implementation
             List<Event> eventsToReturn = (from e in events where e.Admins.Contains(userId) select e).ToList();
             return eventsToReturn;
         }
-        public async Task<List<GetEventPublicResponse>> GetByHostPublic(ObjectId hostId)
+        public async Task<List<EventPublic>> GetByHostPublic(ObjectId hostId)
         {
             var hostIdFilter = Builders<Event>.Filter.Eq(ev => ev.HostCompanySummary.CompanyId, hostId);
             var publicFilter = Builders<Event>.Filter.Ne(ev => ev.Status, EventStatus.Draft);

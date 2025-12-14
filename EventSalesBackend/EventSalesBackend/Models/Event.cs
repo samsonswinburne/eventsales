@@ -81,9 +81,9 @@ namespace EventSalesBackend.Models
 
     public static class EventExtensions
     {
-        public static GetEventPublicResponse ToPublic(this Event eventToConvert)
+        public static EventPublic ToPublic(this Event eventToConvert)
         {
-            return new GetEventPublicResponse
+            return new EventPublic
             {
                 Id = eventToConvert.Id,
                 HostCompanySummary = eventToConvert.HostCompanySummary,

@@ -28,6 +28,7 @@ namespace EventSalesBackend.Data
 
         private void CreateIndexes()
         {
+            // need more indexes for different queries that need more
             var eventIndexes = new[]
             {
                 new CreateIndexModel<Event>(
@@ -35,7 +36,9 @@ namespace EventSalesBackend.Data
                 new CreateIndexModel<Event>(
                     Builders<Event>.IndexKeys.Ascending(e => e.StartDate)),
                 new CreateIndexModel<Event>(
-                    Builders<Event>.IndexKeys.Ascending(e => e.Status))
+                    Builders<Event>.IndexKeys.Ascending(e => e.Status)),
+                new CreateIndexModel<Event>(
+                    Builders<Event>.IndexKeys.Descending(e => e.Summary.TotalSold))
             };
             Events.Indexes.CreateMany(eventIndexes);
 
