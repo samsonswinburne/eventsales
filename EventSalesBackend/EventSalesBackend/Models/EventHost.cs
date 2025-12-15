@@ -6,21 +6,21 @@ namespace EventSalesBackend.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public required string Id { get; set; }
 
         [BsonElement("firstName")]
         [BsonRequired]
-        public string FirstName { get; set; }
+        public required string FirstName { get; set; }
 
         [BsonElement("lastName")]
         [BsonRequired]
-        public string LastName { get; set; }
+        public required string LastName { get; set; }
 
         [BsonElement("birthDate")]
         [BsonRequired]
         [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
         public DateOnly BirthDate { get; set; }
 
-        public bool OnBoardingCompleted { get; set; }
+        public bool OnBoardingCompleted { get; set; } = false;
     }
 }
