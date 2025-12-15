@@ -21,6 +21,6 @@ namespace EventSalesBackend.Models
         [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
         public DateOnly BirthDate { get; set; }
 
-
+        public bool OnBoardingCompleted { get; set; }
     }
 }
