@@ -1,29 +1,49 @@
-﻿using EventSalesBackend.Models;
+﻿using EventSalesBackend.Data;
+using EventSalesBackend.Models;
 using EventSalesBackend.Repositories.Interfaces;
 using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace EventSalesBackend.Repositories.Implementation
 {
     public class CompanyRepository : ICompanyRepository
     {
-        public Task<bool> AddCompanyAdmin(ObjectId companyId, string adminId)
+        private readonly IMongoCollection<Company> _companyRepository;
+        public CompanyRepository(IMongoDbContext context)
         {
-            throw new NotImplementedException();
+            _companyRepository = context.Companies;
+        }
+        public async Task<bool> AddCompanyAdmin(ObjectId companyId, string adminId, List<string>? adminIds)
+        {
+            var update = Builders<Company>.Update.AddToSet(c => c.Admins, adminId);
+             
+            if (adminIds is not null)
+            {
+                adminIds.Add(adminId);// need to add dup check
+                update = Builders<Company>.Update.Set(c => c.Admins, adminIds); 
+
+            }
+            var filter = Builders<Company>.Filter.Eq(c => c.Id, companyId);
+            var result = await _companyRepository.UpdateOneAsync(filter, update);
+            return result.ModifiedCount > 0;
+
         }
 
-        public Task<ObjectId> CreateAsync(Company company)
+        public async Task<ObjectId> CreateAsync(Company company)
         {
-            throw new NotImplementedException();
+            await _companyRepository.InsertOneAsync(company);
+            return company.Id;
         }
 
-        public Task<Company> GetAsync(ObjectId id)
+        public async Task<Company> GetAsync(ObjectId id)
         {
-            throw new NotImplementedException();
+            return await _companyRepository.Find(company => company.Id == id).FirstOrDefaultAsync();
         }
 
-        public Task<bool> UpdateAsync(ObjectId id, Company company)
+        public async Task<bool> UpdateAsync(ObjectId id, Company company)
         {
-            throw new NotImplementedException();
+            var result = await _companyRepository.ReplaceOneAsync(c => c.Id == id, company);
+            return result.ModifiedCount > 0;
         }
     }
 }
