@@ -12,7 +12,7 @@ namespace EventSalesBackend.Repositories.Interfaces
         Task<bool> UpdateStatusAsync(ObjectId id, EventStatus status);
         Task<Event> CreateAsync(Event eventToCreate);
         Task<bool> DeleteAsync(ObjectId id);
-        Task<List<Event>> FindInRadiusByStatusAsync(double latitude, double longitude, double radiusMetres, EventStatus? status = null);
-        Task<List<Event>> GetByFilter(FilterDefinition<Event> filter);
+        Task<List<Event>> FindInRadiusByStatusAsync(double latitude, double longitude, double radiusMetres = 2000, EventStatus? status = null, int limit = 20, int page = 0);
+        Task<List<Event>> GetByFilter(FilterDefinition<Event> filter, int limit = 20, int page = 0);
     }
 }
