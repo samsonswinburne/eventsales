@@ -1,3 +1,4 @@
+using Amazon.Runtime.Internal.Transform;
 using Auth0.AspNetCore.Authentication;
 using EventSalesBackend.Data;
 using EventSalesBackend.Repositories.Implementation;
@@ -35,6 +36,7 @@ builder.Services.AddScoped<IHostRepository, HostRepository>();
 // services
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IHostService, HostService>();
+builder.Services.AddScoped<IUserClaimsService, UserClaimsService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
