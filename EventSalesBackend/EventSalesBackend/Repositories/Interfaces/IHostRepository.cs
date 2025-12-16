@@ -3,8 +3,9 @@ using MongoDB.Bson;
 
 namespace EventSalesBackend.Repositories.Interfaces
 {
-    public interface IHostService
+    public interface IHostRepository
     {
-        Task<ObjectId?> CreateAsync(EventHost host);
+        Task CreateAsync(EventHost host);
+
     }
 }
