@@ -1,7 +1,6 @@
 ﻿using EventSalesBackend.Data;
 using EventSalesBackend.Models;
 using EventSalesBackend.Repositories.Interfaces;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace EventSalesBackend.Repositories.Implementation
@@ -17,6 +16,11 @@ namespace EventSalesBackend.Repositories.Implementation
         public async Task CreateAsync(EventHost host)
         {
             await _hosts.InsertOneAsync(host);
+        }
+        
+        public async Task<EventHost?> GetAsync(string hostId)
+        {
+            return await _hosts.Find(x => x.Id == hostId).FirstOrDefaultAsync();
         }
     }
 }

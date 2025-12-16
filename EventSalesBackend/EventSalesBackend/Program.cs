@@ -1,4 +1,3 @@
-using Amazon.Runtime.Internal.Transform;
 using Auth0.AspNetCore.Authentication;
 using EventSalesBackend.Data;
 using EventSalesBackend.Repositories.Implementation;
@@ -14,6 +13,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.Configure<CookiePolicyOptions>(options =>
   {
@@ -23,6 +23,7 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
 builder.Services.AddAuth0WebAppAuthentication(options =>
 {
     var requiredOptions = builder.Configuration.GetRequiredSection("Auth0");
+    // needs a dto lmaoooo
     options.Domain = requiredOptions["Domain"];
     options.ClientId = requiredOptions["ClientId"];
 });
@@ -33,9 +34,11 @@ builder.Services.AddSingleton<IMongoDbContext, MongoDbContext>();
 // repositories
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<IHostRepository, HostRepository>();
+builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 // services
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IHostService, HostService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<IUserClaimsService, UserClaimsService>();
 var app = builder.Build();
 

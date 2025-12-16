@@ -38,7 +38,7 @@ namespace EventSalesBackend.Controllers
         }
         
         [HttpGet("/app")]
-        public async Task Callback()
+        public void Callback()
         {
             Ok();
         }

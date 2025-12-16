@@ -1,4 +1,4 @@
-﻿using EventSalesBackend.Models.DTOs.Response;
+﻿using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver.GeoJsonObjectModel;
@@ -61,12 +61,10 @@ namespace EventSalesBackend.Models
 
         [BsonElement("startDate")]
         [BsonRequired]
-        [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
         public DateTime StartDate { get; set; }
 
         [BsonElement("endDate")]
         [BsonRequired]
-        [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
         public DateTime EndDate { get; set; }
 
         [BsonElement("created")]
@@ -96,7 +94,9 @@ namespace EventSalesBackend.Models
                 InPersonEvent = eventToConvert.InPersonEvent,
                 VenueAddress = eventToConvert.VenueAddress,
                 IndividualPurchaseLimit = eventToConvert.IndividualPurchaseLimit,
-                VenueLocation = eventToConvert.VenueLocation,
+                // dereference of a possible null reference, need to ensure that the venue coordinates aren't null
+                // which they should never be because the object can be null but coordinates should be required
+                VenueLocation = new JsonVenueLocation{Latitude = eventToConvert.VenueLocation.Coordinates.Latitude, Longitude = eventToConvert.VenueLocation.Coordinates.Longitude},
                 Status = eventToConvert.Status,
                 StartDate = eventToConvert.StartDate,
                 EndDate = eventToConvert.EndDate

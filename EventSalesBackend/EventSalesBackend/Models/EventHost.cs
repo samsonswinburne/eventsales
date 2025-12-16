@@ -5,7 +5,7 @@ namespace EventSalesBackend.Models
     public class EventHost
     {
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
+        [BsonRepresentation(BsonType.String)]
         public required string Id { get; set; }
 
         [BsonElement("firstName")]
@@ -18,7 +18,6 @@ namespace EventSalesBackend.Models
 
         [BsonElement("birthDate")]
         [BsonRequired]
-        [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
         public DateOnly BirthDate { get; set; }
 
         public bool OnBoardingCompleted { get; set; } = false;

@@ -29,13 +29,15 @@ namespace EventSalesBackend.Repositories.Implementation
 
         }
 
+        
+
         public async Task<ObjectId> CreateAsync(Company company)
         {
             await _companyRepository.InsertOneAsync(company);
             return company.Id;
         }
 
-        public async Task<Company> GetAsync(ObjectId id)
+        public async Task<Company?> GetAsync(ObjectId id)
         {
             return await _companyRepository.Find(company => company.Id == id).FirstOrDefaultAsync();
         }

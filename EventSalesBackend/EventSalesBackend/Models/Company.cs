@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System.Diagnostics.Contracts;
+using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 
 namespace EventSalesBackend.Models
 {
@@ -34,5 +34,21 @@ namespace EventSalesBackend.Models
 
         
 
+    }
+
+    public static class CompanyExtensions
+    {
+        public static CompanyPublic ToPublic(this Company company)
+        {
+            return new CompanyPublic
+            {
+                Description = company.Description,
+                LogoUrl = company.LogoUrl,
+                EventIds = company.EventIds,
+                Id = company.Id.ToString(),
+                Name = company.Name,
+                PostCode = company.PostCode
+            };
+        }
     }
 }

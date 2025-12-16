@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EventSalesBackend.Models.DTOs.Request
+namespace EventSalesBackend.Models.DTOs.Request.Events
 {
     public class GetNearbyEventsRequest
     {

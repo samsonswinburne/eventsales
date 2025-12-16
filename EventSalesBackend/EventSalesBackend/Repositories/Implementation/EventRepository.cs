@@ -3,7 +3,6 @@ using EventSalesBackend.Models;
 using EventSalesBackend.Repositories.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using MongoDB.Driver.GeoJsonObjectModel;
 
 namespace EventSalesBackend.Repositories.Implementation
 {

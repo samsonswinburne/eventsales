@@ -1,4 +1,5 @@
-﻿using EventSalesBackend.Models.DTOs.Request;
+﻿using EventSalesBackend.Models.DTOs.Request.Hosts;
+using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using EventSalesBackend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,16 +11,42 @@ namespace EventSalesBackend.Controllers;
 public class HostController : ControllerBase
 {
     private readonly IHostService _hostService;
-    public HostController(IHostService hostService)
+    private readonly IUserClaimsService _userClaimService;
+    public HostController(IHostService hostService,  IUserClaimsService userClaimService)
     {
         _hostService = hostService;
+        _userClaimService = userClaimService;
     }
     [Authorize]
     [HttpPost]
     public async Task<ActionResult> SignupHost([FromBody] CreateHostRequest request)
     {
-        return Ok();
+        var userId= _userClaimService.GetUserId();
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
+
+        var result = await  _hostService.CreateHost(request, userId);
+        if (result)
+        {
+            return Created();
+        }
+        else
+        {
+            return BadRequest();
+        }
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<HostPublic>> GetHost(string id)
+    {
+        var result = await _hostService.GetPublicAsync(id);
+        if (result is null)
+        {
+            return NotFound();
+        }
+        return result;
     } 
-    
     
 }
