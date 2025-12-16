@@ -31,10 +31,10 @@ builder.Services.AddSingleton<IMongoDbContext, MongoDbContext>();
 
 // repositories
 builder.Services.AddScoped<IEventRepository, EventRepository>();
-
+builder.Services.AddScoped<IHostRepository, HostRepository>();
 // services
-builder.Services.AddSingleton<IEventService, EventService>();
-
+builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IHostService, HostService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

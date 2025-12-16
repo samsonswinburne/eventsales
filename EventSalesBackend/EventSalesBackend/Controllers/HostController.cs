@@ -7,7 +7,7 @@ namespace EventSalesBackend.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class HostController
+public class HostController : ControllerBase
 {
     private readonly IHostService _hostService;
     public HostController(IHostService hostService)
@@ -18,6 +18,8 @@ public class HostController
     [HttpPost]
     public async Task<ActionResult> SignupHost([FromBody] CreateHostRequest request)
     {
-        _hostService.CreateHost(request);
+        return Ok();
     } 
+    
+    
 }
