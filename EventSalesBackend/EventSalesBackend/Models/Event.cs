@@ -1,4 +1,5 @@
-﻿using EventSalesBackend.Models.DTOs.Response.PublicInfo;
+﻿using System.Diagnostics.CodeAnalysis;
+using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver.GeoJsonObjectModel;
@@ -20,8 +21,7 @@ namespace EventSalesBackend.Models
         public required string Name { get; set; }
 
         [BsonElement("description")]
-        [BsonRequired]
-        public required string Description { get; set; }
+        public string? Description { get; set; }
 
         [BsonElement("ticketTypes")]
         [BsonRequired]
@@ -149,6 +149,13 @@ namespace EventSalesBackend.Models
 
     public class TicketSummary
     {
+        [SetsRequiredMembers]
+        public TicketSummary()
+        {
+            TotalCapacity = 0;
+            TotalSold = 0;
+            TotalSales = 0;
+        }
         [BsonElement("totalCapacity")]
         [BsonRequired]
         public required int TotalCapacity { get; set; } = 0;
@@ -161,6 +168,8 @@ namespace EventSalesBackend.Models
         [BsonRequired]
         [BsonRepresentation(BsonType.Decimal128)]
         public required int TotalSales { get; set; } = 0;
+
+        
     }
     public class CompanySummary
     {

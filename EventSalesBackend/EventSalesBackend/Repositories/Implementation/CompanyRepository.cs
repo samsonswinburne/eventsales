@@ -1,5 +1,6 @@
 ﻿using EventSalesBackend.Data;
 using EventSalesBackend.Models;
+using EventSalesBackend.Models.DTOs.Request.Events;
 using EventSalesBackend.Repositories.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -29,7 +30,31 @@ namespace EventSalesBackend.Repositories.Implementation
 
         }
 
-        
+        public async Task<AdminSummaryDTO?> GetAdminSummaryAsync(ObjectId companyId)
+        {
+            /*var projection = Builders<Company>.Projection
+                .Include(c => c.Admins)
+                .Include(c => c.Name)
+                .Include(c => c.Id)
+                .Include(c => c.LogoUrl);*/
+
+            var projection = Builders<Company>.Projection.Expression(
+                x => new AdminSummaryDTO
+                {
+                    Admins = x.Admins,
+                    Summary = new CompanySummary
+                    {
+                        CompanyId = x.Id,
+                        CompanyName =  x.Name,
+                        CompanyImageUrl = x.LogoUrl
+                    }
+                } 
+            );
+            
+            var filter = Builders<Company>.Filter.Eq(c => c.Id, companyId);
+            return await _companyRepository.Find(filter).Project(projection).FirstOrDefaultAsync();
+        }
+
 
         public async Task<ObjectId> CreateAsync(Company company)
         {
