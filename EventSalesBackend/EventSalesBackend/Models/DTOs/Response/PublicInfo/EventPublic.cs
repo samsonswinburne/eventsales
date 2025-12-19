@@ -27,7 +27,7 @@ namespace EventSalesBackend.Models.DTOs.Response.PublicInfo
         public required string Photo { get; set; }
 
 
-        public required string PostCode { get; set; }
+        public string? PostCode { get; set; } // if its an online event then not needed
 
 
         public required bool InPersonEvent { get; set; }
@@ -43,7 +43,8 @@ namespace EventSalesBackend.Models.DTOs.Response.PublicInfo
 
         public EventStatus Status { get; set; } = EventStatus.Draft;
 
-
+        
+        
         public required DateTime StartDate { get; set; }
 
 

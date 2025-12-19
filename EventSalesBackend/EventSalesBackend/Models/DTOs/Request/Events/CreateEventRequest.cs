@@ -11,19 +11,6 @@ public class CreateEventRequest
         public required string Name { get; set; }
 
         [Required]
-        [StringLength(5000, MinimumLength = 10)]
-        public required string Description { get; set; }
-                
-
-        [Required]
-        [Url]
-        public required string Photo { get; set; }
-
-        [Required]
-        [StringLength(10)]
-        public required string PostCode { get; set; }
-
-        [Required]
         public required bool InPersonEvent { get; set; }
 
         public string? VenueAddress { get; set; }

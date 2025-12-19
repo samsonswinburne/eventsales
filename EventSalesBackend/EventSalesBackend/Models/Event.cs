@@ -37,7 +37,7 @@ namespace EventSalesBackend.Models
 
         [BsonElement("postCode")]
         [BsonRequired]
-        public required string PostCode { get; set; }
+        public string? PostCode { get; set; }
 
         [BsonElement("inPersonEvent")]
         [BsonRequired]
@@ -49,7 +49,7 @@ namespace EventSalesBackend.Models
 
         [BsonElement("individualPurchaseLimit")]
         [BsonRequired]
-        public required int IndividualPurchaseLimit { get; set; } = 0;
+        public int IndividualPurchaseLimit { get; set; } = 0;
 
         [BsonElement("venueLocation")]
         [BsonIgnoreIfNull]
@@ -90,7 +90,7 @@ namespace EventSalesBackend.Models
                 TicketTypes = eventToConvert.TicketTypes,
                 Summary = eventToConvert.Summary,
                 Photo = eventToConvert.Photo,
-                PostCode = eventToConvert.PostCode,
+                PostCode = eventToConvert.PostCode, // to make public the event should have a postcode?
                 InPersonEvent = eventToConvert.InPersonEvent,
                 VenueAddress = eventToConvert.VenueAddress,
                 IndividualPurchaseLimit = eventToConvert.IndividualPurchaseLimit,
