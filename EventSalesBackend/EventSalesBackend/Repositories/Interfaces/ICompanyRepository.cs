@@ -10,6 +10,6 @@ namespace EventSalesBackend.Repositories.Interfaces
         Task<bool> UpdateAsync(ObjectId id, Company company);
         Task<ObjectId> CreateAsync(Company company);
         Task<bool> AddCompanyAdmin(ObjectId companyId, string adminId, List<string>? adminIds);
-        Task<AdminSummaryDTO?> GetAdminSummaryAsync(ObjectId companyId);
+        Task<AdminSummaryDTO?> GetAdminSummaryAsync(ObjectId companyId, string userId);
     }
 }

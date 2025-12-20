@@ -1,6 +1,8 @@
-﻿using EventSalesBackend.Models.DTOs.Request.Events;
+﻿using EventSalesBackend.Models;
+using EventSalesBackend.Models.DTOs.Request.Events;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using EventSalesBackend.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 
@@ -11,10 +13,13 @@ namespace EventSalesBackend.Controllers
     public class EventController : ControllerBase
     {
         private readonly IEventService _eventService;
-
-        public EventController(IEventService eventService)
+        private readonly ICompanyService _companyService;
+        private readonly IUserClaimsService _userClaimsService;
+        public EventController(IEventService eventService,  ICompanyService companyService,  IUserClaimsService userClaimsService)
         {
             _eventService = eventService;
+            _companyService = companyService;
+            _userClaimsService = userClaimsService;
         }
         
         [HttpGet("{id}")]
@@ -42,10 +47,31 @@ namespace EventSalesBackend.Controllers
             return result;
         }
         // for now its a bool but return type should be changed later
+        [Authorize]
         [HttpPost]
-        public async Task<ActionResult<bool>> CreateEvent(CreateEventRequest request)
+        public async Task<ActionResult<Event>> CreateEvent(CreateEventRequest request)
         {
-            throw new NotImplementedException();
+            var userId = _userClaimsService.GetUserId();
+
+            if (userId is null)
+            {
+                return Unauthorized();
+            }
+
+            if (!ObjectId.TryParse(request.CompanyId, out var companyId))
+            {
+                return BadRequest();
+            }
+            
+            
+            var adminSummaryDto = await _companyService.GetAdminSummaryAsync(companyId, userId);
+            if (adminSummaryDto is null)
+            {
+                return NotFound();
+            }
+            
+            var eventToCreate = request.ToEvent(adminSummaryDto.Value.Admins, adminSummaryDto.Value.Summary);
+            return await _eventService.CreateAsync(eventToCreate);
         }
     }
 }

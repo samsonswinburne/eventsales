@@ -5,7 +5,8 @@ namespace EventSalesBackend.Models.DTOs.Request.Events;
 
 public class CreateEventRequest
     {
-
+        [Required]
+        public required string CompanyId { get; init; }
         [Required]
         [StringLength(100, MinimumLength = 3)]
         public required string Name { get; set; }

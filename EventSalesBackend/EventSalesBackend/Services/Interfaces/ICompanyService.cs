@@ -1,4 +1,5 @@
 ﻿using EventSalesBackend.Models;
+using EventSalesBackend.Models.DTOs.Request.Events;
 using EventSalesBackend.Models.DTOs.Response;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using MongoDB.Bson;
@@ -11,4 +12,5 @@ public interface ICompanyService
     Task<bool> UpdateAsync(ObjectId id, Company company);
     Task<CreateCompanyResponse?> CreateAsync(Company company);
     Task<bool> AddCompanyAdmin(ObjectId companyId, string adminId, List<string>? adminIds);
+    Task<AdminSummaryDTO?> GetAdminSummaryAsync(ObjectId companyId, string userId);
 }

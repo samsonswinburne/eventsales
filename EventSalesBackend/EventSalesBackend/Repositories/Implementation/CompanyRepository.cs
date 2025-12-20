@@ -30,7 +30,9 @@ namespace EventSalesBackend.Repositories.Implementation
 
         }
 
-        public async Task<AdminSummaryDTO?> GetAdminSummaryAsync(ObjectId companyId)
+        
+
+        public async Task<AdminSummaryDTO?> GetAdminSummaryAsync(ObjectId companyId, string userId)
         {
             /*var projection = Builders<Company>.Projection
                 .Include(c => c.Admins)
@@ -52,7 +54,14 @@ namespace EventSalesBackend.Repositories.Implementation
             );
             
             var filter = Builders<Company>.Filter.Eq(c => c.Id, companyId);
-            return await _companyRepository.Find(filter).Project(projection).FirstOrDefaultAsync();
+            
+            var result = await _companyRepository.Find(filter).Project(projection).FirstOrDefaultAsync();
+            if (result.Admins.Contains(userId))
+            {
+                return result;
+            }
+
+            return null;
         }
 
 

@@ -1,4 +1,5 @@
 ﻿using EventSalesBackend.Models;
+using EventSalesBackend.Models.DTOs.Request.Events;
 using EventSalesBackend.Models.DTOs.Response;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using EventSalesBackend.Repositories.Interfaces;
@@ -48,5 +49,11 @@ public class CompanyService : ICompanyService
     public async Task<bool> AddCompanyAdmin(ObjectId companyId, string adminId, List<string>? adminIds)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<AdminSummaryDTO?> GetAdminSummaryAsync(ObjectId companyId, string userId)
+    {
+        return await _companyRepository.GetAdminSummaryAsync(companyId, userId);
+        
     }
 }
