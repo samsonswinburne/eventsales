@@ -7,7 +7,7 @@ using MongoDB.Driver.GeoJsonObjectModel;
 namespace EventSalesBackend.Models
 {
     [BsonIgnoreExtraElements]
-    public class Event
+    public class Event // event should be split up into in person event and digital event, in person event requires different things than digital event
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
@@ -94,9 +94,13 @@ namespace EventSalesBackend.Models
                 InPersonEvent = eventToConvert.InPersonEvent,
                 VenueAddress = eventToConvert.VenueAddress,
                 IndividualPurchaseLimit = eventToConvert.IndividualPurchaseLimit,
-                // dereference of a possible null reference, need to ensure that the venue coordinates aren't null
-                // which they should never be because the object can be null but coordinates should be required
-                VenueLocation = new JsonVenueLocation{Latitude = eventToConvert.VenueLocation.Coordinates.Latitude, Longitude = eventToConvert.VenueLocation.Coordinates.Longitude},
+                VenueLocation = eventToConvert.VenueLocation?.Coordinates != null 
+                    ? new JsonVenueLocation
+                    {
+                        Latitude = eventToConvert.VenueLocation.Coordinates.Latitude, 
+                        Longitude = eventToConvert.VenueLocation.Coordinates.Longitude
+                    }
+                    : null,                
                 Status = eventToConvert.Status,
                 StartDate = eventToConvert.StartDate,
                 EndDate = eventToConvert.EndDate
