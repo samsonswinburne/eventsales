@@ -73,5 +73,30 @@ namespace EventSalesBackend.Controllers
             var eventToCreate = request.ToEvent(adminSummaryDto.Value.Admins, adminSummaryDto.Value.Summary);
             return await _eventService.CreateAsync(eventToCreate);
         }
+
+        [Authorize]
+        [HttpPost("addTicketType")]
+        public async Task<ActionResult<TicketType>> AddTicketType([FromBody] CreateTicketTypeRequest request)
+        { 
+            var userId = _userClaimsService.GetUserId();
+            if (userId is null)
+            {
+                return Unauthorized();
+            }
+
+            if (!ObjectId.TryParse(request.EventId, out var eventId))
+            {
+                return BadRequest("Event ID is invalid");
+            }
+            
+            var result = await _eventService.AddTicketTypeAsync(eventId, userId, request.ToTicketType());
+            if (!result)
+            {
+                // could occur because 404, unauthorised, more. Difficult to reason why because its just 1 query
+                return BadRequest();
+            }
+            return Ok(); // perhaps should be changed to return the ticketType or the ticketId
+            // so that if its correct the user can then operate on it correctly
+        }
     }
 }
