@@ -14,5 +14,6 @@ namespace EventSalesBackend.Repositories.Interfaces
         Task<bool> DeleteAsync(ObjectId id);
         Task<List<Event>> FindInRadiusByStatusAsync(double latitude, double longitude, double radiusMetres = 2000, EventStatus? status = null, int limit = 20, int page = 0);
         Task<List<Event>> GetByFilter(FilterDefinition<Event> filter, int limit = 20, int page = 0);
+        Task<bool> UpdateByFilter(FilterDefinition<Event> filter, UpdateDefinition<Event> updateDefinition);
     }
 }

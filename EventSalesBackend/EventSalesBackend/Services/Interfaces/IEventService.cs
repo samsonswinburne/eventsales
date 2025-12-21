@@ -16,5 +16,6 @@ namespace EventSalesBackend.Services.Interfaces
         Task<bool> DeleteAsync(ObjectId id);
         Task<List<EventPublic>> FindInRadiusPublicAsync(double latitude, double longitude, double radiusMetres, EventStatus? status = null);
         Task<bool> MakePublicAsync(ObjectId eventId, string userId);
+        Task<bool> AddTicketTypeAsync(ObjectId eventId, string userId, TicketType ticketType);
     }
 }

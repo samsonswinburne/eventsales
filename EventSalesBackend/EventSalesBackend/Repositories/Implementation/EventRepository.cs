@@ -69,5 +69,11 @@ namespace EventSalesBackend.Repositories.Implementation
             
             return await _events.Find(filter).Limit(limit).Skip(limit * page).ToListAsync();
         }
+
+        public async Task<bool> UpdateByFilter(FilterDefinition<Event> filter, UpdateDefinition<Event> update)
+        {
+            var result = await _events.UpdateOneAsync(filter, update);
+            return result.ModifiedCount > 0;
+        }
     }
 }

@@ -29,7 +29,7 @@ namespace EventSalesBackend.Services.Implementation
             var results = await _eventRepository.FindInRadiusByStatusAsync(latitude, longitude, radiusMetres, status);
             return results.ConvertAll(e => e.ToPublic());
         }
-
+        // this can be combined into 1 big filter query. downsides are that server side validation wouldn't return errors but could be handled client side
         public async Task<bool> MakePublicAsync(ObjectId eventId, string userId)
         {
             var eventIdFilter = Builders<Event>.Filter.Eq(e => e.Id, eventId);
@@ -57,6 +57,17 @@ namespace EventSalesBackend.Services.Implementation
 
             var update = Builders<Event>.Update.Set(e => e.Status, EventStatus.Published);
             var result = await _eventRepository.UpdateAsync(eventToSet.Id, update);
+            return result;
+        }
+
+        public async Task<bool> AddTicketTypeAsync(ObjectId eventId, string userId, TicketType ticketType)
+        {
+            var eventIdFilter = Builders<Event>.Filter.Eq(e => e.Id, eventId);
+            var adminsFilter = Builders<Event>.Filter.AnyEq(e => e.Admins, userId);
+            var combinedFilter = Builders<Event>.Filter.And(eventIdFilter, adminsFilter);
+            
+            var update =  Builders<Event>.Update.AddToSet(e => e.TicketTypes, ticketType);
+            var result = await _eventRepository.UpdateByFilter(combinedFilter, update);
             return result;
         }
 
