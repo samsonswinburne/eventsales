@@ -30,6 +30,36 @@ namespace EventSalesBackend.Services.Implementation
             return results.ConvertAll(e => e.ToPublic());
         }
 
+        public async Task<bool> MakePublicAsync(ObjectId eventId, string userId)
+        {
+            var eventIdFilter = Builders<Event>.Filter.Eq(e => e.Id, eventId);
+            var eventToSet = await _eventRepository.GetByIdAsync(eventId);
+
+            if (!eventToSet.Admins.Contains(userId))
+            {
+                throw new UnauthorizedAccessException("You don't have permission to view this draft event");
+            }
+
+            if (eventToSet.Description is null)
+            { // should probably change this to a custom exception
+                throw new InvalidOperationException("The event does not have a description");
+            }
+
+            if (eventToSet.EndDate.CompareTo(DateTime.UtcNow) >= 0)
+            {
+                throw new InvalidOperationException("This event has already occured");
+            }
+
+            if (eventToSet.TicketTypes.Count == 0)
+            {
+                throw new InvalidOperationException("The event does not have a ticket type");
+            }
+
+            var update = Builders<Event>.Update.Set(e => e.Status, EventStatus.Published);
+            var result = await _eventRepository.UpdateAsync(eventToSet.Id, update);
+            return result;
+        }
+
         public async Task<EventPublic> GetByIdPublicAsync(ObjectId id, string userId)
         {
             var @event = await _eventRepository.GetByIdAsync(id);
@@ -72,10 +102,7 @@ namespace EventSalesBackend.Services.Implementation
             return await _eventRepository.GetEventsAsync(page, pageSize);
         }
 
-        public async Task<bool> UpdateAsync(ObjectId id, Event eventUpdate)
-        {
-            return await _eventRepository.UpdateAsync(id, eventUpdate);
-        }
+        
 
         public async Task<bool> UpdateStatusAsync(ObjectId id, EventStatus status)
         {

@@ -11,10 +11,10 @@ namespace EventSalesBackend.Services.Interfaces
         Task<Event> GetById(ObjectId id, string userId);
         Task<List<Event>> GetByHost(ObjectId hostId, string userId);
         Task<List<EventPublic>> GetByHostPublic(ObjectId hostId);
-        Task<bool> UpdateAsync(ObjectId id, Event eventUpdate);
         Task<bool> UpdateStatusAsync(ObjectId id, EventStatus status);
         Task<Event> CreateAsync(Event eventToCreate);
         Task<bool> DeleteAsync(ObjectId id);
         Task<List<EventPublic>> FindInRadiusPublicAsync(double latitude, double longitude, double radiusMetres, EventStatus? status = null);
+        Task<bool> MakePublicAsync(ObjectId eventId, string userId);
     }
 }

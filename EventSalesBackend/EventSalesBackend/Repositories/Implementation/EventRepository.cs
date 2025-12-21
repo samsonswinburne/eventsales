@@ -24,9 +24,10 @@ namespace EventSalesBackend.Repositories.Implementation
             return await _events.Find(_ => true).Limit(pageSize).Skip(page * pageSize).ToListAsync();
         }
 
-        public async Task<bool> UpdateAsync(ObjectId id, Event eventUpdate)
+        public async Task<bool> UpdateAsync(ObjectId id, UpdateDefinition<Event> updateDefinition)
         {
-            var result = await _events.ReplaceOneAsync(e => e.Id == id, eventUpdate);
+            
+            var result = await _events.UpdateOneAsync(e => e.Id == id, updateDefinition);
             return result.ModifiedCount > 0;
         }
 
