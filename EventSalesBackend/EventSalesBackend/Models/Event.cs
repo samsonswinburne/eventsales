@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -124,8 +125,9 @@ namespace EventSalesBackend.Models
 
         [BsonElement("name")]
         [BsonRequired]
+        [StringLength(100, MinimumLength = 1)]
         public required string Name { get; set; }
-
+        [StringLength(100, MinimumLength = 1)]
         [BsonElement("description")]
         [BsonRequired]
         public required string Description { get; set; } = string.Empty;
