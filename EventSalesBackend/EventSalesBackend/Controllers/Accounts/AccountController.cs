@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EventSalesBackend.Controllers
+namespace EventSalesBackend.Controllers.Accounts
 {
     [ApiController]
     [Route("[controller]")]

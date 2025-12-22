@@ -1,4 +1,5 @@
-﻿using EventSalesBackend.Models.DTOs.Request.Events;
+﻿using EventSalesBackend.Data;
+using EventSalesBackend.Models.DTOs.Request.Events;
 using FluentValidation;
 using MongoDB.Bson;
 
@@ -16,7 +17,8 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
             .Length(3, 200).WithMessage("Event name must be between 3 and 200 characters");
 
         RuleFor(x => x.Description)
-            .MaximumLength(2000).WithMessage("Description cannot exceed 2000 characters");
+            .MaximumLength(2000).WithMessage("Description cannot exceed 2000 characters")
+            .Matches(RegexPatterns.NamePatternValidationMessage);
 
         RuleFor(x => x.StartDate)
             .NotEmpty().WithMessage("Start date is required")
@@ -31,6 +33,7 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
 
 
         RuleFor(x => x.IndividualPurchaseLimit)
+            .NotNull().WithMessage("Individual purchase limit is required")
             .GreaterThanOrEqualTo(0).WithMessage("Purchase limit cannot be negative");
     }
 }

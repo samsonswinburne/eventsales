@@ -4,7 +4,7 @@ using EventSalesBackend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EventSalesBackend.Controllers;
+namespace EventSalesBackend.Controllers.Hosts;
 
 [ApiController]
 [Route("[controller]")]

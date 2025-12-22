@@ -59,7 +59,7 @@ namespace EventSalesBackend.Models.DTOs.Response.AdminView
     {
         [BsonElement("id")]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public required string Id { get; set; }
 
         [BsonElement("name")]
         [BsonRequired]

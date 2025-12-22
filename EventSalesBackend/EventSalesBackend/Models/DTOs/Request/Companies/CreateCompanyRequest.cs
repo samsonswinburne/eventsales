@@ -1,4 +1,4 @@
-﻿namespace EventSalesBackend.Models.DTOs.Request.Company;
+﻿namespace EventSalesBackend.Models.DTOs.Request.Companies;
 
 public class CreateCompanyRequest
 {

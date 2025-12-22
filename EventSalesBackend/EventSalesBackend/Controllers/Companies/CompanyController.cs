@@ -1,12 +1,12 @@
 ﻿using EventSalesBackend.Models;
-using EventSalesBackend.Models.DTOs.Request.Company;
+using EventSalesBackend.Models.DTOs.Request.Companies;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using EventSalesBackend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 
-namespace EventSalesBackend.Controllers;
+namespace EventSalesBackend.Controllers.Companies;
 [ApiController]
 [Route("[controller]")]
 public class CompanyController : ControllerBase

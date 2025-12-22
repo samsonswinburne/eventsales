@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace EventSalesBackend.Models.DTOs.Request.Events.Data;
+namespace EventSalesBackend.Models.DTOs.Request.Events.TicketTypes;
 
 public class CreateTicketTypeRequest
 {
@@ -27,9 +27,9 @@ public class CreateTicketTypeRequest
 
 public static class CreateTicketTypeRequestExtensions
 {
-    public static TicketType ToTicketType(this CreateTicketTypeRequest request)
+    public static Models.TicketType ToTicketType(this CreateTicketTypeRequest request)
     {
-        return new TicketType
+        return new Models.TicketType
         {
             Description = request.Description,
             DiscountedPrice = null,

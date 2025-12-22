@@ -1,7 +1,7 @@
 ﻿using EventSalesBackend.Extensions;
 using EventSalesBackend.Models;
 using EventSalesBackend.Models.DTOs.Request.Events;
-using EventSalesBackend.Models.DTOs.Request.Events.Data;
+using EventSalesBackend.Models.DTOs.Request.Events.TicketTypes;
 using EventSalesBackend.Models.DTOs.Response.AdminView;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using EventSalesBackend.Services.Interfaces;
@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 
-namespace EventSalesBackend.Controllers
+namespace EventSalesBackend.Controllers.Events
 {
     [ApiController]
     [Route("[controller]")]
@@ -50,7 +50,7 @@ namespace EventSalesBackend.Controllers
             var result = await _eventService.FindInRadiusPublicAsync(request.Latitude, request.Longitude, request.Radius);
             return result;
         }
-        // for now its a bool but return type should be changed later
+        
         [Authorize]
         [HttpPost]
         public async Task<ActionResult<EventAdminView>> CreateEvent(CreateEventRequest request, 
@@ -86,35 +86,6 @@ namespace EventSalesBackend.Controllers
             return eventToCreate.ToAdminView();
         }
 
-        [Authorize]
-        [HttpPost("addTicketType")]
-        public async Task<ActionResult<TicketType>> AddTicketType([FromBody] CreateTicketTypeRequest request, 
-            [FromServices] IValidator<CreateTicketTypeRequest> validator)
-        { 
-            var userId = _userClaimsService.GetUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
-            
-            var validationResult = await validator.ValidateAsync(request);
-
-            if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.ToErrorResponse());
-            }
-
-            
-            var eventId = ObjectId.Parse(request.EventId);
-            
-            var result = await _eventService.AddTicketTypeAsync(eventId, userId, request.ToTicketType());
-            if (!result)
-            {
-                // could occur because 404, unauthorised, more. Difficult to reason why because its just 1 query
-                return BadRequest();
-            }
-            return Ok(); // perhaps should be changed to return the ticketType or the ticketId
-            // so that if its correct the user can then operate on it correctly
-        }
+        
     }
 }
