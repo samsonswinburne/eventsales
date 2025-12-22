@@ -15,7 +15,7 @@ public class CreateTicketTypeRequestValidator : AbstractValidator<CreateTicketTy
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("Description is required")
             .Length(10, 400).WithMessage("Description must be between 10 and 400 characters")
-            .Matches(@RegexPatterns.NamePattern).WithMessage(RegexPatterns.NamePatternValidationMessage);
+            .Matches(RegexPatterns.NamePattern).WithMessage(RegexPatterns.NamePatternValidationMessage);
         RuleFor(x => x.Price)
             .NotNull().WithMessage("Price is required")
             .GreaterThanOrEqualTo(0).WithMessage("Price must be greater or equal 0")
@@ -28,7 +28,5 @@ public class CreateTicketTypeRequestValidator : AbstractValidator<CreateTicketTy
             .NotNull().WithMessage("Sold is required")
             .GreaterThanOrEqualTo(0).WithMessage("Sold must be between 0 and 10000")
             .LessThanOrEqualTo(10000).WithMessage("Sold must be between 0 and 10000");
-        
     }
-    
 }

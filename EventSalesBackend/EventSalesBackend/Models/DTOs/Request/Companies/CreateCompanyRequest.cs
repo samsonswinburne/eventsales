@@ -7,4 +7,3 @@ public class CreateCompanyRequest
     public string? LogoId { get; set; }
     public required string PostCode { get; set; }
 }
-    

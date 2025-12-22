@@ -12,41 +12,31 @@ public class HostController : ControllerBase
 {
     private readonly IHostService _hostService;
     private readonly IUserClaimsService _userClaimService;
-    public HostController(IHostService hostService,  IUserClaimsService userClaimService)
+
+    public HostController(IHostService hostService, IUserClaimsService userClaimService)
     {
         _hostService = hostService;
         _userClaimService = userClaimService;
     }
+
     [Authorize]
     [HttpPost]
     public async Task<ActionResult> SignupHost([FromBody] CreateHostRequest request)
     {
-        var userId= _userClaimService.GetUserId();
-        if (userId is null)
-        {
-            return Unauthorized();
-        }
+        var userId = _userClaimService.GetUserId();
+        if (userId is null) return Unauthorized();
 
-        var result = await  _hostService.CreateHost(request, userId);
-        if (result)
-        {
-            return Created();
-        }
-        else
-        {
-            return BadRequest();
-        }
+        var result = await _hostService.CreateHost(request, userId);
+        if (result) return Created();
+
+        return BadRequest();
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<HostPublic>> GetHost(string id)
     {
         var result = await _hostService.GetPublicAsync(id);
-        if (result is null)
-        {
-            return NotFound();
-        }
+        if (result is null) return NotFound();
         return result;
-    } 
-    
+    }
 }

@@ -28,6 +28,5 @@ public class CreateHostRequestValidator : AbstractValidator<CreateHostRequest>
                 return age >= 18 && age <= 99;
             })
             .WithMessage("Age must be between 18 and 99 years");
-
     }
 }

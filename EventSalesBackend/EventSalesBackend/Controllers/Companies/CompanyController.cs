@@ -7,27 +7,26 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 
 namespace EventSalesBackend.Controllers.Companies;
+
 [ApiController]
 [Route("[controller]")]
 public class CompanyController : ControllerBase
 {
-    private readonly IUserClaimsService _userClaimsService;
     private readonly ICompanyService _companyService;
+    private readonly IUserClaimsService _userClaimsService;
 
     public CompanyController(IUserClaimsService userClaimsService, ICompanyService companyService)
     {
         _userClaimsService = userClaimsService;
         _companyService = companyService;
     }
+
     [Authorize]
     [HttpPost]
     public async Task<ActionResult<string>> CreateCompany([FromBody] CreateCompanyRequest request)
     {
         var userId = _userClaimsService.GetUserId();
-        if (userId is null)
-        {
-            return Unauthorized();
-        }
+        if (userId is null) return Unauthorized();
 
         var company = new Company
         {
@@ -40,10 +39,7 @@ public class CompanyController : ControllerBase
             PostCode = request.PostCode
         };
         var result = await _companyService.CreateAsync(company);
-        if (result is null)
-        {
-            return BadRequest();
-        }
+        if (result is null) return BadRequest();
         return Ok(result);
     }
 
@@ -51,15 +47,9 @@ public class CompanyController : ControllerBase
     public async Task<ActionResult<CompanyPublic>> GetPublicAsync(string id)
     {
         var conversionSuccess = ObjectId.TryParse(id, out var companyId);
-        if (!conversionSuccess)
-        {
-            return BadRequest();
-        }
+        if (!conversionSuccess) return BadRequest();
         var result = await _companyService.GetPublicAsync(companyId);
-        if (result is null)
-        {
-            return NotFound();
-        }
+        if (result is null) return NotFound();
         return Ok(result);
     }
 }

@@ -6,5 +6,4 @@ public class RegexPatterns
 
     public const string NamePatternValidationMessage =
         "Only letters, numbers, spaces, common punctuation, and emojis are allowed.";
-
 }

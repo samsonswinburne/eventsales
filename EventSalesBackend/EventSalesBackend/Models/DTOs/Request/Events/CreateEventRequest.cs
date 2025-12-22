@@ -1,30 +1,25 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 
 namespace EventSalesBackend.Models.DTOs.Request.Events;
 
 public class CreateEventRequest
-    {
-        [Required]
-        public required string CompanyId { get; init; }
-        [Required]
-        [StringLength(100, MinimumLength = 3)]
-        public required string Name { get; set; }
-        
-        [StringLength(100, MinimumLength = 3)]
-        public string? Description { get; set; }
-        [Required]
-        public required bool InPersonEvent { get; set; }
+{
+    [Required] public required string CompanyId { get; init; }
 
-        [Range(0, 100)]
-        public int IndividualPurchaseLimit { get; set; } = 0;
-        
-        [Required]
-        public DateTime StartDate { get; set; }
+    [Required]
+    [StringLength(100, MinimumLength = 3)]
+    public required string Name { get; set; }
 
-        [Required]
-        public DateTime EndDate { get; set; }
-    }
+    [StringLength(100, MinimumLength = 3)] public string? Description { get; set; }
+
+    [Required] public required bool InPersonEvent { get; set; }
+
+    [Range(0, 100)] public int IndividualPurchaseLimit { get; set; } = 0;
+
+    [Required] public DateTime StartDate { get; set; }
+
+    [Required] public DateTime EndDate { get; set; }
+}
 
 public static class CreateEventRequestExtensions
 {

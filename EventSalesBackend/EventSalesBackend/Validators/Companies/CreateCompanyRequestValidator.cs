@@ -21,5 +21,4 @@ public class CreateCompanyRequestValidator : AbstractValidator<CreateCompanyRequ
             .Length(4).WithMessage("PostCode must contain 4 digits")
             .Matches(@"\d").WithMessage("PostCode must contain 4 digits");
     }
-    
 }

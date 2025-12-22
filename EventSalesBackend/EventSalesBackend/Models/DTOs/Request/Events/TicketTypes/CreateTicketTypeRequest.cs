@@ -4,32 +4,30 @@ namespace EventSalesBackend.Models.DTOs.Request.Events.TicketTypes;
 
 public class CreateTicketTypeRequest
 {
-    [Required]
-    public required string EventId {get; init;}
-    [Required]
-    [StringLength(100, MinimumLength = 1)]
-    public required string TicketName {get; init;}
+    [Required] public required string EventId { get; init; }
+
     [Required]
     [StringLength(100, MinimumLength = 1)]
-    public required string Description {get; init;}
+    public required string TicketName { get; init; }
+
     [Required]
-    [Range(0, 99999)]
-    public required int TotalAvailable {get; init;}
-    [Required]
-    [Range(0, 99999)]
-    public required int Sold  {get; init;}
-    [Required]
-    public required bool Enabled {get; init;}
-    [Required]
-    [Range(0, 9999)]
-    public required decimal Price {get; init;}
+    [StringLength(100, MinimumLength = 1)]
+    public required string Description { get; init; }
+
+    [Required] [Range(0, 99999)] public required int TotalAvailable { get; init; }
+
+    [Required] [Range(0, 99999)] public required int Sold { get; init; }
+
+    [Required] public required bool Enabled { get; init; }
+
+    [Required] [Range(0, 9999)] public required decimal Price { get; init; }
 }
 
 public static class CreateTicketTypeRequestExtensions
 {
-    public static Models.TicketType ToTicketType(this CreateTicketTypeRequest request)
+    public static TicketType ToTicketType(this CreateTicketTypeRequest request)
     {
-        return new Models.TicketType
+        return new TicketType
         {
             Description = request.Description,
             DiscountedPrice = null,

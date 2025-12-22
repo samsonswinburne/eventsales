@@ -8,7 +8,6 @@ using EventSalesBackend.Services.Interfaces;
 using FluentValidation;
 using Microsoft.OpenApi.Models;
 using MongoDB.Bson;
-using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,31 +23,28 @@ builder.Services.AddSwaggerGen(c =>
 {
     // Map ObjectId to string in Swagger
     c.MapType<ObjectId>(() => new OpenApiSchema { Type = "string" });
-    
+
     // Map GeoJsonPoint to a simple object
-    c.MapType<GeoJsonPoint<GeoJson2DGeographicCoordinates>>(() => new OpenApiSchema 
-    { 
+    c.MapType<GeoJsonPoint<GeoJson2DGeographicCoordinates>>(() => new OpenApiSchema
+    {
         Type = "object",
         Properties = new Dictionary<string, OpenApiSchema>
         {
-            ["latitude"] = new OpenApiSchema { Type = "number", Format = "double" },
-            ["longitude"] = new OpenApiSchema { Type = "number", Format = "double" }
+            ["latitude"] = new() { Type = "number", Format = "double" },
+            ["longitude"] = new() { Type = "number", Format = "double" }
         }
     });
 });
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.Configure<CookiePolicyOptions>(options =>
-  {
-      options.MinimumSameSitePolicy = SameSiteMode.None;
-  });
+builder.Services.Configure<CookiePolicyOptions>(options => { options.MinimumSameSitePolicy = SameSiteMode.None; });
 
 builder.Services.AddAuth0WebAppAuthentication(options =>
 {
     var requiredOptions = builder.Configuration.GetRequiredSection("Auth0");
     // needs a dto lmaoooo
     options.Domain = requiredOptions["Domain"] ?? throw new EventSalesMongoConfigurationException("Domain");
-    options.ClientId = requiredOptions["ClientId"] ??  throw new EventSalesMongoConfigurationException("ClientId");
+    options.ClientId = requiredOptions["ClientId"] ?? throw new EventSalesMongoConfigurationException("ClientId");
 });
 
 // data

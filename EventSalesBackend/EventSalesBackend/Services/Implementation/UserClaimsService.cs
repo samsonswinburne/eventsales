@@ -11,7 +11,7 @@ public class UserClaimsService : IUserClaimsService
     {
         _httpContextAccessor = httpContextAccessor;
     }
-    
+
     public string? GetUserId()
     {
         var user = _httpContextAccessor.HttpContext?.User;

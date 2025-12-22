@@ -1,25 +1,25 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-namespace EventSalesBackend.Models
+
+namespace EventSalesBackend.Models;
+
+public class EventHost
 {
-    public class EventHost
-    {
-        [BsonId]
-        [BsonRepresentation(BsonType.String)]
-        public required string Id { get; set; }
+    [BsonId]
+    [BsonRepresentation(BsonType.String)]
+    public required string Id { get; set; }
 
-        [BsonElement("firstName")]
-        [BsonRequired]
-        public required string FirstName { get; set; }
+    [BsonElement("firstName")]
+    [BsonRequired]
+    public required string FirstName { get; set; }
 
-        [BsonElement("lastName")]
-        [BsonRequired]
-        public required string LastName { get; set; }
+    [BsonElement("lastName")]
+    [BsonRequired]
+    public required string LastName { get; set; }
 
-        [BsonElement("birthDate")]
-        [BsonRequired]
-        public DateOnly BirthDate { get; set; }
+    [BsonElement("birthDate")]
+    [BsonRequired]
+    public DateOnly BirthDate { get; set; }
 
-        public bool OnBoardingCompleted { get; set; } = false;
-    }
+    public bool OnBoardingCompleted { get; set; } = false;
 }

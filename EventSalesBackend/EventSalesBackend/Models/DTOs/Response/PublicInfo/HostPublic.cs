@@ -3,5 +3,4 @@
 public class HostPublic
 {
     public required string FirstName { get; set; }
-    
 }

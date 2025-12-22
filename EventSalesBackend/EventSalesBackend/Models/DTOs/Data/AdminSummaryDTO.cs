@@ -1,4 +1,4 @@
-﻿namespace EventSalesBackend.Models.DTOs.Request.Events;
+﻿namespace EventSalesBackend.Models.DTOs.Data;
 
 public readonly record struct AdminSummaryDTO
 {

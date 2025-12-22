@@ -11,9 +11,8 @@ public static class ControllerExtensions
         IValidator<T> validator)
     {
         var validationResult = await validator.ValidateAsync(model);
-            
+
         if (!validationResult.IsValid)
-        {
             return controller.BadRequest(new
             {
                 errors = validationResult.Errors.Select(e => new
@@ -22,7 +21,6 @@ public static class ControllerExtensions
                     message = e.ErrorMessage
                 })
             });
-        }
 
         return null; // Validation passed
     }

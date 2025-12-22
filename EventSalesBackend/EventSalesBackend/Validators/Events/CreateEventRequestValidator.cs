@@ -3,7 +3,7 @@ using EventSalesBackend.Models.DTOs.Request.Events;
 using FluentValidation;
 using MongoDB.Bson;
 
-namespace EventSalesBackend.Validators.Event;
+namespace EventSalesBackend.Validators.Events;
 
 public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
 {
@@ -27,7 +27,7 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
         RuleFor(x => x.EndDate)
             .NotEmpty().WithMessage("End date is required")
             .GreaterThan(x => x.StartDate).WithMessage("End date must be after start date");
-        
+
 
         // Conditional validation for in-person events
 

@@ -1,10 +1,9 @@
 ﻿using EventSalesBackend.Models;
 
-namespace EventSalesBackend.Repositories.Interfaces
+namespace EventSalesBackend.Repositories.Interfaces;
+
+public interface IHostRepository
 {
-    public interface IHostRepository
-    {
-        Task CreateAsync(EventHost host);
-        Task<EventHost?> GetAsync(string hostId);
-    }
+    Task CreateAsync(EventHost host);
+    Task<EventHost?> GetAsync(string hostId);
 }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 
 namespace EventSalesBackend.Controllers.Events.TicketTypes;
+
 [ApiController]
 [Route("event/ticket-types")]
 public class TicketTypesController : ControllerBase
@@ -15,39 +16,31 @@ public class TicketTypesController : ControllerBase
     private readonly IEventService _eventService;
     private readonly IUserClaimsService _userClaimsService;
 
-    TicketTypesController(IEventService eventService, IUserClaimsService userClaimsService)
+    private TicketTypesController(IEventService eventService, IUserClaimsService userClaimsService)
     {
         _eventService = eventService;
         _userClaimsService = userClaimsService;
     }
-    
+
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult<TicketType>> AddTicketType([FromBody] CreateTicketTypeRequest request, 
+    public async Task<ActionResult<TicketType>> AddTicketType([FromBody] CreateTicketTypeRequest request,
         [FromServices] IValidator<CreateTicketTypeRequest> validator)
-    { 
+    {
         var userId = _userClaimsService.GetUserId();
-        if (userId is null)
-        {
-            return Unauthorized();
-        }
-            
+        if (userId is null) return Unauthorized();
+
         var validationResult = await validator.ValidateAsync(request);
 
-        if (!validationResult.IsValid)
-        {
-            return BadRequest(validationResult.ToErrorResponse());
-        }
+        if (!validationResult.IsValid) return BadRequest(validationResult.ToErrorResponse());
 
-            
+
         var eventId = ObjectId.Parse(request.EventId);
-            
+
         var result = await _eventService.AddTicketTypeAsync(eventId, userId, request.ToTicketType());
         if (!result)
-        {
             // could occur because 404, unauthorised, more. Difficult to reason why because its just 1 query
             return BadRequest();
-        }
         return Ok(); // perhaps should be changed to return the ticketType or the ticketId
         // so that if its correct the user can then operate on it correctly
     }

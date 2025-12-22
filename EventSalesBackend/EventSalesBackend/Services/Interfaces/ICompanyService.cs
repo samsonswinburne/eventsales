@@ -1,5 +1,5 @@
 ﻿using EventSalesBackend.Models;
-using EventSalesBackend.Models.DTOs.Request.Events;
+using EventSalesBackend.Models.DTOs.Data;
 using EventSalesBackend.Models.DTOs.Response;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using MongoDB.Bson;

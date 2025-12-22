@@ -13,11 +13,12 @@ public class HostService : IHostService
 
     public HostService(IHostRepository hostRepository)
     {
-        _hostRepository = hostRepository;   
+        _hostRepository = hostRepository;
     }
+
     public async Task<bool> CreateHost(CreateHostRequest request, string userId)
     {
-        EventHost host = new EventHost
+        var host = new EventHost
         {
             Id = userId,
             FirstName = request.FirstName,
@@ -34,25 +35,20 @@ public class HostService : IHostService
             // update this it doesn't tell the user why their request failed, just that it failed
             return false;
         }
+
         return true;
-        
-        
     }
 
     public async Task<HostPublic?> GetPublicAsync(string hostId)
     {
         var result = await _hostRepository.GetAsync(hostId);
-        if (result is null)
-        {
-            return null;
-        }
+        if (result is null) return null;
 
         var host = new HostPublic
         {
             FirstName = result.FirstName
         };
         return host;
-
     }
 
     public Task<EventHost?> GetAsync(string hostId, string userId)
