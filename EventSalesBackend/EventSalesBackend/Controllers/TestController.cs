@@ -1,10 +1,8 @@
-﻿using EventSalesBackend.Extensions;
-using EventSalesBackend.Models.DTOs.Request.Events.Data;
-using FluentValidation;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventSalesBackend.Controllers;
+
 [ApiController]
 [Route("[controller]/{validator}")]
 public class TestController : ControllerBase
@@ -14,7 +12,6 @@ public class TestController : ControllerBase
     public async Task<IActionResult> Get()
     {
         var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
-        return Ok(claims); 
+        return Ok(claims);
     }
-    
 }
