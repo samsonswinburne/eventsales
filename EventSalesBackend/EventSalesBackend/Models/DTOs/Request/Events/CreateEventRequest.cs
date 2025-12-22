@@ -21,7 +21,6 @@ public class CreateEventRequest
         [Range(0, 100)]
         public int IndividualPurchaseLimit { get; set; } = 0;
         
-
         [Required]
         public DateTime StartDate { get; set; }
 

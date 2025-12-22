@@ -16,6 +16,7 @@ namespace EventSalesBackend.Services.Implementation
         }
         public async Task<Event> CreateAsync(Event eventToCreate)
         {
+            
             return await _eventRepository.CreateAsync(eventToCreate);
         }
 

@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using EventSalesBackend.Models.DTOs.Response.AdminView;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver.GeoJsonObjectModel;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace EventSalesBackend.Models
 {
@@ -105,6 +107,50 @@ namespace EventSalesBackend.Models
                 Status = eventToConvert.Status,
                 StartDate = eventToConvert.StartDate,
                 EndDate = eventToConvert.EndDate
+            };
+        }
+        public static EventAdminView ToAdminView(this Event eventToConvert)
+        {
+            return new EventAdminView
+            {
+                Id = eventToConvert.Id.ToString(),
+                HostCompanySummary = new CompanySummaryAdminView
+                {
+                    CompanyId = eventToConvert.HostCompanySummary.CompanyId.ToString(),
+                    CompanyName = eventToConvert.HostCompanySummary.CompanyName,
+                    CompanyImageUrl = eventToConvert.HostCompanySummary.CompanyImageUrl
+                },
+                Name = eventToConvert.Name,
+                Description = eventToConvert.Description,
+                TicketTypes = eventToConvert.TicketTypes.Select(tt => new TicketTypeAdminView
+                {
+                    Id = tt.Id.ToString(),
+                    Name = tt.Name,
+                    Description = tt.Description,
+                    TotalAvaliable = tt.TotalAvaliable,
+                    Sold = tt.Sold,
+                    Enabled = tt.Enabled,
+                    Price = tt.Price,
+                    DiscountedPrice = tt.DiscountedPrice
+                }).ToList(),
+                Summary = eventToConvert.Summary,
+                Photo = eventToConvert.Photo,
+                PostCode = eventToConvert.PostCode,
+                InPersonEvent = eventToConvert.InPersonEvent,
+                VenueAddress = eventToConvert.VenueAddress,
+                IndividualPurchaseLimit = eventToConvert.IndividualPurchaseLimit,
+                VenueLocation = eventToConvert.VenueLocation?.Coordinates != null 
+                    ? new JsonVenueLocation
+                    {
+                        Latitude = eventToConvert.VenueLocation.Coordinates.Latitude, 
+                        Longitude = eventToConvert.VenueLocation.Coordinates.Longitude
+                    }
+                    : null,
+                Status = eventToConvert.Status,
+                StartDate = eventToConvert.StartDate,
+                EndDate = eventToConvert.EndDate,
+                Created = eventToConvert.Created,
+                Admins = eventToConvert.Admins
             };
         }
     }

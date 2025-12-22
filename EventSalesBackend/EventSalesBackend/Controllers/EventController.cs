@@ -1,5 +1,6 @@
 ﻿using EventSalesBackend.Models;
 using EventSalesBackend.Models.DTOs.Request.Events;
+using EventSalesBackend.Models.DTOs.Response.AdminView;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using EventSalesBackend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -49,7 +50,7 @@ namespace EventSalesBackend.Controllers
         // for now its a bool but return type should be changed later
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<Event>> CreateEvent(CreateEventRequest request)
+        public async Task<ActionResult<EventAdminView>> CreateEvent(CreateEventRequest request)
         {
             var userId = _userClaimsService.GetUserId();
 
@@ -71,7 +72,8 @@ namespace EventSalesBackend.Controllers
             }
             
             var eventToCreate = request.ToEvent(adminSummaryDto.Value.Admins, adminSummaryDto.Value.Summary);
-            return await _eventService.CreateAsync(eventToCreate);
+            await _eventService.CreateAsync(eventToCreate);
+            return eventToCreate.ToAdminView();
         }
 
         [Authorize]
