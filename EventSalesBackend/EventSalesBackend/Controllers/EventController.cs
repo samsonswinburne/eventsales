@@ -1,8 +1,11 @@
-﻿using EventSalesBackend.Models;
+﻿using EventSalesBackend.Extensions;
+using EventSalesBackend.Models;
 using EventSalesBackend.Models.DTOs.Request.Events;
+using EventSalesBackend.Models.DTOs.Request.Events.Data;
 using EventSalesBackend.Models.DTOs.Response.AdminView;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using EventSalesBackend.Services.Interfaces;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -50,7 +53,8 @@ namespace EventSalesBackend.Controllers
         // for now its a bool but return type should be changed later
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<EventAdminView>> CreateEvent(CreateEventRequest request)
+        public async Task<ActionResult<EventAdminView>> CreateEvent(CreateEventRequest request, 
+            [FromServices]  IValidator<CreateEventRequest> validator)
         {
             var userId = _userClaimsService.GetUserId();
 
@@ -58,7 +62,13 @@ namespace EventSalesBackend.Controllers
             {
                 return Unauthorized();
             }
-
+            
+            var validationResult = await validator.ValidateAsync(request);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.ToErrorResponse());
+            }
+            
             if (!ObjectId.TryParse(request.CompanyId, out var companyId))
             {
                 return BadRequest();
@@ -78,18 +88,24 @@ namespace EventSalesBackend.Controllers
 
         [Authorize]
         [HttpPost("addTicketType")]
-        public async Task<ActionResult<TicketType>> AddTicketType([FromBody] CreateTicketTypeRequest request)
+        public async Task<ActionResult<TicketType>> AddTicketType([FromBody] CreateTicketTypeRequest request, 
+            [FromServices] IValidator<CreateTicketTypeRequest> validator)
         { 
             var userId = _userClaimsService.GetUserId();
             if (userId is null)
             {
                 return Unauthorized();
             }
+            
+            var validationResult = await validator.ValidateAsync(request);
 
-            if (!ObjectId.TryParse(request.EventId, out var eventId))
+            if (!validationResult.IsValid)
             {
-                return BadRequest("Event ID is invalid");
+                return BadRequest(validationResult.ToErrorResponse());
             }
+
+            
+            var eventId = ObjectId.Parse(request.EventId);
             
             var result = await _eventService.AddTicketTypeAsync(eventId, userId, request.ToTicketType());
             if (!result)

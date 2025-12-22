@@ -1,16 +1,21 @@
 using Auth0.AspNetCore.Authentication;
 using EventSalesBackend.Data;
+using EventSalesBackend.Exceptions.Configuration;
 using EventSalesBackend.Repositories.Implementation;
 using EventSalesBackend.Repositories.Interfaces;
 using EventSalesBackend.Services.Implementation;
 using EventSalesBackend.Services.Interfaces;
+using FluentValidation;
 using Microsoft.OpenApi.Models;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -42,8 +47,8 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
 {
     var requiredOptions = builder.Configuration.GetRequiredSection("Auth0");
     // needs a dto lmaoooo
-    options.Domain = requiredOptions["Domain"];
-    options.ClientId = requiredOptions["ClientId"];
+    options.Domain = requiredOptions["Domain"] ?? throw new EventSalesMongoConfigurationException("Domain");
+    options.ClientId = requiredOptions["ClientId"] ??  throw new EventSalesMongoConfigurationException("ClientId");
 });
 
 // data

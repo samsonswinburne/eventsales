@@ -16,8 +16,6 @@ public class CreateEventRequest
         [Required]
         public required bool InPersonEvent { get; set; }
 
-        public string? VenueAddress { get; set; }
-
         [Range(0, 100)]
         public int IndividualPurchaseLimit { get; set; } = 0;
         
@@ -36,7 +34,6 @@ public static class CreateEventRequestExtensions
         {
             Name = obj.Name,
             InPersonEvent = obj.InPersonEvent,
-            VenueAddress = obj.VenueAddress,
             IndividualPurchaseLimit = obj.IndividualPurchaseLimit,
             StartDate = obj.StartDate,
             EndDate = obj.EndDate,

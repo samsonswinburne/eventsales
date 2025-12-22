@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace EventSalesBackend.Models.DTOs.Request.Events;
+namespace EventSalesBackend.Models.DTOs.Request.Events.Data;
 
 public class CreateTicketTypeRequest
 {
