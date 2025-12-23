@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
-using EventSalesBackend.Models.DTOs.Response.AdminView;
+using EventSalesBackend.Models.DTOs.Response.AdminView.Event;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;

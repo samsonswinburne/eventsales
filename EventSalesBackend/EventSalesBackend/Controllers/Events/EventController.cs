@@ -1,7 +1,7 @@
 ﻿using EventSalesBackend.Extensions;
 using EventSalesBackend.Models;
 using EventSalesBackend.Models.DTOs.Request.Events;
-using EventSalesBackend.Models.DTOs.Response.AdminView;
+using EventSalesBackend.Models.DTOs.Response.AdminView.Event;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using EventSalesBackend.Services.Interfaces;
 using FluentValidation;
@@ -70,5 +70,22 @@ public class EventController : ControllerBase
         var eventToCreate = request.ToEvent(adminSummaryDto.Value.Admins, adminSummaryDto.Value.Summary);
         await _eventService.CreateAsync(eventToCreate);
         return eventToCreate.ToAdminView();
+    }
+    [Authorize]
+    [HttpPost("update/public")]
+    public async Task<ActionResult<UpdateEventPublicResponse>> UpdateEventPublic([FromBody] UpdateEventPublicRequest request, 
+        [FromServices] IValidator<UpdateEventPublicRequest> validator)
+    {
+        var userId = _userClaimsService.GetUserId();
+        if (userId is null) return Unauthorized();
+
+        var validationResult = await validator.ValidateAsync(request);
+        if (!validationResult.IsValid) return BadRequest(validationResult.ToErrorResponse());
+
+        throw new NotImplementedException();
+        return Ok(new UpdateEventPublicResponse
+        {
+
+        });
     }
 }

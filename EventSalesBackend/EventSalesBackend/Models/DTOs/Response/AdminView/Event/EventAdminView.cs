@@ -3,7 +3,7 @@ using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace EventSalesBackend.Models.DTOs.Response.AdminView;
+namespace EventSalesBackend.Models.DTOs.Response.AdminView.Event;
 
 [BsonIgnoreExtraElements]
 public class
