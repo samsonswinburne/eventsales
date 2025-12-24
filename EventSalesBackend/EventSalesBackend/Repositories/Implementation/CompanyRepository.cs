@@ -1,4 +1,5 @@
 ﻿using EventSalesBackend.Data;
+using EventSalesBackend.Exceptions.Companies;
 using EventSalesBackend.Models;
 using EventSalesBackend.Models.DTOs.Data;
 using EventSalesBackend.Repositories.Interfaces;
@@ -54,10 +55,12 @@ public class CompanyRepository : ICompanyRepository
 
         var filter = Builders<Company>.Filter.Eq(c => c.Id, companyId);
 
-        var result = await _companyRepository.Find(filter).Project(projection).FirstOrDefaultAsync();
-        if (result.Admins.Contains(userId)) return result;
-
-        return null;
+        AdminSummaryDTO? result = await _companyRepository.Find(filter).Project(projection).FirstOrDefaultAsync();
+        if (result is null)
+        {
+            throw new CompanyNotFoundException(companyId.ToString());
+        }
+        return !result.Value.Admins.Contains(userId) ? throw new UnauthorizedAccessException() : result;
     }
 
 
