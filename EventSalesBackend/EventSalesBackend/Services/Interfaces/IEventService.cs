@@ -19,5 +19,5 @@ public interface IEventService
         EventStatus? status = null);
 
     Task<bool> MakePublicAsync(ObjectId eventId, string userId);
-    Task<bool> AddTicketTypeAsync(ObjectId eventId, string userId, TicketType ticketType);
+    Task<TicketTypePublic> AddTicketTypeAsync(ObjectId eventId, string userId, TicketType ticketType);
 }

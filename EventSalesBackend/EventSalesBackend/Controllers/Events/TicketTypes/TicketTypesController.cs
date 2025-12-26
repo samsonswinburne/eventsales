@@ -38,16 +38,13 @@ public class TicketTypesController : ControllerBase
         
         
         var result = await _eventService.AddTicketTypeAsync(parsedEventId, userId, request.ToTicketType());
-        if (!result)
-            // could occur because 404, unauthorised, more. Difficult to reason why because its just 1 query
-            return BadRequest();
-        return Ok(); // perhaps should be changed to return the ticketType or the ticketId
+        return Ok(result); // perhaps should be changed to return the ticketType or the ticketId
         // so that if its correct the user can then operate on it correctly
     }
 
     [HttpGet("{ticketId}")]
     public async Task<ActionResult<TicketType>> GetTicketType([FromQuery] string ticketId)
     {
-        throw new NotImplementedException();        
+        throw new NotImplementedException();
     }
 }

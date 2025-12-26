@@ -57,7 +57,7 @@ public class EventService : IEventService
         return result;
     }
 
-    public async Task<bool> AddTicketTypeAsync(ObjectId eventId, string userId, TicketType ticketType)
+    public async Task<TicketTypePublic> AddTicketTypeAsync(ObjectId eventId, string userId, TicketType ticketType)
     {
         ticketType.Id = ObjectId.GenerateNewId();
         var eventIdFilter = Builders<Event>.Filter.Eq(e => e.Id, eventId);
@@ -66,7 +66,11 @@ public class EventService : IEventService
 
         var update = Builders<Event>.Update.AddToSet(e => e.TicketTypes, ticketType);
         var result = await _eventRepository.UpdateByFilter(combinedFilter, update);
-        return result;
+        if (!result)
+        {
+            throw new NotImplementedException();
+        }
+        return ticketType.ToPublic();
     }
 
     public async Task<EventPublic> GetByIdPublicAsync(ObjectId id, string userId)
