@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using EventSalesBackend.Models.DTOs.Response.AdminView.Event;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using MongoDB.Bson;
@@ -81,7 +82,7 @@ public static class EventExtensions
             HostCompanySummary = eventToConvert.HostCompanySummary,
             Name = eventToConvert.Name,
             Description = eventToConvert.Description,
-            TicketTypes = eventToConvert.TicketTypes,
+            TicketTypes = eventToConvert.TicketTypes.ConvertAll(e => e.ToPublic()),
             Summary = eventToConvert.Summary,
             Photo = eventToConvert.Photo,
             PostCode = eventToConvert.PostCode, // to make public the event should have a postcode?
@@ -189,6 +190,26 @@ public class TicketType
     [BsonElement("discountedPrice")]
     [BsonRepresentation(BsonType.Decimal128)]
     public decimal? DiscountedPrice { get; set; }
+    public DateTime? DiscountStarts { get; set; }
+    public DateTime? DiscountEnds { get; set; }
+}
+
+public static class TicketTypeExtensions
+{
+    public static TicketTypePublic ToPublic(this TicketType ticketTypeToConvert)
+    {
+        return new TicketTypePublic
+        {
+            Id = ticketTypeToConvert.Id.ToString(),
+            TestId = ticketTypeToConvert.Id,
+            Name = ticketTypeToConvert.Name,
+            Description = ticketTypeToConvert.Description,
+            TotalAvaliable = ticketTypeToConvert.TotalAvaliable,
+            Sold = ticketTypeToConvert.Sold,
+            Price = ticketTypeToConvert.Price,
+            DiscountedPrice = ticketTypeToConvert.DiscountedPrice
+        };
+    }
 }
 
 public class TicketSummary

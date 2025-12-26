@@ -59,6 +59,7 @@ public class EventService : IEventService
 
     public async Task<bool> AddTicketTypeAsync(ObjectId eventId, string userId, TicketType ticketType)
     {
+        ticketType.Id = ObjectId.GenerateNewId();
         var eventIdFilter = Builders<Event>.Filter.Eq(e => e.Id, eventId);
         var adminsFilter = Builders<Event>.Filter.AnyEq(e => e.Admins, userId);
         var combinedFilter = Builders<Event>.Filter.And(eventIdFilter, adminsFilter);
@@ -72,7 +73,8 @@ public class EventService : IEventService
     {
         var @event = await _eventRepository.GetByIdAsync(id);
         if (@event.Status == EventStatus.Draft && !@event.Admins.Contains(userId))
-            throw new UnauthorizedAccessException("You don't have permission to view this draft event");
+            throw new UnauthorizedAccessException($"You don't have permission to view this draft event, {@event.Admins[0]}");
+        // second part of this exception needs to be removed before going public
         return @event.ToPublic();
     }
 
