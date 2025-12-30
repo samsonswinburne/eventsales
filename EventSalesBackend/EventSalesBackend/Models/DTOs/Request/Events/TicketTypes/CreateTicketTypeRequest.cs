@@ -4,7 +4,6 @@ namespace EventSalesBackend.Models.DTOs.Request.Events.TicketTypes;
 
 public class CreateTicketTypeRequest
 {
-    [Required] public required string EventId { get; init; }
 
     [Required]
     [StringLength(100, MinimumLength = 1)]

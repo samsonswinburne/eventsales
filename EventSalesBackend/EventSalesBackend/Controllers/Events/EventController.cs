@@ -29,13 +29,15 @@ public class EventController : ControllerBase
         _userClaimsService = userClaimsService;
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<EventPublic>> GetEventByIdPublic(string id)
+    [HttpGet("{eventId}")]
+    public async Task<ActionResult<EventPublic>> GetEventByIdPublic(string eventId)
     {
-        if (!ObjectId.TryParse(id, out var convertedId)) return BadRequest("Invalid ID format");
+        if (!ObjectId.TryParse(eventId, out var convertedId)) return BadRequest("Invalid ID format");
+        var userId = _userClaimsService.GetUserId() ?? "";
+        
         try
         {
-            var result = await _eventService.GetByIdPublicAsync(convertedId, "GOINGTOBEID");
+            var result = await _eventService.GetByIdPublicAsync(convertedId, userId);
             return result;
         }
         catch (UnauthorizedAccessException ex)
