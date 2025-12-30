@@ -2,9 +2,7 @@
 
 public class RegexPatterns
 {
-    public const string NamePattern = @"^[\p{L}\p{N}\u200D\uFE0F .,!?'""\-()]+$";
-
-    
+    public const string NamePattern = @"^[\p{L}\p{N}\p{M}\p{S}\p{P}\p{Zs}]+$";
 }
 public class RegexValidationMessages
 {
