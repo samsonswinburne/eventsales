@@ -9,9 +9,7 @@ public class CreateTicketTypeRequestValidator : AbstractValidator<CreateTicketTy
 {
     public CreateTicketTypeRequestValidator()
     {
-        RuleFor(x => x.EventId)
-            .NotEmpty().WithMessage("Company Id is required")
-            .Must(id => ObjectId.TryParse(id, out _)).WithMessage("Company Id must be a valid Id");
+
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("Description is required")
             .Length(10, 400).WithMessage("Description must be between 10 and 400 characters")

@@ -4,6 +4,10 @@ public class RegexPatterns
 {
     public const string NamePattern = @"^[\p{L}\p{N}\u200D\uFE0F .,!?'""\-()]+$";
 
-    public const string NamePatternValidationMessage =
+    
+}
+public class RegexValidationMessages
+{
+    public const string NamePatternMessage =
         "Only letters, numbers, spaces, common punctuation, and emojis are allowed.";
 }
