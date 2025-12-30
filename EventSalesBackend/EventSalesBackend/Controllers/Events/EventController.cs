@@ -1,4 +1,5 @@
-﻿using EventSalesBackend.Extensions;
+﻿using EventSalesBackend.Exceptions.MongoDB;
+using EventSalesBackend.Extensions;
 using EventSalesBackend.Models;
 using EventSalesBackend.Models.DTOs.Request.Events;
 using EventSalesBackend.Models.DTOs.Response.AdminView.Event;
@@ -6,6 +7,7 @@ using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using EventSalesBackend.Services.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 
@@ -73,7 +75,7 @@ public class EventController : ControllerBase
     }
     [Authorize]
     [HttpPost("update/public")]
-    public async Task<ActionResult<UpdateEventPublicResponse>> UpdateEventPublic([FromBody] UpdateEventPublicRequest request, 
+    public async Task<ActionResult<UpdateEventPublishedResponse>> UpdateEventPublished([FromBody] UpdateEventPublicRequest request, 
         [FromServices] IValidator<UpdateEventPublicRequest> validator)
     {
         var userId = _userClaimsService.GetUserId();
@@ -83,9 +85,35 @@ public class EventController : ControllerBase
         if (!validationResult.IsValid) return BadRequest(validationResult.ToErrorResponse());
 
         throw new NotImplementedException();
-        return Ok(new UpdateEventPublicResponse
+        return Ok(new UpdateEventPublishedResponse
         {
 
         });
+    }
+    [Authorize]
+    [HttpPatch("{eventId}/location")]
+    public async Task<ActionResult<UpdateEventLocationResponse>> UpdateEventLocation([FromBody] UpdateEventLocationRequest request,
+        [FromServices] IValidator<UpdateEventLocationRequest> validator, [FromRoute] string eventId)
+    {
+        var userId =  _userClaimsService.GetUserId();
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
+        if (!ObjectId.TryParse(eventId, out var id))
+        {
+            return BadRequest("EventId is invalid");
+        }
+        var validationResult = await validator.ValidateAsync(request);
+        if (!validationResult.IsValid) return BadRequest(validationResult.ToErrorResponse());
+        try
+        {
+            var result = await _eventService.UpdateEventLocationAsync(id, userId, request.Latitude, request.Longitude);
+            return Ok(new UpdateEventLocationResponse {Address = result });
+        }catch (MongoFailedToUpdateException ex)
+        {
+            return BadRequest();
+        }
+        
     }
 }

@@ -20,4 +20,6 @@ public interface IEventService
 
     Task<bool> MakePublicAsync(ObjectId eventId, string userId);
     Task<bool> AddTicketTypeAsync(ObjectId eventId, string userId, TicketType ticketType);
+
+    Task<string> UpdateEventLocationAsync(ObjectId eventId, string userId, double latitude, double longitude);
 }

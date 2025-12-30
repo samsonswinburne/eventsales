@@ -1,15 +1,18 @@
-﻿using EventSalesBackend.Models;
+﻿using EventSalesBackend.Exceptions.MongoDB;
+using EventSalesBackend.Models;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using EventSalesBackend.Repositories.Interfaces;
 using EventSalesBackend.Services.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.GeoJsonObjectModel;
 
 namespace EventSalesBackend.Services.Implementation;
 
 public class EventService : IEventService
 {
     private readonly IEventRepository _eventRepository;
+    private readonly IGeocodeService _geocodeService;
 
     public EventService(IEventRepository eventRepository)
     {
@@ -112,5 +115,35 @@ public class EventService : IEventService
     public async Task<bool> UpdateStatusAsync(ObjectId id, EventStatus status)
     {
         return await _eventRepository.UpdateStatusAsync(id, status);
+    }
+
+    public async Task<string> UpdateEventLocationAsync(ObjectId eventId, string userId, double latitude, double longitude)
+    {
+        var result = await _geocodeService.ReverseGeocode(latitude, longitude);
+
+        var eventIdFilter = Builders<Event>.Filter.Eq(x => x.Id, eventId);
+        var adminsFilter = Builders<Event>.Filter.AnyEq(e => e.Admins, userId);
+        var eventTypeFilter = Builders<Event>.Filter.Eq(e => e.InPersonEvent, true);
+        var eventStatusFilter = Builders<Event>.Filter.Lte(e => e.Status, EventStatus.Published);
+
+        var combinedFilter = Builders<Event>.Filter.And(eventIdFilter, adminsFilter, eventTypeFilter, eventStatusFilter);
+        
+
+        var update = Builders<Event>.Update
+        .Set(x => x.VenueLocation,
+            new GeoJsonPoint<GeoJson2DGeographicCoordinates>(
+                new GeoJson2DGeographicCoordinates(latitude, longitude)
+            )
+        )
+        .Set(x => x.VenueAddress, result.Address);
+
+        var updateResult = await _eventRepository.UpdateByFilter(combinedFilter, update);
+        if (!updateResult)
+        {
+            throw new MongoFailedToUpdateException("event");
+        }
+
+        // code to update if successful then
+        return result.Address;
     }
 }

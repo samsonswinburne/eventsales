@@ -55,10 +55,12 @@ builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<IHostRepository, HostRepository>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 // services
+builder.Services.AddHttpClient();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IHostService, HostService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<IUserClaimsService, UserClaimsService>();
+builder.Services.AddScoped<IGeocodeService, GeocodeService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
