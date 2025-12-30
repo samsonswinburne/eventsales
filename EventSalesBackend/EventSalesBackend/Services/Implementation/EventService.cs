@@ -1,5 +1,6 @@
 ﻿using EventSalesBackend.Exceptions.MongoDB;
 using EventSalesBackend.Models;
+using EventSalesBackend.Models.DTOs.Response.AdminView.Event;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using EventSalesBackend.Repositories.Interfaces;
 using EventSalesBackend.Services.Interfaces;
@@ -59,7 +60,7 @@ public class EventService : IEventService
         var result = await _eventRepository.UpdateAsync(eventToSet.Id, update);
         return result;
     }
-
+    
     public async Task<TicketTypePublic> AddTicketTypeAsync(ObjectId eventId, string userId, TicketType ticketType)
     {
         ticketType.Id = ObjectId.GenerateNewId();
@@ -123,7 +124,7 @@ public class EventService : IEventService
         return await _eventRepository.UpdateStatusAsync(id, status);
     }
 
-    public async Task<string> UpdateEventLocationAsync(ObjectId eventId, string userId, double latitude, double longitude)
+    public async Task<UpdateEventLocationResponse> UpdateEventLocationAsync(ObjectId eventId, string userId, double latitude, double longitude)
     {
         var result = await _geocodeService.ReverseGeocode(latitude, longitude);
 
@@ -150,6 +151,12 @@ public class EventService : IEventService
         }
 
         // code to update if successful then
-        return result.Address;
+        return 
+            new UpdateEventLocationResponse
+            {
+            Address = result.Address
+            };
     }
+
+   
 }

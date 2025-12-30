@@ -11,6 +11,6 @@ public class UpdateTicketTypeDescriptionRequestValidator :  AbstractValidator<Up
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("Description is required")
             .Length(10, 400).WithMessage("Description must be between 10 and 400 characters")
-            .Matches(RegexPatterns.NamePattern).WithMessage(RegexPatterns.NamePatternValidationMessage);
+            .Matches(RegexPatterns.NamePattern).WithMessage(RegexValidationMessages.NamePatternMessage);
     }
 }

@@ -10,7 +10,7 @@ public class UpdateTicketTypeNameRequestValidator : AbstractValidator<UpdateTick
     {
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Name is required")
-            .Matches(RegexPatterns.NamePattern).WithMessage(RegexPatterns.NamePatternValidationMessage)
+            .Matches(RegexPatterns.NamePattern).WithMessage(RegexValidationMessages.NamePatternMessage)
             .Length(1, 100).WithMessage("Ticket Name must be between 1 and 100 characters");
     }   
 }

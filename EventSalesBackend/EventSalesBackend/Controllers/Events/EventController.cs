@@ -111,7 +111,7 @@ public class EventController : ControllerBase
         try
         {
             var result = await _eventService.UpdateEventLocationAsync(id, userId, request.Latitude, request.Longitude);
-            return Ok(new UpdateEventLocationResponse {Address = result });
+            return Ok(result);
         }catch (MongoFailedToUpdateException ex)
         {
             return BadRequest();
