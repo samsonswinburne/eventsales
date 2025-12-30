@@ -15,9 +15,10 @@ public class EventService : IEventService
     private readonly IEventRepository _eventRepository;
     private readonly IGeocodeService _geocodeService;
 
-    public EventService(IEventRepository eventRepository)
+    public EventService(IEventRepository eventRepository, IGeocodeService geocodeService)
     {
         _eventRepository = eventRepository;
+        _geocodeService = geocodeService;
     }
 
     public async Task<Event> CreateAsync(Event eventToCreate)
