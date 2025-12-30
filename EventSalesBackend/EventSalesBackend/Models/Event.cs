@@ -10,8 +10,7 @@ using MongoDB.Driver.GeoJsonObjectModel;
 namespace EventSalesBackend.Models;
 
 [BsonIgnoreExtraElements]
-public class
-    Event // event should be split up into in person event and digital event, in person event requires different things than digital event
+public class Event // event should be split up into in person event and digital event, in person event requires different things than digital event
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]

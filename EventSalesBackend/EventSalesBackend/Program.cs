@@ -63,6 +63,15 @@ builder.Services.AddScoped<IUserClaimsService, UserClaimsService>();
 builder.Services.AddScoped<IGeocodeService, GeocodeService>();
 var app = builder.Build();
 
+
+
+// Force MongoDbContext to initialize
+using (var scope = app.Services.CreateScope())
+{
+    var mongoContext = scope.ServiceProvider.GetRequiredService<IMongoDbContext>();
+    Console.WriteLine("MongoDbContext initialized");
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

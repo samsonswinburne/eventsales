@@ -140,7 +140,7 @@ public class EventService : IEventService
         var update = Builders<Event>.Update
         .Set(x => x.VenueLocation,
             new GeoJsonPoint<GeoJson2DGeographicCoordinates>(
-                new GeoJson2DGeographicCoordinates(latitude, longitude)
+                new GeoJson2DGeographicCoordinates(longitude, latitude)
             )
         )
         .Set(x => x.VenueAddress, result.Address);

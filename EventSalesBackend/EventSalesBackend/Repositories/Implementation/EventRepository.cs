@@ -1,8 +1,10 @@
 ﻿using EventSalesBackend.Data;
 using EventSalesBackend.Models;
 using EventSalesBackend.Repositories.Interfaces;
+using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.GeoJsonObjectModel;
 
 namespace EventSalesBackend.Repositories.Implementation;
 
@@ -54,15 +56,38 @@ public class EventRepository : IEventRepository
     }
 
     public async Task<List<Event>> FindInRadiusByStatusAsync(double latitude, double longitude,
-        double radiusMetres = 2000, EventStatus? status = null, int limit = 20, int page = 0)
+    double radiusMetres = 2000, EventStatus? status = null, int limit = 20, int page = 0)
     {
+
+        var point = new GeoJsonPoint<GeoJson2DGeographicCoordinates>(
+    new GeoJson2DGeographicCoordinates(longitude, latitude)
+);
+
+        var options = new GeoNearOptions<Event, Event>
+        {
+            DistanceField = "distance",
+            MaxDistance = radiusMetres,
+            Query = Builders<Event>.Filter.Eq(e => e.InPersonEvent, true),
+            Spherical = true
+        };
+
+        var results = await _events.Aggregate()
+            .GeoNear(point, options)
+            .ToListAsync();
+        return results;
+
         var sort = Builders<Event>.Sort.Descending(e => e.Summary.TotalSold);
+
         var statusFilter = Builders<Event>.Filter.Eq(e => e.Status, EventStatus.Published);
         if (status != null) statusFilter = Builders<Event>.Filter.Eq(e => e.Status, status);
-        var locationFilter = Builders<Event>.Filter.Near(e => e.VenueLocation, latitude, longitude, radiusMetres);
+
+        
+        
+        var locationFilter = Builders<Event>.Filter.Near(e => e.VenueLocation, longitude, latitude, radiusMetres);
+
         var statusLocationFilter = Builders<Event>.Filter.And(statusFilter, locationFilter);
 
-        return await _events.Find(statusLocationFilter).Sort(sort).Limit(limit).Skip(page * limit).ToListAsync();
+        return await _events.Find(locationFilter).Sort(sort).Limit(limit).Skip(page * limit).ToListAsync();
     }
 
     public async Task<List<Event>> GetByFilter(FilterDefinition<Event> filter, int limit = 20, int page = 0)

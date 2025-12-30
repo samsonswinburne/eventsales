@@ -1,4 +1,5 @@
 ﻿using EventSalesBackend.Models;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace EventSalesBackend.Data;
@@ -33,7 +34,8 @@ public class MongoDbContext : IMongoDbContext
         var eventIndexes = new[]
         {
             new CreateIndexModel<Event>(
-                Builders<Event>.IndexKeys.Geo2DSphere(e => e.VenueLocation)),
+                Builders<Event>.IndexKeys.Geo2DSphere(e => e.VenueLocation)
+                        .Ascending(e => e.Status)),
             new CreateIndexModel<Event>(
                 Builders<Event>.IndexKeys.Ascending(e => e.StartDate)),
             new CreateIndexModel<Event>(
@@ -43,6 +45,11 @@ public class MongoDbContext : IMongoDbContext
         };
         Events.Indexes.CreateMany(eventIndexes);
 
+        var indexes = Events.Indexes.List().ToListAsync();
+        foreach (var index in indexes.Result)
+        {
+            Console.WriteLine(index.ToJson());
+        }
         //var hostIndexes = new[]
         //{
 
