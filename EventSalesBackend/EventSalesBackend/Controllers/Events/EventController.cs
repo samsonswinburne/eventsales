@@ -76,17 +76,24 @@ public class EventController : ControllerBase
         return eventToCreate.ToAdminView();
     }
     [Authorize]
-    [HttpPost("update/public")]
-    public async Task<ActionResult<UpdateEventPublishedResponse>> UpdateEventPublished([FromBody] UpdateEventPublicRequest request, 
-        [FromServices] IValidator<UpdateEventPublicRequest> validator)
+    [HttpPost("{eventId}/makepublic")]
+    public async Task<ActionResult<UpdateEventPublishedResponse>> UpdateEventPublished([FromRoute] string eventId)
     {
         var userId = _userClaimsService.GetUserId();
         if (userId is null) return Unauthorized();
 
-        var validationResult = await validator.ValidateAsync(request);
-        if (!validationResult.IsValid) return BadRequest(validationResult.ToErrorResponse());
+        if (!ObjectId.TryParse(eventId, out var eventIdValidated))
+        {
+            return BadRequest("Invalid EventId");
+        }
 
+        var result = await _eventService.MakePublicAsync(eventIdValidated, userId);
+        if (result)
+        {
+            return Ok();
+        }
         throw new NotImplementedException();
+        return BadRequest("Unspecified Error");
         return Ok(new UpdateEventPublishedResponse
         {
 

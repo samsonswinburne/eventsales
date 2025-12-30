@@ -21,10 +21,14 @@ public class CreateTicketTypeRequestValidator : AbstractValidator<CreateTicketTy
         RuleFor(x => x.TicketName)
             .NotNull().WithMessage("Ticket Name is required")
             .Length(0, 100).WithMessage("Ticket Name must be between 0 and 100 characters")
-            .Matches(RegexValidationMessages.NamePatternMessage);
+            .Matches(RegexPatterns.NamePattern).WithMessage(RegexValidationMessages.NamePatternMessage);
         RuleFor(x => x.Sold)
             .NotNull().WithMessage("Sold is required")
             .GreaterThanOrEqualTo(0).WithMessage("Sold must be between 0 and 10000")
             .LessThanOrEqualTo(10000).WithMessage("Sold must be between 0 and 10000");
+        RuleFor(x => x)
+            .Must(x => x.Sold <= x.TotalAvailable).WithMessage("Tickets avaliable must be greater than or equal to tickets sold");
+        RuleFor(x => x.TotalAvailable)
+            .GreaterThanOrEqualTo(0).WithMessage("There must be a positive number of tickets avaliable");
     }
 }

@@ -67,7 +67,10 @@ public class EventRepository : IEventRepository
         {
             DistanceField = "distance",
             MaxDistance = radiusMetres,
-            Query = Builders<Event>.Filter.Eq(e => e.InPersonEvent, true),
+            Query = Builders<Event>.Filter.And(
+                Builders<Event>.Filter.Eq(e => e.InPersonEvent, true),
+                Builders<Event>.Filter.Eq(e => e.Status, EventStatus.Published)
+                ),
             Spherical = true
         };
 

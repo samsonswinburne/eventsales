@@ -34,8 +34,10 @@ public class MongoDbContext : IMongoDbContext
         var eventIndexes = new[]
         {
             new CreateIndexModel<Event>(
-                Builders<Event>.IndexKeys.Geo2DSphere(e => e.VenueLocation)
-                        .Ascending(e => e.Status)),
+            Builders<Event>.IndexKeys
+                .Geo2DSphere(e => e.VenueLocation)
+                .Ascending(e => e.Status)
+                .Ascending(e => e.InPersonEvent)),
             new CreateIndexModel<Event>(
                 Builders<Event>.IndexKeys.Ascending(e => e.StartDate)),
             new CreateIndexModel<Event>(
