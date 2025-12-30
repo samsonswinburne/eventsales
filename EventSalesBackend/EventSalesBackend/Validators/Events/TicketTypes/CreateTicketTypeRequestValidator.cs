@@ -29,6 +29,7 @@ public class CreateTicketTypeRequestValidator : AbstractValidator<CreateTicketTy
         RuleFor(x => x)
             .Must(x => x.Sold <= x.TotalAvailable).WithMessage("Tickets avaliable must be greater than or equal to tickets sold");
         RuleFor(x => x.TotalAvailable)
+            .NotNull()
             .GreaterThanOrEqualTo(0).WithMessage("There must be a positive number of tickets avaliable");
     }
 }
