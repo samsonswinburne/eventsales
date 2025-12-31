@@ -79,18 +79,6 @@ public class EventRepository : IEventRepository
             .ToListAsync();
         return results;
 
-        var sort = Builders<Event>.Sort.Descending(e => e.Summary.TotalSold);
-
-        var statusFilter = Builders<Event>.Filter.Eq(e => e.Status, EventStatus.Published);
-        if (status != null) statusFilter = Builders<Event>.Filter.Eq(e => e.Status, status);
-
-        
-        
-        var locationFilter = Builders<Event>.Filter.Near(e => e.VenueLocation, longitude, latitude, radiusMetres);
-
-        var statusLocationFilter = Builders<Event>.Filter.And(statusFilter, locationFilter);
-
-        return await _events.Find(locationFilter).Sort(sort).Limit(limit).Skip(page * limit).ToListAsync();
     }
 
     public async Task<List<Event>> GetByFilter(FilterDefinition<Event> filter, int limit = 20, int page = 0)
