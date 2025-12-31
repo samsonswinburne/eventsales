@@ -27,6 +27,7 @@ public class MongoDbContext : IMongoDbContext
     public IMongoCollection<Company> Companies => _database.GetCollection<Company>("companies");
 
     public IMongoCollection<Ticket> Tickets => _database.GetCollection<Ticket>("tickets");
+    public IMongoCollection<RequestCompanyAdmin> CompanyAdminRequests => _database.GetCollection<RequestCompanyAdmin>("companyAdminRequests");
 
     private void CreateIndexes()
     {
@@ -79,5 +80,16 @@ public class MongoDbContext : IMongoDbContext
                 Builders<EventHost>.IndexKeys.Ascending(h => h.Email)
                 )
         };
+        Hosts.Indexes.CreateMany(hostIndexes);
+        var rcaIndexes = new[]
+        {
+            new CreateIndexModel<RequestCompanyAdmin>(
+                Builders<RequestCompanyAdmin>.IndexKeys.Ascending(r => r.CompanyId)
+                ),
+            new CreateIndexModel<RequestCompanyAdmin>(
+                Builders<RequestCompanyAdmin>.IndexKeys.Ascending(r => r.RequestReceiverId)
+                )
+        };
+        CompanyAdminRequests.Indexes.CreateMany(rcaIndexes);
     }
 }

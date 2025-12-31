@@ -9,4 +9,5 @@ public interface IMongoDbContext
     IMongoCollection<EventHost> Hosts { get; }
     IMongoCollection<Company> Companies { get; }
     IMongoCollection<Ticket> Tickets { get; }
+    IMongoCollection<RequestCompanyAdmin> CompanyAdminRequests { get; }
 }
