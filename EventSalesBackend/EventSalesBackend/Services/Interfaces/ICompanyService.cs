@@ -1,8 +1,10 @@
-﻿using EventSalesBackend.Models;
+﻿using Amazon.Runtime.Internal;
+using EventSalesBackend.Models;
 using EventSalesBackend.Models.DTOs.Data;
 using EventSalesBackend.Models.DTOs.Response;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using MongoDB.Bson;
+using System.ComponentModel.Design;
 
 namespace EventSalesBackend.Services.Interfaces;
 
@@ -13,4 +15,5 @@ public interface ICompanyService
     Task<CreateCompanyResponse?> CreateAsync(Company company);
     Task<bool> AddCompanyAdmin(ObjectId companyId, string adminId, List<string>? adminIds);
     Task<AdminSummaryDTO?> GetAdminSummaryAsync(ObjectId companyId, string userId);
+    Task<RequestCompanyAdminPublic?> InviteAdminAsync(ObjectId userId, ObjectId companyId, string email);
 }

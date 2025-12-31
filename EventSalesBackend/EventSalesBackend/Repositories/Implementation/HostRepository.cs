@@ -23,4 +23,9 @@ public class HostRepository : IHostRepository
     {
         return await _hosts.Find(x => x.Id == hostId).FirstOrDefaultAsync();
     }
+
+    public async Task<EventHost?> GetByEmailAsync(string email)
+    {
+        return await _hosts.Find(x => x.Email == email).FirstOrDefaultAsync();
+    }
 }

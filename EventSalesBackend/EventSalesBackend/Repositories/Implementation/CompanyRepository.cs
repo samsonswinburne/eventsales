@@ -80,4 +80,5 @@ public class CompanyRepository : ICompanyRepository
         var result = await _companyRepository.ReplaceOneAsync(c => c.Id == id, company);
         return result.ModifiedCount > 0;
     }
+    
 }

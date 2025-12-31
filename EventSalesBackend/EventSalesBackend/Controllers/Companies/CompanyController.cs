@@ -1,10 +1,14 @@
-﻿using EventSalesBackend.Models;
+﻿using EventSalesBackend.Extensions;
+using EventSalesBackend.Models;
 using EventSalesBackend.Models.DTOs.Request.Companies;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using EventSalesBackend.Services.Interfaces;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 
 namespace EventSalesBackend.Controllers.Companies;
 
@@ -14,7 +18,7 @@ public class CompanyController : ControllerBase
 {
     private readonly ICompanyService _companyService;
     private readonly IUserClaimsService _userClaimsService;
-
+    
     public CompanyController(IUserClaimsService userClaimsService, ICompanyService companyService)
     {
         _userClaimsService = userClaimsService;
@@ -51,5 +55,19 @@ public class CompanyController : ControllerBase
         var result = await _companyService.GetPublicAsync(companyId);
         if (result is null) return NotFound();
         return Ok(result);
+    }
+    [HttpPost("{companyId}/admins")]
+    public async Task<ActionResult<RequestCompanyAdminPublic>> RequestCompanyAdminAsync([FromBody] RequestCompanyAdminRequest request,
+        [FromRoute] string companyId, [FromServices] IValidator<RequestCompanyAdminRequest> validator)
+    {
+        
+        var userId = _userClaimsService.GetUserId();
+        if (userId is null) return Unauthorized();
+        if (!ObjectId.TryParse(companyId, out var validatedCompanyId)) return BadRequest("CompanyId is invalid");
+        var validatorResult = await validator.ValidateAsync(request);
+        if (!validatorResult.IsValid) return BadRequest(validatorResult.ToErrorResponse());
+
+        await _companyService.InviteAdminAsync(userId, companyId, request.AdminRequestReceiverEmail);
+
     }
 }

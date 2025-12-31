@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace EventSalesBackend.Controllers;
 
@@ -12,6 +13,9 @@ public class TestController : ControllerBase
     public async Task<IActionResult> Get()
     {
         var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
-        return Ok(claims);
+        //var emailClaim = User.Claims.Select(c => n)
+        var emailClaim = User.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
+        return Ok(emailClaim);
+        
     }
 }

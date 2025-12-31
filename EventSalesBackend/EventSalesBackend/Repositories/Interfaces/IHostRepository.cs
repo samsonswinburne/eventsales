@@ -6,4 +6,5 @@ public interface IHostRepository
 {
     Task CreateAsync(EventHost host);
     Task<EventHost?> GetAsync(string hostId);
+    Task<EventHost?> GetByEmailAsync(string email);
 }

@@ -16,7 +16,7 @@ public class HostService : IHostService
         _hostRepository = hostRepository;
     }
 
-    public async Task<bool> CreateHost(CreateHostRequest request, string userId)
+    public async Task<bool> CreateHost(CreateHostRequest request, string userId, string email)
     {
         var host = new EventHost
         {
@@ -24,7 +24,8 @@ public class HostService : IHostService
             FirstName = request.FirstName,
             LastName = request.LastName,
             BirthDate = request.BirthDate,
-            OnBoardingCompleted = false
+            OnBoardingCompleted = false,
+            Email = email
         };
         try
         {
@@ -54,5 +55,10 @@ public class HostService : IHostService
     public Task<EventHost?> GetAsync(string hostId, string userId)
     {
         return _hostRepository.GetAsync(hostId);
+    }
+
+    public Task<EventHost?> GetByEmailAsync(string email)
+    {
+        return _hostRepository.GetByEmailAsync(email);
     }
 }

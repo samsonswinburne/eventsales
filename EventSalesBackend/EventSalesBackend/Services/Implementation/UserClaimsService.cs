@@ -17,7 +17,11 @@ public class UserClaimsService : IUserClaimsService
         var user = _httpContextAccessor.HttpContext?.User;
         return user?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     }
-
+    public string? GetEmail()
+    {
+        var user = _httpContextAccessor?.HttpContext?.User;
+        return user?.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
+    }
     public string? GetRoles()
     {
         throw new NotImplementedException();

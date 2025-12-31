@@ -25,8 +25,10 @@ public class HostController : ControllerBase
     {
         var userId = _userClaimService.GetUserId();
         if (userId is null) return Unauthorized();
+        var email = _userClaimService.GetEmail();
+        if (email is null) return Unauthorized();
 
-        var result = await _hostService.CreateHost(request, userId);
+        var result = await _hostService.CreateHost(request, userId, email);
         if (result) return Created();
 
         return BadRequest();

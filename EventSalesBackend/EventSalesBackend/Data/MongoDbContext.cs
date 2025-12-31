@@ -73,5 +73,11 @@ public class MongoDbContext : IMongoDbContext
                 Builders<Ticket>.IndexKeys.Ascending(t => t.CustomerId))
         };
         Tickets.Indexes.CreateMany(ticketIndexes);
+        var hostIndexes = new[]
+        {
+            new CreateIndexModel<EventHost>(
+                Builders<EventHost>.IndexKeys.Ascending(h => h.Email)
+                )
+        };
     }
 }

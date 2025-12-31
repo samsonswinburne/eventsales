@@ -6,7 +6,8 @@ namespace EventSalesBackend.Services.Interfaces;
 
 public interface IHostService
 {
-    Task<bool> CreateHost(CreateHostRequest request, string userId);
+    Task<bool> CreateHost(CreateHostRequest request, string userId, string email);
     Task<HostPublic?> GetPublicAsync(string hostId);
     Task<EventHost?> GetAsync(string hostId, string userId);
+    Task<EventHost?> GetByEmailAsync(string email);
 }

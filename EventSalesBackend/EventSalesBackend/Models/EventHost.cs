@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Text.Json.Serialization;
 
 namespace EventSalesBackend.Models;
 
@@ -22,4 +23,9 @@ public class EventHost
     public DateOnly BirthDate { get; set; }
 
     public bool OnBoardingCompleted { get; set; } = false;
+
+    [JsonIgnore]
+    [BsonElement("email")]
+    [BsonRequired]
+    public required string Email { get; init; }
 }
