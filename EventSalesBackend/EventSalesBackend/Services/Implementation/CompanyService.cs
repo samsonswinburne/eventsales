@@ -12,12 +12,15 @@ namespace EventSalesBackend.Services.Implementation;
 public class CompanyService : ICompanyService
 {
     private readonly ICompanyRepository _companyRepository;
+    private readonly IRequestCompanyAdminRepository _requestCompanyAdminRepository;
     private readonly IHostService _hostService;
+    
 
-    public CompanyService(ICompanyRepository repository, IHostService hostService)
+    public CompanyService(ICompanyRepository repository, IHostService hostService, IRequestCompanyAdminRepository requestCompanyAdminRepository)
     {
         _companyRepository = repository;
         _hostService = hostService;
+        _requestCompanyAdminRepository = requestCompanyAdminRepository;
     }
 
     public async Task<CompanyPublic?> GetPublicAsync(ObjectId id)
@@ -81,7 +84,7 @@ public class CompanyService : ICompanyService
             RequestReceiverId = userToInvite.Id
         };
         // write rca to database
-        throw new NotImplementedException("RCA IS NOT WRITTEN TO DATABASE BECAUSE NO METHOD HAS BEEN WRITTEN YET");
+        var result = await _requestCompanyAdminRepository.CreateAsync(rca);
     }
 
     public Task<RequestCompanyAdminPublic?> InviteAdminAsync(ObjectId userId, ObjectId companyId, string email)
