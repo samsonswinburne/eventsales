@@ -49,9 +49,9 @@ public class CompanyService : ICompanyService
         return null;
     }
 
-    public async Task<bool> AddCompanyAdmin(ObjectId companyId, string adminId, List<string>? adminIds)
+    public async Task<bool> AddCompanyAdmin(ObjectId companyId, string adminId)
     {
-        throw new NotImplementedException();
+        return await _companyRepository.AddCompanyAdmin(companyId, adminId);
     }
 
     public async Task<AdminSummaryDTO?> GetAdminSummaryAsync(ObjectId companyId, string userId)

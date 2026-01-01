@@ -1,5 +1,6 @@
 ﻿using EventSalesBackend.Data;
 using EventSalesBackend.Exceptions.Companies;
+using EventSalesBackend.Exceptions.MongoDB;
 using EventSalesBackend.Models;
 using EventSalesBackend.Models.DTOs.Data;
 using EventSalesBackend.Repositories.Interfaces;
@@ -17,18 +18,17 @@ public class CompanyRepository : ICompanyRepository
         _companyRepository = context.Companies;
     }
 
-    public async Task<bool> AddCompanyAdmin(ObjectId companyId, string adminId, List<string>? adminIds)
+    public async Task<bool> AddCompanyAdmin(ObjectId companyId, string adminId)
     {
         var update = Builders<Company>.Update.AddToSet(c => c.Admins, adminId);
-
-        if (adminIds is not null)
-        {
-            adminIds.Add(adminId); // need to add dup check
-            update = Builders<Company>.Update.Set(c => c.Admins, adminIds);
-        }
-
         var filter = Builders<Company>.Filter.Eq(c => c.Id, companyId);
         var result = await _companyRepository.UpdateOneAsync(filter, update);
+
+        if(result.ModifiedCount == 0)
+        {
+            throw new MongoFailedToUpdateException("company");
+        }
+
         return result.ModifiedCount > 0;
     }
 

@@ -13,7 +13,7 @@ public interface ICompanyService
     Task<CompanyPublic?> GetPublicAsync(ObjectId id);
     Task<bool> UpdateAsync(ObjectId id, Company company);
     Task<CreateCompanyResponse?> CreateAsync(Company company);
-    Task<bool> AddCompanyAdmin(ObjectId companyId, string adminId, List<string>? adminIds);
+    Task<bool> AddCompanyAdmin(ObjectId companyId, string adminId);
     Task<AdminSummaryDTO?> GetAdminSummaryAsync(ObjectId companyId, string userId);
     Task<RequestCompanyAdminPublic?> InviteAdminAsync(ObjectId userId, ObjectId companyId, string email);
 }
