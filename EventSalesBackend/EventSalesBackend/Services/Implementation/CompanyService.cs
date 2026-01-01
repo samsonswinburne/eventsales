@@ -82,7 +82,9 @@ public class CompanyService : ICompanyService
         {
             CompanyId = companyId,
             RequestSenderId = userId,
-            RequestReceiverId = userToInvite.Id
+            RequestReceiverId = userToInvite.Id,
+            Status = RcaStatus.Pending,
+            SentTime = DateTime.UtcNow
         };
         // write rca to database
         await _requestCompanyAdminRepository.CreateAsync(rca);
