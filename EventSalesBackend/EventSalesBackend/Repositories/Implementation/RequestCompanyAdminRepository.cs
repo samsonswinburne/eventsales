@@ -3,6 +3,7 @@ using EventSalesBackend.Models;
 using EventSalesBackend.Repositories.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Security.Cryptography.Xml;
 
 namespace EventSalesBackend.Repositories.Implementation
 {
@@ -26,6 +27,10 @@ namespace EventSalesBackend.Repositories.Implementation
         {
             var filter = Builders<RequestCompanyAdmin>.Filter.Eq(r => r.Id, rcaId);
             return await _rcas.Find(filter).FirstOrDefaultAsync();
+        }
+        public async Task<bool> UpdateAsyncProtected() // 
+        {
+            throw new NotImplementedException("UpdateAsyncProtected");
         }
     }
 }
