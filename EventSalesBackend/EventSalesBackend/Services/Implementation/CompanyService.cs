@@ -1,4 +1,5 @@
 ﻿using EventSalesBackend.Exceptions.Hosts;
+using EventSalesBackend.Exceptions.MongoDB;
 using EventSalesBackend.Models;
 using EventSalesBackend.Models.DTOs.Data;
 using EventSalesBackend.Models.DTOs.Response;
@@ -84,7 +85,12 @@ public class CompanyService : ICompanyService
             RequestReceiverId = userToInvite.Id
         };
         // write rca to database
-        var result = await _requestCompanyAdminRepository.CreateAsync(rca);
+        await _requestCompanyAdminRepository.CreateAsync(rca);
+        if(rca.Id is null)
+        {
+            throw new MongoInsertException("requestCompanyAdmin");
+        }
+        return rca.ToPublic();
     }
 
     public Task<RequestCompanyAdminPublic?> InviteAdminAsync(ObjectId userId, ObjectId companyId, string email)

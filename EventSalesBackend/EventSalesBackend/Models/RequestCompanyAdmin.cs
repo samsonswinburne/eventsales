@@ -9,10 +9,13 @@ namespace EventSalesBackend.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public ObjectId Id { get; set; }
+        public ObjectId? Id { get; set; }
 
+        [BsonElement("companyId")]
         public required ObjectId CompanyId { get; init; }
+        [BsonElement("senderId")]
         public required string RequestSenderId { get; init; }
+        [BsonElement("receiverId")]
         public required string RequestReceiverId { get; init; }
     }
     public static class RequestCompanyAdminExtensions
