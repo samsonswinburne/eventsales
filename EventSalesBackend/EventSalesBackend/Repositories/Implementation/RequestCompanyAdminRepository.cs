@@ -28,9 +28,16 @@ namespace EventSalesBackend.Repositories.Implementation
             var filter = Builders<RequestCompanyAdmin>.Filter.Eq(r => r.Id, rcaId);
             return await _rcas.Find(filter).FirstOrDefaultAsync();
         }
-        public async Task<bool> UpdateAsyncProtected() // 
+        public async Task<bool> UpdateAsyncProtected(ObjectId rcaId, string responderId, RcaStatus status)
         {
-            throw new NotImplementedException("UpdateAsyncProtected");
+            var rcaIdresponderIdFilter = Builders<RequestCompanyAdmin>.Filter.And(
+                Builders<RequestCompanyAdmin>.Filter.Eq(r => r.Id, rcaId),
+                Builders<RequestCompanyAdmin>.Filter.Eq(r => r.RequestReceiverId, responderId)
+                );
+            var update = Builders<RequestCompanyAdmin>.Update.Set(r => r.Status, status);
+
+            var result = await _rcas.UpdateOneAsync(rcaIdresponderIdFilter, update);
+            return result.ModifiedCount > 0;
         }
     }
 }
