@@ -17,7 +17,21 @@ namespace EventSalesBackend.Models
         public required string RequestSenderId { get; init; }
         [BsonElement("receiverId")]
         public required string RequestReceiverId { get; init; }
+        [BsonElement("status")]
+        public RcaStatus Status { get; init; } = RcaStatus.Pending;
+        [BsonElement("sentTime")]
+        public DateTime SentTime { get; init; } = DateTime.UtcNow;
+        [BsonElement("updatedTime")]
+        public DateTime? UpdatedTime { get; init; }
+        
     }
+    public enum RcaStatus
+    {
+        Pending,
+        Declined,
+        Approved
+    }
+
     public static class RequestCompanyAdminExtensions
     {
         public static RequestCompanyAdminPublic ToPublic(this RequestCompanyAdmin rca)
@@ -27,7 +41,10 @@ namespace EventSalesBackend.Models
                 Id = rca.Id.ToString(),
                 CompanyId = rca.CompanyId.ToString(),
                 RequestReceiverId = rca.RequestReceiverId,
-                RequestSenderId = rca.RequestSenderId
+                RequestSenderId = rca.RequestSenderId,
+                SentTime = rca.SentTime,
+                Status = rca.Status,
+                UpdatedTime = rca.UpdatedTime
             };
         }
     }
