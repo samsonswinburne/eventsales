@@ -1,4 +1,6 @@
-﻿using EventSalesBackend.Exceptions.Hosts;
+﻿using EventSalesBackend.Exceptions.Companies;
+using EventSalesBackend.Exceptions.Companies.DTOs;
+using EventSalesBackend.Exceptions.Hosts;
 using EventSalesBackend.Exceptions.MongoDB;
 using EventSalesBackend.Models;
 using EventSalesBackend.Models.DTOs.Data;
@@ -71,11 +73,16 @@ public class CompanyService : ICompanyService
 
         if(userToInviteTask is null || userToInvite?.Id is null)
         {
-            throw new HostNotFoundError(email);
+            throw new HostNotFoundException(email);
+        }
+
+        if (adminSummary is null || adminSummary?.Admins is null)
+        {
+            throw new AdminSummaryNotFoundException(companyId); 
         }
         if (!adminSummary.Value.Admins.Contains(userId))
         {
-            throw new UnauthorizedAccessException();
+            throw new UserNotAdminException(userId, companyId);
         }
 
         var rca = new RequestCompanyAdmin
@@ -88,10 +95,8 @@ public class CompanyService : ICompanyService
         };
         // write rca to database
         await _requestCompanyAdminRepository.CreateAsync(rca);
-        if(rca.Id is null)
-        {
-            throw new MongoInsertException("requestCompanyAdmin");
-        }
+        if (rca.Id is null) throw new MongoInsertException("requestCompanyAdmin");
+        
         return rca.ToPublic();
     }
 

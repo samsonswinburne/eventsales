@@ -67,7 +67,20 @@ public class CompanyController : ControllerBase
         var validatorResult = await validator.ValidateAsync(request);
         if (!validatorResult.IsValid) return BadRequest(validatorResult.ToErrorResponse());
 
-        await _companyService.InviteAdminAsync(userId, companyId, request.AdminRequestReceiverEmail);
-
+        try
+        {
+            var result =
+                await _companyService.InviteAdminAsync(userId, validatedCompanyId, request.AdminRequestReceiverEmail);
+            if (result is null) return BadRequest();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            if (ex is BaseException bex)
+            {
+                return BadRequest(bex.ToErrorResponse());
+            }
+            return BadRequest("Unspecified error: " + ex.Message);
+        }
     }
 }

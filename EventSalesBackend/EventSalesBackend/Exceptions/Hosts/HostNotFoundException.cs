@@ -2,14 +2,13 @@
 
 namespace EventSalesBackend.Exceptions.Hosts
 {
-    public class HostNotFoundError :Exception, BaseException
+    public class HostNotFoundException :Exception, BaseException
     {
         private string _email;
-        public HostNotFoundError(string email) : base($"{email} was not found")
+        public HostNotFoundException(string email) : base($"{email} was not found")
         {
             _email = email;
         }
-
         
 
         public object ToErrorResponse()
