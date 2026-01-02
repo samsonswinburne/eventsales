@@ -63,7 +63,7 @@ public class CompanyService : ICompanyService
 
     public async Task<RequestCompanyAdminPublic?> InviteAdminAsync(string userId, ObjectId companyId, string email)
     {
-        
+        // could possibly join these 2 queries into one
         var adminSummaryTask = _companyRepository.GetAdminSummaryAsync(companyId, userId);
         var userToInviteTask = _hostService.GetByEmailAsync(email);
 
@@ -71,12 +71,12 @@ public class CompanyService : ICompanyService
         var adminSummary = await adminSummaryTask;
         var userToInvite = await userToInviteTask;
 
-        if(userToInviteTask is null || userToInvite?.Id is null)
+        if(userToInvite?.Id is null)
         {
             throw new HostNotFoundException(email);
         }
 
-        if (adminSummary is null || adminSummary?.Admins is null)
+        if (adminSummary?.Admins is null)
         {
             throw new AdminSummaryNotFoundException(companyId); 
         }
@@ -100,8 +100,21 @@ public class CompanyService : ICompanyService
         return rca.ToPublic();
     }
 
-    public Task<RequestCompanyAdminPublic?> InviteAdminAsync(ObjectId userId, ObjectId companyId, string email)
+    public async Task<bool> DeclineAdminRequestAsync(ObjectId rcaId, string userId)
     {
-        throw new NotImplementedException();
+        var updateRcaResult
+            = await _requestCompanyAdminRepository.UpdateAsyncProtected(rcaId, userId, RcaStatus.Declined);
+        if (!updateRcaResult)
+        {
+            throw new MongoFailedToUpdateException("requestCompanyAdmin");
+        }
+
+        return true;
+        
+    }
+
+    public async Task<bool> AcceptAdminRequestAsync(ObjectId rcaId, string userId)
+    {
+        throw new NotImplementedException("AcceptAdminRequestAsync needs transactions");
     }
 }

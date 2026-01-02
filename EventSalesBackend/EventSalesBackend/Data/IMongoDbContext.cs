@@ -10,4 +10,5 @@ public interface IMongoDbContext
     IMongoCollection<Company> Companies { get; }
     IMongoCollection<Ticket> Tickets { get; }
     IMongoCollection<RequestCompanyAdmin> CompanyAdminRequests { get; }
+    IClientSessionHandle StartSession();
 }
