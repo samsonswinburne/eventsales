@@ -56,6 +56,7 @@ public class CompanyController : ControllerBase
         if (result is null) return NotFound();
         return Ok(result);
     }
+    [Authorize]
     [HttpPost("{companyId}/admins")]
     public async Task<ActionResult<RequestCompanyAdminPublic>> RequestCompanyAdminAsync([FromBody] RequestCompanyAdminRequest request,
         [FromRoute] string companyId, [FromServices] IValidator<RequestCompanyAdminRequest> validator)
