@@ -20,7 +20,20 @@ public class UserClaimsService : IUserClaimsService
     public string? GetEmail()
     {
         var user = _httpContextAccessor?.HttpContext?.User;
-        return user?.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
+        var email =  user?.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
+        if(email is not null) return email;
+        var userId = GetUserId();
+        if (userId is null) return null;
+        var type = userId.Split("|")[0];
+        switch (type)
+        {
+            case "auth0":
+                return user?.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
+            case "google-oauth2":
+                return user?.Claims.FirstOrDefault(c => c.Type == "nickname")?.Value + "@gmail.com";
+            default:
+                return null;
+        }
     }
     public string? GetRoles()
     {

@@ -95,7 +95,7 @@ public class CompanyService : ICompanyService
         };
         // write rca to database
         await _requestCompanyAdminRepository.CreateAsync(rca);
-        if (rca.Id is null) throw new MongoInsertException("requestCompanyAdmin");
+        if (rca.Id == ObjectId.Empty) throw new MongoInsertException("requestCompanyAdmin");
         
         return rca.ToPublic();
     }

@@ -16,7 +16,7 @@ namespace EventSalesBackend.Exceptions.MongoDB
             {
                 errors = new
                 {
-                    _type = $"{_type} was not able to be created"
+                    type = $"{_type} was not able to be created"
                 }
             };
         }

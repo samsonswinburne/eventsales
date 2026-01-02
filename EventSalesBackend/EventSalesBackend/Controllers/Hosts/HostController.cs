@@ -1,4 +1,5 @@
-﻿using EventSalesBackend.Models.DTOs.Request.Hosts;
+﻿using System.Text.RegularExpressions;
+using EventSalesBackend.Models.DTOs.Request.Hosts;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using EventSalesBackend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -27,7 +28,8 @@ public class HostController : ControllerBase
         if (userId is null) return Unauthorized();
         var email = _userClaimService.GetEmail();
         if (email is null) return Unauthorized();
-
+        if (!Regex.IsMatch(email, @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")) return BadRequest("SOMETHING WRONG WITH EMAIL");
+    
         var result = await _hostService.CreateHost(request, userId, email);
         if (result) return Created();
 

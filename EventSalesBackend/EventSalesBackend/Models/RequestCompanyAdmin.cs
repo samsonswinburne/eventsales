@@ -9,7 +9,7 @@ namespace EventSalesBackend.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public ObjectId? Id { get; set; }
+        public ObjectId Id { get; set; }
 
         [BsonElement("companyId")]
         public required ObjectId CompanyId { get; init; }

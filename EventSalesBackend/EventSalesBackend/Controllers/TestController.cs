@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using EventSalesBackend.Services.Interfaces;
 
 namespace EventSalesBackend.Controllers;
 
@@ -8,14 +9,28 @@ namespace EventSalesBackend.Controllers;
 [Route("[controller]/{validator}")]
 public class TestController : ControllerBase
 {
+    private readonly IUserClaimsService _userClaimService;
+
+    public TestController(IUserClaimsService userClaimService)
+    {
+        _userClaimService = userClaimService;
+    }
     [HttpGet]
     [Authorize]
     public async Task<IActionResult> Get()
     {
-        var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
-        //var emailClaim = User.Claims.Select(c => n)
-        var emailClaim = User.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
-        return Ok(emailClaim);
-        
+        var email = _userClaimService.GetEmail();
+        if (email is null)
+        {
+            return BadRequest();
+        }
+        return Ok(email);
+        // var claims = User.Claims.Select(c => new 
+        // { 
+        //     Type = c.Type, 
+        //     Value = c.Value 
+        // });
+        //     
+        // return Ok(claims);
     }
 }

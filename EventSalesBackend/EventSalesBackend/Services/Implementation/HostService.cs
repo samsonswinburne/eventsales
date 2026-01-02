@@ -18,6 +18,11 @@ public class HostService : IHostService
 
     public async Task<bool> CreateHost(CreateHostRequest request, string userId, string email)
     {
+
+        if (email is null || email.Length < 3)
+        {
+            throw new ArgumentException("email, this shouldn't occur. It should be validated in the controller");
+        }
         var host = new EventHost
         {
             Id = userId,
