@@ -16,6 +16,4 @@ public interface ICompanyService
     Task<bool> AddCompanyAdmin(ObjectId companyId, string adminId);
     Task<AdminSummaryDTO?> GetAdminSummaryAsync(ObjectId companyId, string userId);
     Task<RequestCompanyAdminPublic?> InviteAdminAsync(string userId, ObjectId companyId, string email);
-    Task<bool> DeclineAdminRequestAsync(ObjectId rcaId, string userId);
-    Task<bool> AcceptAdminRequestAsync(ObjectId rcaId, string userId);
 }

@@ -34,12 +34,9 @@ namespace EventSalesBackend.Repositories.Implementation
                 Builders<RequestCompanyAdmin>.Filter.Eq(r => r.Id, rcaId),
                 Builders<RequestCompanyAdmin>.Filter.Eq(r => r.RequestReceiverId, responderId)
                 );
-            var update = Builders<RequestCompanyAdmin>.Update.
-                Set(r => r.Status, status)
-                .Set(r => r.UpdatedTime, DateTime.UtcNow);
+            var update = Builders<RequestCompanyAdmin>.Update.Set(r => r.Status, status);
 
             var result = await _rcas.UpdateOneAsync(rcaIdresponderIdFilter, update);
-            
             return result.ModifiedCount > 0;
         }
     }

@@ -7,7 +7,6 @@ namespace EventSalesBackend.Data;
 public class MongoDbContext : IMongoDbContext
 {
     private readonly IMongoDatabase _database;
-    private readonly IMongoClient _client;
 
     public MongoDbContext(IConfiguration configuration)
     {
@@ -15,13 +14,11 @@ public class MongoDbContext : IMongoDbContext
         var connectionString = mongoDbSettings["ConnectionString"];
         var databaseName = mongoDbSettings["DatabaseName"];
 
-        _client = new MongoClient(connectionString);
-        
-        _database = _client.GetDatabase(databaseName);
+        var client = new MongoClient(connectionString);
+        _database = client.GetDatabase(databaseName);
 
         CreateIndexes();
     }
-    public IClientSessionHandle StartSession() => _client.StartSession();
 
     public IMongoCollection<Event> Events => _database.GetCollection<Event>("events");
 
