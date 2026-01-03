@@ -29,7 +29,8 @@ namespace EventSalesBackend.Models
     {
         Pending,
         Declined,
-        Approved
+        Approved,
+        Cancelled
     }
 
     public static class RequestCompanyAdminExtensions

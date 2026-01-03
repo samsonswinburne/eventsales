@@ -32,7 +32,8 @@ namespace EventSalesBackend.Repositories.Implementation
         {
             var rcaIdresponderIdFilter = Builders<RequestCompanyAdmin>.Filter.And(
                 Builders<RequestCompanyAdmin>.Filter.Eq(r => r.Id, rcaId),
-                Builders<RequestCompanyAdmin>.Filter.Eq(r => r.RequestReceiverId, responderId)
+                Builders<RequestCompanyAdmin>.Filter.Eq(r => r.RequestReceiverId, responderId),
+                Builders<RequestCompanyAdmin>.Filter.Eq(r => r.Status, RcaStatus.Pending) // only pending requests can be approved / denied / canceled
                 );
             var update = Builders<RequestCompanyAdmin>.Update.
                 Set(r => r.Status, status)

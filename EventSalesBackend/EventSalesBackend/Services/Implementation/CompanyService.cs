@@ -113,9 +113,14 @@ public class CompanyService : ICompanyService
         
     }
 
-    public async Task<bool> AcceptAdminRequestAsync(ObjectId rcaId, string userId)
+    public async Task<bool> CancelAdminRequestAsync(ObjectId rcaId, string userId)
     {
-        throw new NotImplementedException("AcceptAdminRequestAsync needs transactions");
-
+        var updateRcaResult =
+            await _requestCompanyAdminRepository.UpdateAsyncProtected(rcaId, userId, RcaStatus.Cancelled);
+        if (!updateRcaResult)
+        {
+            throw new MongoFailedToUpdateException("requestCompanyAdmin");
+        }
+        return true;
     }
 }
