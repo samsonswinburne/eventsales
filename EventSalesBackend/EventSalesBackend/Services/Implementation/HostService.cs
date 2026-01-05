@@ -1,8 +1,10 @@
-﻿using EventSalesBackend.Models;
+﻿using EventSalesBackend.Exceptions.MongoDB;
+using EventSalesBackend.Models;
 using EventSalesBackend.Models.DTOs.Request.Hosts;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using EventSalesBackend.Repositories.Interfaces;
 using EventSalesBackend.Services.Interfaces;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace EventSalesBackend.Services.Implementation;
@@ -10,10 +12,16 @@ namespace EventSalesBackend.Services.Implementation;
 public class HostService : IHostService
 {
     private readonly IHostRepository _hostRepository;
+    private readonly ICompanyService _companyService;
+    private readonly IRequestCompanyAdminRepository _requestCompanyAdminRepository;
+    private readonly IEventService _eventService;
 
-    public HostService(IHostRepository hostRepository)
+    public HostService(IHostRepository hostRepository, ICompanyService companyService, IRequestCompanyAdminRepository requestCompanyAdminRepository, IEventService eventService)
     {
         _hostRepository = hostRepository;
+        _companyService = companyService;
+        _requestCompanyAdminRepository = requestCompanyAdminRepository;
+        _eventService = eventService;
     }
 
     public async Task<bool> CreateHost(CreateHostRequest request, string userId, string email)
@@ -65,5 +73,57 @@ public class HostService : IHostService
     public Task<EventHost?> GetByEmailAsync(string email)
     {
         return _hostRepository.GetByEmailAsync(email);
+    }
+
+    public async Task<bool> AcceptRcaAsync(ObjectId rcaId, string userId)
+    {
+        var updateRcaTask =  _requestCompanyAdminRepository.UpdateAsyncProtected(rcaId, userId, RcaStatus.Approved);
+        var getRcaTask =  _requestCompanyAdminRepository.GetAsyncProtected(rcaId, userId);
+
+        await Task.WhenAll(updateRcaTask);
+
+        var updateRcaResult = await updateRcaTask;
+        var getRcaResult = await getRcaTask;
+
+        if (!updateRcaResult) throw new MongoFailedToUpdateException("status");
+        if (getRcaResult?.Id == null) throw new MongoNotFoundException("rca");
+        
+        var addToCompanyTask = _companyService.AddAdminAsync(getRcaResult.CompanyId, userId);
+        var addToEventsTask = _eventService.AddAdminToEvents(getRcaResult.CompanyId, userId);
+
+        await Task.WhenAll(addToCompanyTask, addToEventsTask);
+        var addToCompanyResult = await addToCompanyTask;
+        var addToEventsResult = await addToEventsTask;
+
+        if (addToCompanyResult == false || addToEventsResult == false) 
+        {
+            // one task failed if both tasks fail or neither fail then no changes need to be made to company / events
+
+            List<Task<bool>> bools = new List<Task<bool>>();
+
+            var revertRcaUpdateTask = _requestCompanyAdminRepository.UpdateAsyncProtected(rcaId, userId, RcaStatus.Pending);
+
+            if (addToCompanyResult) bools.Add(_companyService.RemoveAdminAsync(getRcaResult.CompanyId, userId));
+            if (addToEventsResult) bools.Add(_eventService.RemoveAdminFromEvents(getRcaResult.CompanyId, userId));
+
+            await Task.WhenAll(bools);
+            
+            foreach(var result in bools)
+            {
+                await result;
+                if (!result.Result)
+                {
+                    // hopefully doesn't occur, means that it was unable to roll back
+                    Console.WriteLine("PLEASE DONT OCCUR!");
+                }
+                continue;
+            }
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+
     }
 }

@@ -23,4 +23,7 @@ public interface IEventService
     Task<TicketTypePublic> AddTicketTypeAsync(ObjectId eventId, string userId, TicketType ticketType);
 
     Task<UpdateEventLocationResponse> UpdateEventLocationAsync(ObjectId eventId, string userId, double latitude, double longitude);
+
+    Task<bool> AddAdminToEvents(ObjectId companyId, string userId);
+    Task<bool> RemoveAdminFromEvents(ObjectId companyId, string userId);
 }

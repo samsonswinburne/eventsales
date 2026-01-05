@@ -53,7 +53,7 @@ public class CompanyService : ICompanyService
 
     public async Task<bool> AddCompanyAdmin(ObjectId companyId, string adminId)
     {
-        return await _companyRepository.AddCompanyAdmin(companyId, adminId);
+        return await _companyRepository.AddCompanyAdminAsync(companyId, adminId);
     }
 
     public async Task<AdminSummaryDTO?> GetAdminSummaryAsync(ObjectId companyId, string userId)

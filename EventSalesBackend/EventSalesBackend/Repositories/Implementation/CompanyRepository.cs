@@ -18,7 +18,7 @@ public class CompanyRepository : ICompanyRepository
         _companyRepository = context.Companies;
     }
 
-    public async Task<bool> AddCompanyAdmin(ObjectId companyId, string adminId)
+    public async Task<bool> AddCompanyAdminAsync(ObjectId companyId, string adminId)
     {
         var update = Builders<Company>.Update.AddToSet(c => c.Admins, adminId);
         var filter = Builders<Company>.Filter.Eq(c => c.Id, companyId);

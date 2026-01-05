@@ -18,4 +18,6 @@ public interface ICompanyService
     Task<RequestCompanyAdminPublic?> InviteAdminAsync(string userId, ObjectId companyId, string email);
     Task<bool> DeclineAdminRequestAsync(ObjectId rcaId, string userId);
     Task<bool> CancelAdminRequestAsync(ObjectId rcaId, string userId);
+    Task<bool> AddAdminAsync(ObjectId companyId, string userId);
+    Task<bool> RemoveAdminAsync(ObjectId companyId, string userId);
 }

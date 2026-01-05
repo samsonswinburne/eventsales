@@ -3,7 +3,6 @@ using EventSalesBackend.Models;
 using EventSalesBackend.Repositories.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System.Security.Cryptography.Xml;
 
 namespace EventSalesBackend.Repositories.Implementation
 {
@@ -28,6 +27,21 @@ namespace EventSalesBackend.Repositories.Implementation
             var filter = Builders<RequestCompanyAdmin>.Filter.Eq(r => r.Id, rcaId);
             return await _rcas.Find(filter).FirstOrDefaultAsync();
         }
+
+        public async Task<RequestCompanyAdmin?> GetAsyncProtected(ObjectId rcaId, string userId)
+        {
+            // currently allows the request reciever and sender to view it. In the future it should be the admins can view it as well
+            var filter = Builders<RequestCompanyAdmin>.Filter.And(
+                Builders<RequestCompanyAdmin>.Filter.Eq(r => r.Id, rcaId),
+                Builders<RequestCompanyAdmin>.Filter.Or(
+                    Builders<RequestCompanyAdmin>.Filter.Eq(r => r.RequestReceiverId, userId),
+                    Builders<RequestCompanyAdmin>.Filter.Eq(r => r.RequestSenderId, userId)
+                    )
+                );
+            return await _rcas.Find(filter).FirstOrDefaultAsync();
+
+        }
+
         public async Task<bool> UpdateAsyncProtected(ObjectId rcaId, string responderId, RcaStatus status)
         {
             var rcaIdresponderIdFilter = Builders<RequestCompanyAdmin>.Filter.And(

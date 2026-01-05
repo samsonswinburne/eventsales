@@ -7,5 +7,6 @@ namespace EventSalesBackend.Repositories.Interfaces
     {
         Task<bool> CreateAsync(RequestCompanyAdmin rca);
         Task<bool> UpdateAsyncProtected(ObjectId rcaId, string responderId, RcaStatus status);
+        Task<RequestCompanyAdmin?> GetAsyncProtected(ObjectId rcaId, string responderId);
     }
 }
