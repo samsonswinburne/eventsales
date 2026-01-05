@@ -6,6 +6,7 @@ using EventSalesBackend.Repositories.Interfaces;
 using EventSalesBackend.Services.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Diagnostics.Metrics;
 
 namespace EventSalesBackend.Services.Implementation;
 
@@ -74,7 +75,28 @@ public class HostService : IHostService
     {
         return _hostRepository.GetByEmailAsync(email);
     }
-
+    private enum RollbackOperation
+    {
+        Rca,
+        Company,
+        Events
+    }
+    private record OperationResult(RollbackOperation Operation, bool Success); // should be moved later
+    private async Task<OperationResult> RunRollback(
+    RollbackOperation name,
+    Func<Task<bool>> operation)
+    {
+        try
+        {
+            var success = await operation();
+            return new OperationResult(name, success);
+        }
+        catch (Exception ex)
+        {
+            // log ex here
+            return new OperationResult(name, false);
+        }
+    }
     public async Task<bool> AcceptRcaAsync(ObjectId rcaId, string userId)
     {
         var updateRcaTask =  _requestCompanyAdminRepository.UpdateAsyncProtected(rcaId, userId, RcaStatus.Approved);
@@ -97,25 +119,75 @@ public class HostService : IHostService
 
         var retries = 0;
 
-        if (addToCompanyResult && addToEventsResult) return true;
+        if (addToCompanyResult && addToEventsResult) return true; // succesful run should end here - otherwise roll back
 
-        while (addToCompanyResult == false || addToEventsResult == false)
+        var rollbackRcaPending = true;
+        var rollbackCompanyPending = !addToCompanyResult;
+        var rollbackEventsPending = !addToEventsResult;
+
+        while (rollbackRcaPending || rollbackCompanyPending || rollbackEventsPending)
         {
-            // one task failed if both tasks fail or neither fail then no changes need to be made to company / events
+            var rollbackTasks = new List<Task<OperationResult>>();
 
-            List<Task<bool>> bools = new List<Task<bool>>();
+            if (rollbackRcaPending)
+            {
+                rollbackTasks.Add(
+                    RunRollback(
+                        RollbackOperation.Rca,
+                        () => _requestCompanyAdminRepository
+                            .UpdateAsyncProtected(rcaId, userId, RcaStatus.Pending)
+                    )
+                );
+            }
 
-            var revertRcaUpdateTask = _requestCompanyAdminRepository.UpdateAsyncProtected(rcaId, userId, RcaStatus.Pending);
+            if (rollbackCompanyPending)
+            {
+                rollbackTasks.Add(
+                    RunRollback(
+                        RollbackOperation.Company,
+                        () => _companyService.RemoveAdminAsync(getRcaResult.CompanyId, userId)
+                    )
+                );
+            }
 
-            if (addToCompanyResult) bools.Add(_companyService.RemoveAdminAsync(getRcaResult.CompanyId, userId));
-            if (addToEventsResult) bools.Add(_eventService.RemoveAdminFromEvents(getRcaResult.CompanyId, userId));
+            if (rollbackEventsPending)
+            {
+                rollbackTasks.Add(
+                    RunRollback(
+                        RollbackOperation.Events,
+                        () => _eventService.RemoveAdminFromEvents(getRcaResult.CompanyId, userId)
+                    )
+                );
+            }
 
-            await Task.WhenAll(bools);
+            var results = await Task.WhenAll(rollbackTasks);
 
+            foreach (var result in results)
+            {
+                if (result.Success)
+                {
+                    switch (result.Operation)
+                    {
+                        case RollbackOperation.Rca:
+                            rollbackRcaPending = false;
+                            break;
+                        case RollbackOperation.Company:
+                            rollbackCompanyPending = false;
+                            break;
+                        case RollbackOperation.Events:
+                            rollbackEventsPending = false;
+                            break;
+                    }
+                }
+            }
 
             if (retries++ > 4)
             {
                 throw new MongoFailedToUpdateException("rollback");
+            }
+            if (rollbackRcaPending || rollbackCompanyPending || rollbackEventsPending)
+            {
+                await Task.Delay(150);
             }
         }
         return false;
