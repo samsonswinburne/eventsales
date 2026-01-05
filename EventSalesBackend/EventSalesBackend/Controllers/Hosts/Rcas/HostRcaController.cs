@@ -3,6 +3,7 @@ using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using EventSalesBackend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,11 +22,25 @@ namespace EventSalesBackend.Controllers.Hosts.Rcas
         }
         // GET: api/<Rcas>
         [Authorize]
-        [HttpGet]
-        public async Task<ActionResult> Get([FromQuery] string? status = null)
+        [HttpGet("{id?}")]
+        public async Task<ActionResult> Get(string? id, [FromQuery] string? status = null)
         {
+            
+
             var userId = _userClaimsService.GetUserId();
             if (userId is null) return Unauthorized();
+
+            if (string.IsNullOrEmpty(id))
+            {
+                if (!ObjectId.TryParse(id, out var parsedId))
+                {
+                    return BadRequest("Rca Id is in an invalid format");
+                }
+                var singleResult =  await _hostService.GetRcaByIdAsync(parsedId);
+                if (singleResult is null) return NotFound();
+                return Ok(singleResult);
+            }
+
             RcaStatus? parsedStatus = Enum.TryParse<RcaStatus>(status, out var t)
                          ? t
                          : null;
@@ -35,12 +50,6 @@ namespace EventSalesBackend.Controllers.Hosts.Rcas
 
         }
 
-        // GET api/<Rcas>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            throw new NotImplementedException();
-        }
 
         // POST api/<Rcas>
         [HttpPost]
