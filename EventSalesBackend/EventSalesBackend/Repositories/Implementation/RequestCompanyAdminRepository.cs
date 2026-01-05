@@ -42,6 +42,24 @@ namespace EventSalesBackend.Repositories.Implementation
 
         }
 
+        public async Task<List<RequestCompanyAdmin>> GetByIdStatusAsync(string responderId, RcaStatus? status)
+        {
+            var idFilter = 
+                Builders<RequestCompanyAdmin>.Filter.Eq(r => r.RequestReceiverId, responderId);
+
+            var statusFilter = Builders<RequestCompanyAdmin>.Filter.Empty;
+
+            if (status != null)
+            {
+                statusFilter = Builders<RequestCompanyAdmin>.Filter.Eq(r => r.Status, status);
+            }
+
+            var idStatusFilter = Builders<RequestCompanyAdmin>.Filter.And(idFilter, statusFilter);
+
+            return await _rcas.Find(idStatusFilter).ToListAsync();
+
+        }
+
         public async Task<bool> UpdateAsyncProtected(ObjectId rcaId, string responderId, RcaStatus status)
         {
             var rcaIdresponderIdFilter = Builders<RequestCompanyAdmin>.Filter.And(
