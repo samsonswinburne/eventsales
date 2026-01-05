@@ -12,6 +12,6 @@ public interface IHostService
     Task<EventHost?> GetAsync(string hostId, string userId);
     Task<EventHost?> GetByEmailAsync(string email);
     Task<bool> AcceptRcaAsync(ObjectId rcaId, string userId);
-    Task<RequestCompanyAdminPublic> GetRcaByIdAsync(ObjectId id);
-    Task<List<RequestCompanyAdminPublic>> GetByHostIdStatusAsync(string hostId, RcaStatus? status);
+    Task<RequestCompanyAdminPublic> GetRcaByIdAsyncProtected(ObjectId id, string hostId);
+    Task<List<RequestCompanyAdminPublic>> GetRcaByHostIdStatusAsync(string hostId, RcaStatus? status);
 }

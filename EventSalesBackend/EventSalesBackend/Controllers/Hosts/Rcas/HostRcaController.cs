@@ -36,7 +36,7 @@ namespace EventSalesBackend.Controllers.Hosts.Rcas
                 {
                     return BadRequest("Rca Id is in an invalid format");
                 }
-                var singleResult =  await _hostService.GetRcaByIdAsync(parsedId);
+                var singleResult =  await _hostService.GetRcaByIdAsyncProtected(parsedId, userId);
                 if (singleResult is null) return NotFound();
                 return Ok(singleResult);
             }
@@ -44,7 +44,7 @@ namespace EventSalesBackend.Controllers.Hosts.Rcas
             RcaStatus? parsedStatus = Enum.TryParse<RcaStatus>(status, out var t)
                          ? t
                          : null;
-            var result = await _hostService.GetByHostIdStatusAsync(userId, parsedStatus);
+            var result = await _hostService.GetRcaByHostIdStatusAsync(userId, parsedStatus);
             if(result is null) return NotFound();
             return Ok(result);
 

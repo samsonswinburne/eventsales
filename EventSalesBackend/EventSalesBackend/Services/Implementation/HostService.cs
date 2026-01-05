@@ -190,9 +190,15 @@ public class HostService : IHostService
         // successfully rolled back
     }
 
-    public async Task<List<RequestCompanyAdminPublic>> GetByHostIdStatusAsync(string hostId, RcaStatus? status)
+    public async Task<List<RequestCompanyAdminPublic>> GetRcaByHostIdStatusAsync(string hostId, RcaStatus? status)
     {
         var result =  await _requestCompanyAdminRepository.GetByIdStatusAsync(hostId, status);
         return result.ConvertAll(r => r.ToPublic());
+    }
+
+    public async Task<RequestCompanyAdminPublic?> GetRcaByIdAsyncProtected(ObjectId id, string userId)
+    {
+        var result = await _requestCompanyAdminRepository.GetAsyncProtected(id, userId);
+        return result?.ToPublic();
     }
 }
