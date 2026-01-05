@@ -95,7 +95,11 @@ public class HostService : IHostService
         var addToCompanyResult = await addToCompanyTask;
         var addToEventsResult = await addToEventsTask;
 
-        if (addToCompanyResult == false || addToEventsResult == false) 
+        var retries = 0;
+
+        if (addToCompanyResult && addToEventsResult) return true;
+
+        while (addToCompanyResult == false || addToEventsResult == false)
         {
             // one task failed if both tasks fail or neither fail then no changes need to be made to company / events
 
@@ -107,23 +111,14 @@ public class HostService : IHostService
             if (addToEventsResult) bools.Add(_eventService.RemoveAdminFromEvents(getRcaResult.CompanyId, userId));
 
             await Task.WhenAll(bools);
-            
-            foreach(var result in bools)
-            {
-                await result;
-                if (!result.Result)
-                {
-                    // hopefully doesn't occur, means that it was unable to roll back
-                    Console.WriteLine("PLEASE DONT OCCUR!");
-                }
-                continue;
-            }
-            return false;
-        }
-        else
-        {
-            return true;
-        }
 
+
+            if (retries++ > 4)
+            {
+                throw new MongoFailedToUpdateException("rollback");
+            }
+        }
+        return false;
+        // successfully rolled back
     }
 }
