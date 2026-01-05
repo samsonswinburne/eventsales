@@ -1,5 +1,6 @@
 ﻿using EventSalesBackend.Exceptions.MongoDB;
 using EventSalesBackend.Models;
+using EventSalesBackend.Models.DTOs.Data.Hosts;
 using EventSalesBackend.Models.DTOs.Request.Hosts;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using EventSalesBackend.Repositories.Interfaces;
@@ -13,16 +14,16 @@ namespace EventSalesBackend.Services.Implementation;
 public class HostService : IHostService
 {
     private readonly IHostRepository _hostRepository;
-    private readonly ICompanyService _companyService;
+    private readonly ICompanyRepository _companyRepository;
     private readonly IRequestCompanyAdminRepository _requestCompanyAdminRepository;
-    private readonly IEventService _eventService;
+    private readonly IEventRepository _eventRepository;
 
-    public HostService(IHostRepository hostRepository, ICompanyService companyService, IRequestCompanyAdminRepository requestCompanyAdminRepository, IEventService eventService)
+    public HostService(IHostRepository hostRepository, ICompanyRepository companyService, IRequestCompanyAdminRepository requestCompanyAdminRepository, IEventRepository eventService)
     {
         _hostRepository = hostRepository;
-        _companyService = companyService;
+        _companyRepository = companyService;
         _requestCompanyAdminRepository = requestCompanyAdminRepository;
-        _eventService = eventService;
+        _eventRepository = eventService;
     }
 
     public async Task<bool> CreateHost(CreateHostRequest request, string userId, string email)
@@ -75,26 +76,21 @@ public class HostService : IHostService
     {
         return _hostRepository.GetByEmailAsync(email);
     }
-    private enum RollbackOperation
-    {
-        Rca,
-        Company,
-        Events
-    }
-    private record OperationResult(RollbackOperation Operation, bool Success); // should be moved later
-    private async Task<OperationResult> RunRollback(
-    RollbackOperation name,
+
+     // should be moved later
+    private async Task<HostRollbackOperationResult> RunRollback(
+    HostRollbackOperation name,
     Func<Task<bool>> operation)
     {
         try
         {
             var success = await operation();
-            return new OperationResult(name, success);
+            return new HostRollbackOperationResult(name, success);
         }
         catch (Exception ex)
         {
             // log ex here
-            return new OperationResult(name, false);
+            return new HostRollbackOperationResult(name, false);
         }
     }
     public async Task<bool> AcceptRcaAsync(ObjectId rcaId, string userId)
@@ -110,8 +106,8 @@ public class HostService : IHostService
         if (!updateRcaResult) throw new MongoFailedToUpdateException("status");
         if (getRcaResult?.Id == null) throw new MongoNotFoundException("rca");
         
-        var addToCompanyTask = _companyService.AddAdminAsync(getRcaResult.CompanyId, userId);
-        var addToEventsTask = _eventService.AddAdminToEvents(getRcaResult.CompanyId, userId);
+        var addToCompanyTask = _companyRepository.AddCompanyAdminAsync(getRcaResult.CompanyId, userId);
+        var addToEventsTask = _eventRepository.AddAdminToEvents(getRcaResult.CompanyId, userId);
 
         await Task.WhenAll(addToCompanyTask, addToEventsTask);
         var addToCompanyResult = await addToCompanyTask;
@@ -127,13 +123,13 @@ public class HostService : IHostService
 
         while (rollbackRcaPending || rollbackCompanyPending || rollbackEventsPending)
         {
-            var rollbackTasks = new List<Task<OperationResult>>();
+            var rollbackTasks = new List<Task<HostRollbackOperationResult>>();
 
             if (rollbackRcaPending)
             {
                 rollbackTasks.Add(
                     RunRollback(
-                        RollbackOperation.Rca,
+                        HostRollbackOperation.Rca,
                         () => _requestCompanyAdminRepository
                             .UpdateAsyncProtected(rcaId, userId, RcaStatus.Pending)
                     )
@@ -144,8 +140,8 @@ public class HostService : IHostService
             {
                 rollbackTasks.Add(
                     RunRollback(
-                        RollbackOperation.Company,
-                        () => _companyService.RemoveAdminAsync(getRcaResult.CompanyId, userId)
+                        HostRollbackOperation.Company,
+                        () => _companyRepository.RemoveCompanyAdminAsync(getRcaResult.CompanyId, userId)
                     )
                 );
             }
@@ -154,8 +150,8 @@ public class HostService : IHostService
             {
                 rollbackTasks.Add(
                     RunRollback(
-                        RollbackOperation.Events,
-                        () => _eventService.RemoveAdminFromEvents(getRcaResult.CompanyId, userId)
+                        HostRollbackOperation.Events,
+                        () => _eventRepository.RemoveAdminFromEvents(getRcaResult.CompanyId, userId)
                     )
                 );
             }
@@ -168,13 +164,13 @@ public class HostService : IHostService
                 {
                     switch (result.Operation)
                     {
-                        case RollbackOperation.Rca:
+                        case HostRollbackOperation.Rca:
                             rollbackRcaPending = false;
                             break;
-                        case RollbackOperation.Company:
+                        case HostRollbackOperation.Company:
                             rollbackCompanyPending = false;
                             break;
-                        case RollbackOperation.Events:
+                        case HostRollbackOperation.Events:
                             rollbackEventsPending = false;
                             break;
                     }

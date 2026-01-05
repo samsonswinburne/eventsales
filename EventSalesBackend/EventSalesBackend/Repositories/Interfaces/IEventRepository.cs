@@ -18,4 +18,6 @@ public interface IEventRepository
 
     Task<List<Event>> GetByFilter(FilterDefinition<Event> filter, int limit = 20, int page = 0);
     Task<bool> UpdateByFilter(FilterDefinition<Event> filter, UpdateDefinition<Event> updateDefinition);
+    Task<bool> AddAdminToEvents(ObjectId companyId, string userId);
+    Task<bool> RemoveAdminFromEvents(ObjectId companyId, string userId);
 }

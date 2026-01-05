@@ -16,13 +16,13 @@ public class CompanyService : ICompanyService
 {
     private readonly ICompanyRepository _companyRepository;
     private readonly IRequestCompanyAdminRepository _requestCompanyAdminRepository;
-    private readonly IHostService _hostService;
+    private readonly IHostRepository _hostRepository;
     
 
-    public CompanyService(ICompanyRepository repository, IHostService hostService, IRequestCompanyAdminRepository requestCompanyAdminRepository)
+    public CompanyService(ICompanyRepository repository, IHostRepository hostService, IRequestCompanyAdminRepository requestCompanyAdminRepository)
     {
         _companyRepository = repository;
-        _hostService = hostService;
+        _hostRepository = hostService;
         _requestCompanyAdminRepository = requestCompanyAdminRepository;
     }
 
@@ -65,7 +65,7 @@ public class CompanyService : ICompanyService
     {
         
         var adminSummaryTask = _companyRepository.GetAdminSummaryAsync(companyId, userId);
-        var userToInviteTask = _hostService.GetByEmailAsync(email);
+        var userToInviteTask = _hostRepository.GetByEmailAsync(email);
 
         await Task.WhenAll(adminSummaryTask, userToInviteTask);
         var adminSummary = await adminSummaryTask;
@@ -122,5 +122,17 @@ public class CompanyService : ICompanyService
             throw new MongoFailedToUpdateException("requestCompanyAdmin");
         }
         return true;
+    }
+
+    public async Task<bool> AddAdminAsync(ObjectId companyId, string userId)
+    {
+        var result = await _companyRepository.AddCompanyAdminAsync(companyId, userId);
+        return result;
+    }
+
+    public async Task<bool> RemoveAdminAsync(ObjectId companyId, string userId)
+    {
+        var result = await _companyRepository.RemoveCompanyAdminAsync(companyId, userId);
+        return result;
     }
 }

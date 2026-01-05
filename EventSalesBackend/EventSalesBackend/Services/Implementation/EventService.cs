@@ -159,5 +159,13 @@ public class EventService : IEventService
             };
     }
 
-   
+    public async Task<bool> AddAdminToEvents(ObjectId companyId, string userId)
+    {
+        return await _eventRepository.AddAdminToEvents(companyId, userId);
+    }
+
+    public async Task<bool> RemoveAdminFromEvents(ObjectId companyId, string userId)
+    {
+        return await _eventRepository.RemoveAdminFromEvents(companyId, userId);
+    }
 }

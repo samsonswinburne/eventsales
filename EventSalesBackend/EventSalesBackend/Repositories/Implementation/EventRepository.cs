@@ -91,4 +91,22 @@ public class EventRepository : IEventRepository
         var result = await _events.UpdateOneAsync(filter, update);
         return result.ModifiedCount > 0;
     }
+
+    public async Task<bool> AddAdminToEvents(ObjectId companyId, string userId)
+    {
+        var filter = Builders<Event>.Filter.Eq(e => e.HostCompanySummary.CompanyId, companyId);
+        var update = Builders<Event>.Update.AddToSet(e => e.Admins, userId);
+
+        var result = await _events.UpdateManyAsync(filter, update);
+        return result.ModifiedCount > 0;
+    }
+
+    public async Task<bool> RemoveAdminFromEvents(ObjectId companyId, string userId)
+    {
+        var filter = Builders<Event>.Filter.Eq(e => e.HostCompanySummary.CompanyId, companyId);
+        var update = Builders<Event>.Update.Pull(e => e.Admins, userId);
+
+        var result = await _events.UpdateManyAsync(filter, update);
+        return result.ModifiedCount > 0;
+    }
 }

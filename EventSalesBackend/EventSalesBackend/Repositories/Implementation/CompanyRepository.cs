@@ -24,11 +24,6 @@ public class CompanyRepository : ICompanyRepository
         var filter = Builders<Company>.Filter.Eq(c => c.Id, companyId);
         var result = await _companyRepository.UpdateOneAsync(filter, update);
 
-        if(result.ModifiedCount == 0)
-        {
-            throw new MongoFailedToUpdateException("company");
-        }
-
         return result.ModifiedCount > 0;
     }
 
@@ -80,5 +75,13 @@ public class CompanyRepository : ICompanyRepository
         var result = await _companyRepository.ReplaceOneAsync(c => c.Id == id, company);
         return result.ModifiedCount > 0;
     }
-    
+
+    public async Task<bool> RemoveCompanyAdminAsync(ObjectId companyId, string userId)
+    {
+        var update = Builders<Company>.Update.Pull(c => c.Admins, userId);
+        var filter = Builders<Company>.Filter.Eq(c => c.Id, companyId);
+        var result = await _companyRepository.UpdateOneAsync(filter, update);
+
+        return result.ModifiedCount > 0;
+    }
 }
