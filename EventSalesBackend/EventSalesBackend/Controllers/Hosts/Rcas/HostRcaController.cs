@@ -1,4 +1,5 @@
-﻿using EventSalesBackend.Models;
+﻿using EventSalesBackend.Extensions;
+using EventSalesBackend.Models;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using EventSalesBackend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -36,17 +37,43 @@ namespace EventSalesBackend.Controllers.Hosts.Rcas
                 {
                     return BadRequest("Rca Id is in an invalid format");
                 }
-                var singleResult =  await _hostService.GetRcaByIdAsyncProtected(parsedId, userId);
-                if (singleResult is null) return NotFound();
-                return Ok(singleResult);
+
+                try
+                {
+                    var singleResult = await _hostService.GetRcaByIdAsyncProtected(parsedId, userId);
+                    if (singleResult is null) return NotFound();
+                    return Ok(singleResult);
+                }catch (Exception ex)
+                {
+                    if (ex is BaseException bex)
+                    {
+                        return BadRequest(bex.ToErrorResponse());
+                    }
+                    return BadRequest("Unspecified error " + ex.Message);
+                }
+
+                
             }
 
             RcaStatus? parsedStatus = Enum.TryParse<RcaStatus>(status, out var t)
                          ? t
                          : null;
-            var result = await _hostService.GetRcaByHostIdStatusAsync(userId, parsedStatus);
-            if(result is null) return NotFound();
-            return Ok(result);
+
+            try
+            {
+                var results = await _hostService.GetRcaByHostIdStatusAsync(userId, parsedStatus);
+                if (results is null) return NotFound();
+                return Ok(results);
+            }catch (Exception ex)
+            {
+                if (ex is BaseException bex)
+                {
+                    return BadRequest(bex.ToErrorResponse());
+                }
+                return BadRequest("Unspecified error: " + ex.Message);
+            }
+
+
 
         }
 
