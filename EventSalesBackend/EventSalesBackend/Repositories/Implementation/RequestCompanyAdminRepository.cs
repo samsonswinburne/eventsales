@@ -74,5 +74,18 @@ namespace EventSalesBackend.Repositories.Implementation
             var result = await _rcas.UpdateOneAsync(rcaIdresponderIdFilter, update);
             return result.ModifiedCount > 0;
         }
+        public async Task<bool> RollbackAsync(ObjectId rcaId, string responderId)
+        {
+            var rcaIdresponderIdFilter = Builders<RequestCompanyAdmin>.Filter.And(
+                Builders<RequestCompanyAdmin>.Filter.Eq(r => r.Id, rcaId),
+                Builders<RequestCompanyAdmin>.Filter.Eq(r => r.RequestReceiverId, responderId)
+                );
+            var update = Builders<RequestCompanyAdmin>.Update.
+                Set(r => r.Status, RcaStatus.Pending)
+                .Unset(r => r.UpdatedTime);
+
+            var result = await _rcas.UpdateOneAsync(rcaIdresponderIdFilter, update);
+            return result.ModifiedCount > 0;
+        }
     }
 }

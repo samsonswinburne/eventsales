@@ -105,6 +105,7 @@ public class HostService : IHostService
 
         if (!updateRcaResult) throw new MongoFailedToUpdateException("status");
         if (getRcaResult?.Id == null) throw new MongoNotFoundException("rca");
+        var companyId = getRcaResult.CompanyId;
         
         var addToCompanyTask = _companyRepository.AddCompanyAdminAsync(getRcaResult.CompanyId, userId);
         var addToEventsTask = _eventRepository.AddAdminToEvents(getRcaResult.CompanyId, userId);
@@ -118,8 +119,8 @@ public class HostService : IHostService
         if (addToCompanyResult && addToEventsResult) return true; // succesful run should end here - otherwise roll back
 
         var rollbackRcaPending = true;
-        var rollbackCompanyPending = !addToCompanyResult;
-        var rollbackEventsPending = !addToEventsResult;
+        var rollbackCompanyPending = addToCompanyResult;
+        var rollbackEventsPending = addToEventsResult;
 
         while (rollbackRcaPending || rollbackCompanyPending || rollbackEventsPending)
         {
@@ -131,7 +132,7 @@ public class HostService : IHostService
                     RunRollback(
                         HostRollbackOperation.Rca,
                         () => _requestCompanyAdminRepository
-                            .UpdateAsyncProtected(rcaId, userId, RcaStatus.Pending)
+                            .RollbackAsync(rcaId, userId)
                     )
                 );
             }
@@ -141,7 +142,7 @@ public class HostService : IHostService
                 rollbackTasks.Add(
                     RunRollback(
                         HostRollbackOperation.Company,
-                        () => _companyRepository.RemoveCompanyAdminAsync(getRcaResult.CompanyId, userId)
+                        () => _companyRepository.RemoveCompanyAdminAsync(companyId, userId)
                     )
                 );
             }
@@ -151,7 +152,7 @@ public class HostService : IHostService
                 rollbackTasks.Add(
                     RunRollback(
                         HostRollbackOperation.Events,
-                        () => _eventRepository.RemoveAdminFromEvents(getRcaResult.CompanyId, userId)
+                        () => _eventRepository.RemoveAdminFromEvents(companyId, userId)
                     )
                 );
             }
@@ -176,13 +177,14 @@ public class HostService : IHostService
                     }
                 }
             }
-
+            
             if (retries++ > 4)
             {
                 throw new MongoFailedToUpdateException("rollback");
             }
             if (rollbackRcaPending || rollbackCompanyPending || rollbackEventsPending)
             {
+                Console.WriteLine($"retrying, {rollbackRcaPending} {rollbackCompanyPending} {rollbackEventsPending}");
                 await Task.Delay(150);
             }
         }
@@ -200,5 +202,11 @@ public class HostService : IHostService
     {
         var result = await _requestCompanyAdminRepository.GetAsyncProtected(id, userId);
         return result?.ToPublic();
+    }
+
+    public async Task<bool> DeclineRcaAsync(ObjectId rcaId, string userId)
+    {
+        var result = await _requestCompanyAdminRepository.UpdateAsyncProtected(rcaId, userId, RcaStatus.Declined);
+        return result;
     }
 }

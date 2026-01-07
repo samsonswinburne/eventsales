@@ -31,13 +31,12 @@ namespace EventSalesBackend.Controllers.Hosts.Rcas
             var userId = _userClaimsService.GetUserId();
             if (userId is null) return Unauthorized();
 
-            if (string.IsNullOrEmpty(id))
+            if (!string.IsNullOrEmpty(id))
             {
                 if (!ObjectId.TryParse(id, out var parsedId))
                 {
                     return BadRequest("Rca Id is in an invalid format");
                 }
-
                 try
                 {
                     var singleResult = await _hostService.GetRcaByIdAsyncProtected(parsedId, userId);
@@ -79,9 +78,29 @@ namespace EventSalesBackend.Controllers.Hosts.Rcas
 
 
         // POST api/<Rcas>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPost("{rcaId}")]
+        public async Task<ActionResult> Post([FromRoute] string rcaId, [FromBody] bool verdict)
         {
+            var userId = _userClaimsService.GetUserId();
+            if (userId is null) return Unauthorized();
+            if (!ObjectId.TryParse(rcaId, out var validatedRcaId)) return BadRequest("RCA Id is in an invalid format");
+
+            try
+            {
+                var success = verdict ? await _hostService.AcceptRcaAsync(validatedRcaId, userId) : await _hostService.DeclineRcaAsync(validatedRcaId, userId);
+
+                // kind of verbose but essentially just if success then we will return Ok otherwise we will return that they failed to decline / accept the RCA
+                return success ? Ok() : verdict ? BadRequest("Failed to accept RCA") : BadRequest("Failed to decline RCA");
+            }
+            catch(Exception ex)
+            {
+                if (ex is BaseException bex)
+                {
+                    return BadRequest(bex.ToErrorResponse());
+                }
+                return BadRequest("An unspecified error occured " + ex.Message);
+            }
+
             throw new NotImplementedException();
         }
 

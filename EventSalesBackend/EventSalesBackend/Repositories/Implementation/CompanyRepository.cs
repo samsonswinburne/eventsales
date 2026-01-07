@@ -82,6 +82,10 @@ public class CompanyRepository : ICompanyRepository
         var filter = Builders<Company>.Filter.Eq(c => c.Id, companyId);
         var result = await _companyRepository.UpdateOneAsync(filter, update);
 
+
+        if (result.MatchedCount == 0)
+            throw new MongoNotFoundException("admin");
+        
         return result.ModifiedCount > 0;
     }
 }
