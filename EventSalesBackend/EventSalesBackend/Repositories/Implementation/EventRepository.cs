@@ -98,7 +98,9 @@ public class EventRepository : IEventRepository
         var update = Builders<Event>.Update.AddToSet(e => e.Admins, userId);
 
         var result = await _events.UpdateManyAsync(filter, update);
-        return result.ModifiedCount > 0;
+        
+        return result.MatchedCount == result.ModifiedCount;
+        
     }
 
     public async Task<bool> RemoveAdminFromEvents(ObjectId companyId, string userId)
