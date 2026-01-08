@@ -44,7 +44,7 @@ public class CompanyService : ICompanyService
         var host = await _hostRepository.GetAsync(company.OwnerId);
         if(host?.Id is null)
         {
-            throw new HostNotFoundException();
+            throw new HostNotFoundException(null, company.OwnerId);
         }
         await _companyRepository.CreateAsync(company);
         if (company.Id != default)
@@ -79,6 +79,10 @@ public class CompanyService : ICompanyService
         if(userToInvite?.Id is null)
         {
             throw new HostNotFoundException(email);
+        }
+        if (!userToInvite.OnBoardingCompleted)
+        {
+            throw new HostNotCompletedOnboardingException(userToInvite.Id);
         }
 
         if (adminSummary?.Admins is null)
