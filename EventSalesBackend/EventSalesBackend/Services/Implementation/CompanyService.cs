@@ -41,6 +41,11 @@ public class CompanyService : ICompanyService
 
     public async Task<CreateCompanyResponse?> CreateAsync(Company company)
     {
+        var host = await _hostRepository.GetAsync(company.OwnerId);
+        if(host?.Id is null)
+        {
+            throw new HostNotFoundException();
+        }
         await _companyRepository.CreateAsync(company);
         if (company.Id != default)
             return new CreateCompanyResponse
