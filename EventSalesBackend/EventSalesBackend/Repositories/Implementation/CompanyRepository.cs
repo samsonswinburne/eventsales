@@ -84,8 +84,24 @@ public class CompanyRepository : ICompanyRepository
 
 
         if (result.MatchedCount == 0)
-            throw new MongoNotFoundException("admin");
+            throw new MongoNotFoundException("admin", userId);
         
+        return result.ModifiedCount > 0;
+    }
+    public async Task<bool> RemoveCompanyAdminProtectedAsync(ObjectId companyId, string ownerId, string userId)
+    {
+        var filter = Builders<Company>.Filter.And(
+            Builders<Company>.Filter.Eq(c => c.Id, companyId),
+            Builders<Company>.Filter.Eq(c => c.OwnerId, ownerId)
+            );
+        var update = Builders<Company>.Update.Pull(c => c.Admins, userId);
+
+        var result = await _companyRepository.UpdateOneAsync(filter, update);
+
+
+        if (result.MatchedCount == 0)
+            throw new MongoNotFoundException("admin", userId);
+
         return result.ModifiedCount > 0;
     }
 }

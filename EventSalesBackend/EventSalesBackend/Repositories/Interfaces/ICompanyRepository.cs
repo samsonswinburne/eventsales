@@ -11,5 +11,7 @@ public interface ICompanyRepository
     Task<ObjectId> CreateAsync(Company company);
     Task<bool> AddCompanyAdminAsync(ObjectId companyId, string adminId);
     Task<bool> RemoveCompanyAdminAsync(ObjectId companyId, string userId);
+    Task<bool> RemoveCompanyAdminProtectedAsync(ObjectId companyId, string ownerId, string userId);
+
     Task<AdminSummaryDTO?> GetAdminSummaryAsync(ObjectId companyId, string userId);
 }

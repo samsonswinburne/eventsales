@@ -20,4 +20,5 @@ public interface ICompanyService
     Task<bool> CancelAdminRequestAsync(ObjectId rcaId, string userId);
     Task<bool> AddAdminAsync(ObjectId companyId, string userId);
     Task<bool> RemoveAdminAsync(ObjectId companyId, string userId);
+    Task<bool> RemoveAdminProtectedAsync(ObjectId companyId, string ownerId, string userId)
 }
