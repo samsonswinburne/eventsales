@@ -175,4 +175,9 @@ public class CompanyService : ICompanyService
         }
         return true;
     }
+
+    public async Task<bool> SetOwnerProtectedAsync(ObjectId companyId, string requestSenderId, string newAdminId)
+    {
+        return await _companyRepository.UpdateOwnerIdProtectedAsync(companyId, requestSenderId, newAdminId);
+    }
 }

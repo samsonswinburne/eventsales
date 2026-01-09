@@ -104,4 +104,19 @@ public class CompanyRepository : ICompanyRepository
 
         return result.ModifiedCount > 0;
     }
+    public async Task<bool> UpdateOwnerIdProtectedAsync(ObjectId companyId, string requestingUserId, string setOwnerUserId)
+    {
+        var filter = Builders<Company>.Filter.And(
+            Builders<Company>.Filter.Eq(c => c.Id, companyId),
+            Builders<Company>.Filter.Eq(c => c.OwnerId, requestingUserId),
+            Builders<Company>.Filter.AnyEq(c => c.Admins, setOwnerUserId) // a user must first be part of a team before becoming an owner
+            );
+        var update = Builders<Company>.Update.Set(c => c.OwnerId, setOwnerUserId);
+        var result = await _companyRepository.UpdateOneAsync(filter, update);
+
+        if (result.MatchedCount == 0)
+            throw new MongoNotFoundException("admin", setOwnerUserId);
+
+        return result.ModifiedCount > 0;
+    }
 }
