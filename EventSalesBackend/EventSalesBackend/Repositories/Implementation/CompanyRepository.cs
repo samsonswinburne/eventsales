@@ -92,7 +92,8 @@ public class CompanyRepository : ICompanyRepository
     {
         var filter = Builders<Company>.Filter.And(
             Builders<Company>.Filter.Eq(c => c.Id, companyId),
-            Builders<Company>.Filter.Eq(c => c.OwnerId, ownerId)
+            Builders<Company>.Filter.Eq(c => c.OwnerId, ownerId),
+            Builders<Company>.Filter.Ne(c => c.OwnerId, userId) // one more check to be sure they aren't removing themselves
             );
         var update = Builders<Company>.Update.Pull(c => c.Admins, userId);
 
