@@ -148,6 +148,11 @@ public class CompanyService : ICompanyService
     }
     public async Task<bool> RemoveAdminProtectedAsync(ObjectId companyId, string ownerId, string userId) // will be called from company controller
     {
+        if(ownerId == userId)
+        {
+            throw new InvalidOperationException("you can't remove yourself as an admin haha");
+        }
+
         var removeFromCompany = await _companyRepository.RemoveCompanyAdminProtectedAsync(companyId, ownerId, userId);
 
         if (!removeFromCompany) throw new MongoFailedToUpdateException("company");
