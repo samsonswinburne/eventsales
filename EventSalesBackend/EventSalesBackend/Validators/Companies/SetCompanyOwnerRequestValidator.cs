@@ -4,13 +4,12 @@ using MongoDB.Bson;
 
 namespace EventSalesBackend.Validators.Companies
 {
-    public class SetCompanyOwnerRequestValidator
-        : AbstractValidator<SetCompanyOwnerRequest>
+    public class RemoveCompanyAdminRequestValidator : AbstractValidator<RemoveCompanyAdminRequest>
     {
-        public SetCompanyOwnerRequestValidator()
+        public RemoveCompanyAdminRequestValidator()
         {
             RuleFor(x => x.UserId)
-                .NotEmpty().WithMessage("UserId to make owner must not be empty");
+                .NotEmpty().WithMessage("UserId to remove must not be empty");
                 
         }
     }
