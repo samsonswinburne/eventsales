@@ -43,7 +43,7 @@ public class CompanyService : ICompanyService
 
     public async Task<CreateCompanyResponse?> CreateAsync(Company company)
     {
-        var host = await _hostRepository.GetAsync(company.OwnerId); // test is remote broken again
+        var host = await _hostRepository.GetAsync(company.OwnerId);
         if(host?.Id is null)
         {
             throw new HostNotFoundException(null, company.OwnerId);
