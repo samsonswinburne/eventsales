@@ -46,16 +46,24 @@ public class MongoDbContext : IMongoDbContext
             new CreateIndexModel<Event>(
                 Builders<Event>.IndexKeys.Descending(e => e.Summary.TotalSold)),
             new CreateIndexModel<Event>(
-                Builders<Event>.IndexKeys.Ascending(e => e.Slug),
-                new CreateIndexOptions<Event>
-                {
-                    Unique = true,
-                    PartialFilterExpression = Builders<Event>.Filter.And(
-                                            Builders<Event>.Filter.Exists(e => e.Slug),
-                                            Builders<Event>.Filter.Ne(e => e.Status, EventStatus.Draft)
-                        ),
-                }
+            Builders<Event>.IndexKeys.Ascending(e => e.Slug),
+            new CreateIndexOptions<Event>
+            {
+                Unique = true,
+                PartialFilterExpression = Builders<Event>.Filter.And(
+                    Builders<Event>.Filter.Exists("slug"),
+                    Builders<Event>.Filter.In(
+                        "status",
+                        new[]
+                        {
+                            EventStatus.Published,
+                            EventStatus.Cancelled,
+                            EventStatus.Completed
+                        }
+                    )
                 )
+            }
+            )
         };
         Events.Indexes.CreateMany(eventIndexes);
         

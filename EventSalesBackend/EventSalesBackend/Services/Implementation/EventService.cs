@@ -188,4 +188,9 @@ public class EventService : IEventService
         }
         return result.ToPublic();
     }
+
+    public async Task<bool> GetSlugAvailable(string slug)
+    {
+        return await _eventRepository.GetSlugAvailable(slug);
+    }
 }

@@ -27,4 +27,5 @@ public interface IEventService
     Task<bool> AddAdminToEvents(ObjectId companyId, string userId);
     Task<bool> RemoveAdminFromEvents(ObjectId companyId, string userId);
     Task<EventPublic?> GetBySlugPublicProtected(string slug);
+    Task<bool> GetSlugAvailable(string slug);
 }

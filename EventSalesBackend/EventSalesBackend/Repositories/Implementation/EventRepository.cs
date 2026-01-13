@@ -124,9 +124,10 @@ public class EventRepository : IEventRepository
         
     }
 
-    public async Task<bool> GetSlugTaken(string slug)
+    public async Task<bool> GetSlugAvailable(string slug)
     {
         var filter = Builders<Event>.Filter.Eq(e => e.Slug, slug);
-        return await _events.Find(filter).Limit(1).AnyAsync();
+        var result =  await _events.Find(filter).Limit(1).AnyAsync();
+        return !result; // should be reversed because if a document is found it means that the slug is not available
     }
 }
