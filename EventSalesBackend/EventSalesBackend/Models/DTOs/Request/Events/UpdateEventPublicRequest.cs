@@ -2,5 +2,5 @@
 
 public class UpdateEventPublicRequest
 {
-    public required string EventId { get; set; }
+    public required string Slug { get; set; }
 }

@@ -77,7 +77,8 @@ public class EventController : ControllerBase
     }
     [Authorize]
     [HttpPost("{eventId}/makepublic")]
-    public async Task<ActionResult<UpdateEventPublishedResponse>> UpdateEventPublished([FromRoute] string eventId)
+    public async Task<ActionResult<UpdateEventPublishedResponse>> UpdateEventPublished([FromRoute] string eventId, 
+        [FromBody] UpdateEventPublicRequest request, IValidator<UpdateEventPublicRequest> validator)
     {
         var userId = _userClaimsService.GetUserId();
         if (userId is null) return Unauthorized();
@@ -86,8 +87,13 @@ public class EventController : ControllerBase
         {
             return BadRequest("Invalid EventId");
         }
+        var validationResult = await validator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(validationResult.ToErrorResponse());
+        }
 
-        var result = await _eventService.MakePublicAsync(eventIdValidated, userId);
+        var result = await _eventService.MakePublicAsync(eventIdValidated, userId, request.Slug);
         if (result)
         {
             return Ok();
