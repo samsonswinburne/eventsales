@@ -78,7 +78,7 @@ public static class EventExtensions
         return new EventPublic
         {
             Id = eventToConvert.Id.ToString(),
-            HostCompanySummary = eventToConvert.HostCompanySummary,
+            HostCompanySummary = eventToConvert.HostCompanySummary.ToJson(),
             Name = eventToConvert.Name,
             Description = eventToConvert.Description,
             TicketTypes = eventToConvert.TicketTypes.ConvertAll(e => e.ToPublic()),
@@ -106,12 +106,7 @@ public static class EventExtensions
         return new EventAdminView
         {
             Id = eventToConvert.Id.ToString(),
-            HostCompanySummary = new CompanySummaryAdminView
-            {
-                CompanyId = eventToConvert.HostCompanySummary.CompanyId.ToString(),
-                CompanyName = eventToConvert.HostCompanySummary.CompanyName,
-                CompanyImageUrl = eventToConvert.HostCompanySummary.CompanyImageUrl
-            },
+            HostCompanySummary = eventToConvert.HostCompanySummary.ToJson(),
             Name = eventToConvert.Name,
             Description = eventToConvert.Description,
             TicketTypes = eventToConvert.TicketTypes.Select(tt => new TicketTypeAdminView
@@ -241,4 +236,16 @@ public class CompanySummary
     [BsonElement("name")] public required string CompanyName { get; set; }
 
     [BsonElement("image")] public required string CompanyImageUrl { get; set; }
+}
+public static class CompanySummaryExtensions
+{
+    public static CompanySummaryJson ToJson(this CompanySummary cs)
+    {
+        return new CompanySummaryJson
+        {
+            CompanyId = cs.CompanyId.ToString(),
+            CompanyImageUrl = cs.CompanyImageUrl,
+            CompanyName = cs.CompanyName
+        };
+    }
 }

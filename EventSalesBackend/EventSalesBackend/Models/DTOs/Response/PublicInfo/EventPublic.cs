@@ -1,5 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System.ComponentModel.DataAnnotations;
 
 namespace EventSalesBackend.Models.DTOs.Response.PublicInfo;
 
@@ -9,45 +10,45 @@ public class EventPublic
     public required string Id { get; set; }
 
 
-    public required CompanySummary HostCompanySummary { get; set; }
+    public required CompanySummaryJson HostCompanySummary { get; init; }
 
 
-    public required string Name { get; set; }
+    public required string Name { get; init; }
 
 
-    public string? Description { get; set; }
+    public string? Description { get; init; }
 
 
-    public required List<TicketTypePublic> TicketTypes { get; set; } = new();
+    public required List<TicketTypePublic> TicketTypes { get; init; } = new();
 
 
-    public required TicketSummary Summary { get; set; }
+    public required TicketSummary Summary { get; init; }
 
 
-    public required string Photo { get; set; }
+    public required string Photo { get; init; }
 
 
-    public string? PostCode { get; set; } // if its an online event then not needed
+    public string? PostCode { get; init; } // if its an online event then not needed
 
 
-    public required bool InPersonEvent { get; set; }
+    public required bool InPersonEvent { get; init; }
 
 
-    public string? VenueAddress { get; set; }
+    public string? VenueAddress { get; init; }
 
 
-    public required int IndividualPurchaseLimit { get; set; } = 0;
+    public required int IndividualPurchaseLimit { get; init; } = 0;
 
-    public JsonVenueLocation? VenueLocation { get; set; }
-
-
-    public EventStatus Status { get; set; } = EventStatus.Draft;
+    public JsonVenueLocation? VenueLocation { get; init; }
 
 
-    public required DateTime StartDate { get; set; }
+    public required EventStatus Status { get; set; }
 
 
-    public required DateTime EndDate { get; set; }
+    public required DateTime StartDate { get; init; }
+
+
+    public required DateTime EndDate { get; init; }
 }
 
 public class JsonVenueLocation
@@ -60,21 +61,29 @@ public class JsonVenueLocation
 public class TicketTypePublic
 {
 
-    public required string Id { get; set; }
+    public required string Id { get; init; }
 
-    public required string Name { get; set; }
-
-
-    public required string Description { get; set; } = string.Empty;
+    public required string Name { get; init; }
 
 
-    public required int TotalAvaliable { get; set; }
+    public required string Description { get; init; } = string.Empty;
 
-    public required int Sold { get; set; } = 0;
+
+    public required int TotalAvaliable { get; init; }
+
+    public required int Sold { get; init; } = 0;
     
     
-    public required decimal Price { get; set; }
+    public required decimal Price { get; init; }
     
-    public decimal? DiscountedPrice { get; set; }
+    public decimal? DiscountedPrice { get; init; }
 
+}
+public class CompanySummaryJson
+{
+    public required string CompanyId { get; init; }
+
+    public required string CompanyName { get; init; }
+
+    public required string CompanyImageUrl { get; init; }
 }
