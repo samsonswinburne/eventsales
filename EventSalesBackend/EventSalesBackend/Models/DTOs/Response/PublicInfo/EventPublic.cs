@@ -61,7 +61,6 @@ public class TicketTypePublic
 {
 
     public required string Id { get; set; }
-    public required ObjectId TestId { get; init; }
 
     public required string Name { get; set; }
 

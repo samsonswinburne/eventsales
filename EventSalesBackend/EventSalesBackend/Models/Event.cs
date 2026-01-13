@@ -19,7 +19,7 @@ public class Event // event should be split up into in person event and digital 
     [BsonElement("companySummary")] public required CompanySummary HostCompanySummary { get; set; }
 
     [BsonElement("name")] [BsonRequired] public required string Name { get; set; }
-
+    [BsonElement("slug")][BsonIgnoreIfNull] public string? Slug { get; set; }
     [BsonElement("description")] public string? Description { get; set; }
 
     [BsonElement("ticketTypes")]
@@ -200,7 +200,6 @@ public static class TicketTypeExtensions
         return new TicketTypePublic
         {
             Id = ticketTypeToConvert.Id.ToString(),
-            TestId = ticketTypeToConvert.Id,
             Name = ticketTypeToConvert.Name,
             Description = ticketTypeToConvert.Description,
             TotalAvaliable = ticketTypeToConvert.TotalAvaliable,

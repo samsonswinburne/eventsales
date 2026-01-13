@@ -1,4 +1,5 @@
-﻿using EventSalesBackend.Exceptions.MongoDB;
+﻿using EventSalesBackend.Exceptions.Event;
+using EventSalesBackend.Exceptions.MongoDB;
 using EventSalesBackend.Models;
 using EventSalesBackend.Models.DTOs.Response.AdminView.Event;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
@@ -39,13 +40,19 @@ public class EventService : IEventService
     }
 
     // this can be combined into 1 big filter query. downsides are that server side validation wouldn't return errors but could be handled client side
-    public async Task<bool> MakePublicAsync(ObjectId eventId, string userId)
+    public async Task<bool> MakePublicAsync(ObjectId eventId, string userId, string slug)
     {
         var eventIdFilter = Builders<Event>.Filter.Eq(e => e.Id, eventId);
         var eventToSet = await _eventRepository.GetByIdAsync(eventId);
 
+        
+
         if (!eventToSet.Admins.Contains(userId))
             throw new UnauthorizedAccessException("You don't have permission to view this draft event");
+        if (eventToSet.Status != EventStatus.Draft) throw new InvalidOperationException("You cannot publish an event that isn't a draft");
+        if (eventToSet.Slug is null) throw new InvalidOperationException("This event does not have a slug");
+
+        // doing this here to try and reduce wait time a bit
 
         if (eventToSet.Description is null)
             // should probably change this to a custom exception
@@ -56,9 +63,12 @@ public class EventService : IEventService
 
         if (eventToSet.TicketTypes.Count == 0)
             throw new InvalidOperationException("The event does not have a ticket type");
-
-        var update = Builders<Event>.Update.Set(e => e.Status, EventStatus.Published);
+        var update = Builders<Event>.Update.Combine(
+            Builders<Event>.Update.Set(e => e.Status, EventStatus.Published), // make it published
+            Builders<Event>.Update.Set(e => e.Slug, slug)
+            );
         var result = await _eventRepository.UpdateAsync(eventToSet.Id, update);
+        
         return result;
     }
     
@@ -167,5 +177,15 @@ public class EventService : IEventService
     public async Task<bool> RemoveAdminFromEvents(ObjectId companyId, string userId)
     {
         return await _eventRepository.RemoveAdminFromEvents(companyId, userId);
+    }
+
+    public async Task<EventPublic?> GetBySlugPublicProtected(string slug)
+    {
+        var result = await _eventRepository.GetBySlugProtected(slug);
+        if(result is null)
+        {
+            throw new SlugNotFoundException(slug);
+        }
+        return result.ToPublic();
     }
 }

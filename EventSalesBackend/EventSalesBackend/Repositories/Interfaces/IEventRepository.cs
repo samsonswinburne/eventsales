@@ -1,4 +1,5 @@
 ﻿using EventSalesBackend.Models;
+using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -20,4 +21,6 @@ public interface IEventRepository
     Task<bool> UpdateByFilter(FilterDefinition<Event> filter, UpdateDefinition<Event> updateDefinition);
     Task<bool> AddAdminToEvents(ObjectId companyId, string userId);
     Task<bool> RemoveAdminFromEvents(ObjectId companyId, string userId);
+    Task<Event?> GetBySlugProtected(string slug);
+
 }
