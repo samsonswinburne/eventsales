@@ -124,4 +124,9 @@ public class EventRepository : IEventRepository
         
     }
 
+    public async Task<bool> GetSlugTaken(string slug)
+    {
+        var filter = Builders<Event>.Filter.Eq(e => e.Slug, slug);
+        return await _events.Find(filter).Limit(1).AnyAsync();
+    }
 }
