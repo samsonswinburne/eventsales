@@ -17,6 +17,8 @@ public class AccountController : ControllerBase
             // Indicate here where Auth0 should redirect the user after a login.
             // Note that the resulting absolute Uri must be added to the
             // **Allowed Callback URLs** settings for the app.
+            // using return URls like this means a user can set them manually although this shouldn't be a problem with actual security in place
+            // eg. when signing up we redirect them to the onboarding change, if they change it then i guess they don't onboard now and have to complete it later?
             .WithRedirectUri(returnUrl)
             .Build();
 
