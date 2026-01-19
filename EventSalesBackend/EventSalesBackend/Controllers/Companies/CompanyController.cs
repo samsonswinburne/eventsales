@@ -7,8 +7,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
-using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
+
 
 namespace EventSalesBackend.Controllers.Companies;
 
@@ -77,10 +76,7 @@ public class CompanyController : ControllerBase
         }
         catch (Exception ex)
         {
-            if (ex is BaseException bex)
-            {
-                return BadRequest(bex.ToErrorResponse());
-            }
+            if (ex is BaseException bex) return BadRequest(bex.ToErrorResponse());
             return BadRequest("Unspecified error: " + ex.Message);
         }
     }

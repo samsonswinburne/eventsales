@@ -104,10 +104,9 @@ public class CompanyService : ICompanyService
     {
         var updateRcaResult
             = await _requestCompanyAdminRepository.UpdateAsyncProtected(rcaId, userId, RcaStatus.Declined);
-        if (!updateRcaResult)
-        {
-            throw new MongoFailedToUpdateException("requestCompanyAdmin");
-        }
+        if (!updateRcaResult) throw new MongoFailedToUpdateException("requestCompanyAdmin");
+
+
 
         return true;
         
@@ -117,10 +116,8 @@ public class CompanyService : ICompanyService
     {
         var updateRcaResult =
             await _requestCompanyAdminRepository.UpdateAsyncProtected(rcaId, userId, RcaStatus.Cancelled);
-        if (!updateRcaResult)
-        {
-            throw new MongoFailedToUpdateException("requestCompanyAdmin");
-        }
+        if (!updateRcaResult) throw new MongoFailedToUpdateException("requestCompanyAdmin");
+        
         return true;
     }
 
