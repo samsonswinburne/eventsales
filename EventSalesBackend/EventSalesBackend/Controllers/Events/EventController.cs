@@ -78,37 +78,7 @@ public class EventController : ControllerBase
         await _eventService.CreateAsync(eventToCreate);
         return eventToCreate.ToAdminView();
     }
-    [Authorize]
-    [HttpGet("slug/{slug}")]
-    public async Task<ActionResult<GetSlugAvailableResponse>> GetSlugAvailable([FromRoute] string slug)
-    {
-        // this section is the same as my fluent validation for creating a slug, to be honest might not be needed because
-        // if a user is using the application the intended way there should be client side validation so none of these should need to be called
-        if (_userClaimsService.GetUserId() is null) return Unauthorized();
-        if (string.IsNullOrEmpty(slug)) return BadRequest("Slug should be set");
-        if (slug.Length > 30) return BadRequest("Slug length can be maximum 30 characters");
-        if (!Regex.IsMatch(slug, RegexPatterns.SlugPattern)) return BadRequest(RegexValidationMessages.SlugPatternMessage);
-
-        try
-        {
-            var result = await _eventService.GetSlugAvailable(slug);
-            return Ok(
-                new GetSlugAvailableResponse
-                {
-                    Available = result,
-                    Slug = slug
-                }
-                );
-        }catch (Exception ex)
-        {
-            if(ex is BaseException bex)
-            {
-                return BadRequest(bex.ToErrorResponse());
-            }
-            return BadRequest(ex.Message);
-        }
-
-    }
+    
     [Authorize] 
     [HttpPost("{eventId}/makepublic")]
     public async Task<ActionResult<UpdateEventPublishedResponse>> UpdateEventPublished([FromRoute] string eventId, 
