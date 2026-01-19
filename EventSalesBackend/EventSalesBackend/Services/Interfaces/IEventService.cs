@@ -19,11 +19,13 @@ public interface IEventService
     Task<List<EventPublic>> FindInRadiusPublicAsync(double latitude, double longitude, double radiusMetres,
         EventStatus? status = null);
 
-    Task<bool> MakePublicAsync(ObjectId eventId, string userId);
+    Task<bool> MakePublicAsync(ObjectId eventId, string userId, string slug);
     Task<TicketTypePublic> AddTicketTypeAsync(ObjectId eventId, string userId, TicketType ticketType);
 
     Task<UpdateEventLocationResponse> UpdateEventLocationAsync(ObjectId eventId, string userId, double latitude, double longitude);
 
     Task<bool> AddAdminToEvents(ObjectId companyId, string userId);
     Task<bool> RemoveAdminFromEvents(ObjectId companyId, string userId);
+    Task<EventPublic?> GetBySlugPublicProtected(string slug);
+    Task<bool> GetSlugAvailable(string slug);
 }

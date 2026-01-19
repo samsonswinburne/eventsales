@@ -19,18 +19,18 @@ public class TestController : ControllerBase
     [Authorize]
     public async Task<IActionResult> Get()
     {
-        var email = _userClaimService.GetEmail();
-        if (email is null)
+        //var email = _userClaimService.GetEmail();
+        //if (email is null)
+        //{
+        //    return BadRequest();
+        //}
+        //return Ok(email);
+        var claims = User.Claims.Select(c => new
         {
-            return BadRequest();
-        }
-        return Ok(email);
-        // var claims = User.Claims.Select(c => new 
-        // { 
-        //     Type = c.Type, 
-        //     Value = c.Value 
-        // });
-        //     
-        // return Ok(claims);
+            Type = c.Type,
+            Value = c.Value
+        });
+
+        return Ok(claims);
     }
 }

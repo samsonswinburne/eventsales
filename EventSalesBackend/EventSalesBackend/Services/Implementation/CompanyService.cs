@@ -17,13 +17,15 @@ public class CompanyService : ICompanyService
     private readonly ICompanyRepository _companyRepository;
     private readonly IRequestCompanyAdminRepository _requestCompanyAdminRepository;
     private readonly IHostRepository _hostRepository;
+    private readonly IEventRepository _eventRepository;
     
 
-    public CompanyService(ICompanyRepository repository, IHostRepository hostService, IRequestCompanyAdminRepository requestCompanyAdminRepository)
+    public CompanyService(ICompanyRepository repository, IHostRepository hostService, IRequestCompanyAdminRepository requestCompanyAdminRepository, IEventRepository eventRepository)
     {
         _companyRepository = repository;
         _hostRepository = hostService;
         _requestCompanyAdminRepository = requestCompanyAdminRepository;
+        _eventRepository = eventRepository;
     }
 
     public async Task<CompanyPublic?> GetPublicAsync(ObjectId id)
@@ -41,6 +43,11 @@ public class CompanyService : ICompanyService
 
     public async Task<CreateCompanyResponse?> CreateAsync(Company company)
     {
+        var host = await _hostRepository.GetAsync(company.OwnerId);
+        if(host?.Id is null)
+        {
+            throw new HostNotFoundException(null, company.OwnerId);
+        }
         await _companyRepository.CreateAsync(company);
         if (company.Id != default)
             return new CreateCompanyResponse
@@ -74,6 +81,10 @@ public class CompanyService : ICompanyService
         if(userToInvite?.Id is null)
         {
             throw new HostNotFoundException(email);
+        }
+        if (!userToInvite.OnBoardingCompleted)
+        {
+            throw new HostNotCompletedOnboardingException(userToInvite.Id);
         }
 
         if (adminSummary?.Admins is null)
@@ -131,5 +142,44 @@ public class CompanyService : ICompanyService
     {
         var result = await _companyRepository.RemoveCompanyAdminAsync(companyId, userId);
         return result;
+    }
+    public async Task<bool> RemoveAdminProtectedAsync(ObjectId companyId, string ownerId, string userId) // will be called from company controller
+    {
+        if(ownerId == userId)
+        {
+            throw new InvalidOperationException("you can't remove yourself as an admin haha");
+        }
+
+        var removeFromCompany = await _companyRepository.RemoveCompanyAdminProtectedAsync(companyId, ownerId, userId);
+
+        if (!removeFromCompany) throw new MongoFailedToUpdateException("company");
+        // either unauthorised or admin does not exist at company
+
+        // if the first request is successful then we can guarantee that the requester is company owner
+        var removeFromEvents = await _eventRepository.RemoveAdminFromEvents(companyId, userId);
+        if (!removeFromEvents)
+        {
+            // removing from events has failed, now we should roll back removing from company
+            var rollbackPending = true;
+            var retries = 0;
+
+            while (rollbackPending)
+            {
+                rollbackPending = !await _companyRepository.AddCompanyAdminAsync(companyId, userId);
+
+                if (retries++ > 4)
+                {
+                    throw new MongoFailedToUpdateException("rollback company");
+                }
+                if (rollbackPending) Thread.Sleep(1500);
+            }
+            if (!removeFromCompany) throw new MongoFailedToUpdateException("company");
+        }
+        return true;
+    }
+
+    public async Task<bool> SetOwnerProtectedAsync(ObjectId companyId, string requestSenderId, string newAdminId)
+    {
+        return await _companyRepository.UpdateOwnerIdProtectedAsync(companyId, requestSenderId, newAdminId);
     }
 }

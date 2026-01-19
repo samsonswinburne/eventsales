@@ -12,7 +12,7 @@ public class
     public required string Id { get; set; }
 
 
-    public required CompanySummaryAdminView HostCompanySummary { get; set; }
+    public required CompanySummaryJson HostCompanySummary { get; set; }
 
 
     public required string Name { get; set; }

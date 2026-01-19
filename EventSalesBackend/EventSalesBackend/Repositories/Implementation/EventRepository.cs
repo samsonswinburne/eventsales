@@ -1,5 +1,7 @@
 ﻿using EventSalesBackend.Data;
+using EventSalesBackend.Exceptions.Event;
 using EventSalesBackend.Models;
+using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using EventSalesBackend.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
@@ -31,6 +33,7 @@ public class EventRepository : IEventRepository
     public async Task<bool> UpdateAsync(ObjectId id, UpdateDefinition<Event> updateDefinition)
     {
         var result = await _events.UpdateOneAsync(e => e.Id == id, updateDefinition);
+        if (result.MatchedCount == 0) throw new EventNotFoundException(id);
         return result.ModifiedCount > 0;
     }
 
@@ -98,7 +101,9 @@ public class EventRepository : IEventRepository
         var update = Builders<Event>.Update.AddToSet(e => e.Admins, userId);
 
         var result = await _events.UpdateManyAsync(filter, update);
-        return result.ModifiedCount > 0;
+        
+        return result.MatchedCount == result.ModifiedCount;
+        
     }
 
     public async Task<bool> RemoveAdminFromEvents(ObjectId companyId, string userId)
@@ -108,5 +113,21 @@ public class EventRepository : IEventRepository
 
         var result = await _events.UpdateManyAsync(filter, update);
         return result.ModifiedCount > 0;
+    }
+    public async Task<Event?> GetBySlugProtected(string slug)
+    {
+        var filter = Builders<Event>.Filter.And(
+            Builders<Event>.Filter.Ne(e => e.Status, EventStatus.Draft),
+            Builders<Event>.Filter.Eq(e => e.Slug, slug)
+            );
+        return await _events.Find(filter).FirstOrDefaultAsync();
+        
+    }
+
+    public async Task<bool> GetSlugAvailable(string slug)
+    {
+        var filter = Builders<Event>.Filter.Eq(e => e.Slug, slug);
+        var result =  await _events.Find(filter).Limit(1).AnyAsync();
+        return !result; // should be reversed because if a document is found it means that the slug is not available
     }
 }

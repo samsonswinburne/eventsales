@@ -38,7 +38,8 @@ public static class CreateEventRequestExtensions
             HostCompanySummary = summary,
             TicketTypes = [],
             Summary = new TicketSummary(),
-            Photo = "" // default photo string
+            Photo = "", // default photo string
+            Slug = null
         };
     }
 }

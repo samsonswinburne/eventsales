@@ -2,6 +2,6 @@
 {
     public class RequestCompanyAdminRequest
     {
-        public string AdminRequestReceiverEmail { get; init; }
+        public required string AdminRequestReceiverEmail { get; init; }
     }
 }

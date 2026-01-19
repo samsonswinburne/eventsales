@@ -1,4 +1,5 @@
-﻿using EventSalesBackend.Models.DTOs.Request.Events;
+﻿using EventSalesBackend.Data;
+using EventSalesBackend.Models.DTOs.Request.Events;
 using FluentValidation;
 using MongoDB.Bson;
 
@@ -8,8 +9,9 @@ public class UpdateEventPublicRequestValidator : AbstractValidator<UpdateEventPu
 {
     public UpdateEventPublicRequestValidator()
     {
-        RuleFor(x => x.EventId).NotEmpty().WithMessage("EventId cannot be empty")
-            .Length(24).WithMessage("EventId must be 24 characters")
-            .Must(id => ObjectId.TryParse(id, out _)).WithMessage("EventId must be a valid eventId");
+        RuleFor(x => x.Slug)
+            .NotEmpty().WithMessage("Slug cannot be empty")
+            .Length(1, 30).WithMessage("Slug must be between 1 and 30 characters")
+            .Matches(RegexPatterns.SlugPattern).WithMessage(RegexValidationMessages.SlugPatternMessage);
     }
 }

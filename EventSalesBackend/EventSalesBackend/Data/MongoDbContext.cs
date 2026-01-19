@@ -44,10 +44,29 @@ public class MongoDbContext : IMongoDbContext
             new CreateIndexModel<Event>(
                 Builders<Event>.IndexKeys.Ascending(e => e.Status)),
             new CreateIndexModel<Event>(
-                Builders<Event>.IndexKeys.Descending(e => e.Summary.TotalSold))
+                Builders<Event>.IndexKeys.Descending(e => e.Summary.TotalSold)),
+            new CreateIndexModel<Event>(
+            Builders<Event>.IndexKeys.Ascending(e => e.Slug),
+            new CreateIndexOptions<Event>
+            {
+                Unique = true,
+                PartialFilterExpression = Builders<Event>.Filter.And(
+                    Builders<Event>.Filter.Exists("slug"),
+                    Builders<Event>.Filter.In(
+                        "status",
+                        new[]
+                        {
+                            EventStatus.Published,
+                            EventStatus.Cancelled,
+                            EventStatus.Completed
+                        }
+                    )
+                )
+            }
+            )
         };
         Events.Indexes.CreateMany(eventIndexes);
-
+        
         var indexes = Events.Indexes.List().ToListAsync();
         foreach (var index in indexes.Result)
         {
