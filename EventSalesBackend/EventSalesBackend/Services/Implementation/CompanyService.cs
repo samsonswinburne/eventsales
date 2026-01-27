@@ -186,7 +186,7 @@ public class CompanyService : ICompanyService
     public async Task<List<CompanySummaryJson>?> GetCompanySummariesByUserId(string userId)
     {
         var result = await _companyRepository.GetCompanySummariesByUserId(userId);
-        return result.ConvertAll(c => new CompanySummaryJson
+        return result?.ConvertAll(c => new CompanySummaryJson
         {
             CompanyId = c.CompanyId.ToString(),
             CompanyName = c.CompanyName,
