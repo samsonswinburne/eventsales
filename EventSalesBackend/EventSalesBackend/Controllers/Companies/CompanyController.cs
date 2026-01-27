@@ -26,11 +26,12 @@ public class CompanyController : ControllerBase
 
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult<string>> CreateCompany([FromBody] CreateCompanyRequest request)
+    public async Task<ActionResult<string>> CreateCompany([FromBody] CreateCompanyRequest request, [FromServices] IValidator<CreateCompanyRequest> validator)
     {
         var userId = _userClaimsService.GetUserId();
         if (userId is null) return Unauthorized();
-
+        var validationResult = await validator.ValidateAsync(request);
+        if (!validationResult.IsValid) return BadRequest(validationResult.ToErrorResponse());
         var company = new Company
         {
             OwnerId = userId,
