@@ -125,12 +125,16 @@ public class CompanyRepository : ICompanyRepository
     {
         var filter = Builders<Company>.Filter.AnyEq(c => c.Admins, userId);
 
-        var projection = Builders<Company>.Projection
-            .Include(c => c.Id)
-            .Include(c => c.Name)
-            .Include(c => c.LogoUrl);
+        
 
-        var result = await _companyRepository.Find(filter).Project<CompanySummary>(projection).ToListAsync();
+        var result = await _companyRepository.Find(filter).Project
+            (e => new CompanySummary 
+            {
+                CompanyId = e.Id,
+                CompanyName = e.Name,
+                CompanyImageUrl = e.LogoUrl,
+            })
+            .ToListAsync();
         return result;
     }
 }

@@ -231,7 +231,7 @@ public class TicketSummary
 
 public class CompanySummary
 {
-    [BsonElement("id")] public required ObjectId CompanyId { get; set; }
+    [BsonElement("companyId")] public required ObjectId CompanyId { get; set; }
 
     [BsonElement("name")] public required string CompanyName { get; set; }
 
