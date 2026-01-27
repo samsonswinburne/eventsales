@@ -17,7 +17,7 @@ public class CompanyController : ControllerBase
 {
     private readonly ICompanyService _companyService;
     private readonly IUserClaimsService _userClaimsService;
-    
+
     public CompanyController(IUserClaimsService userClaimsService, ICompanyService companyService)
     {
         _userClaimsService = userClaimsService;
@@ -60,7 +60,7 @@ public class CompanyController : ControllerBase
     public async Task<ActionResult<RequestCompanyAdminPublic>> RequestCompanyAdminAsync([FromBody] RequestCompanyAdminRequest request,
         [FromRoute] string companyId, [FromServices] IValidator<RequestCompanyAdminRequest> validator)
     {
-        
+
         var userId = _userClaimsService.GetUserId();
         if (userId is null) return Unauthorized();
         if (!ObjectId.TryParse(companyId, out var validatedCompanyId)) return BadRequest("CompanyId is invalid");
@@ -78,6 +78,23 @@ public class CompanyController : ControllerBase
         {
             if (ex is BaseException bex) return BadRequest(bex.ToErrorResponse());
             return BadRequest("Unspecified error: " + ex.Message);
+        }
+    }
+    [Authorize]
+    [HttpGet("me")]
+    public async Task<ActionResult<List<CompanySummaryJson>>> GetMyCompanies()
+    {
+        var userId = _userClaimsService.GetUserId();
+        if (userId is null) return Unauthorized();
+        try
+        {
+            var result = await _companyService.GetCompanySummariesByUserId(userId);
+            return Ok(result);
+        }
+        catch(Exception ex)
+        {
+            if (ex is BaseException bex) return BadRequest(bex.ToErrorResponse());
+            return BadRequest($"Unspecified error: {ex.Message}");
         }
     }
 }
