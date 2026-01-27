@@ -1,10 +1,8 @@
-﻿using Amazon.Runtime.Internal;
-using EventSalesBackend.Models;
+﻿using EventSalesBackend.Models;
 using EventSalesBackend.Models.DTOs.Data;
 using EventSalesBackend.Models.DTOs.Response;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using MongoDB.Bson;
-using System.ComponentModel.Design;
 
 namespace EventSalesBackend.Services.Interfaces;
 
@@ -22,4 +20,5 @@ public interface ICompanyService
     Task<bool> RemoveAdminAsync(ObjectId companyId, string userId);
     Task<bool> RemoveAdminProtectedAsync(ObjectId companyId, string ownerId, string userId);
     Task<bool> SetOwnerProtectedAsync(ObjectId companyId, string requestSenderId, string newAdminId);
+    Task<List<CompanySummaryJson>?> GetCompanySummariesByUserId(string userId);
 }

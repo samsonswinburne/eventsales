@@ -120,4 +120,17 @@ public class CompanyRepository : ICompanyRepository
 
         return result.ModifiedCount > 0;
     }
+
+    public async Task<List<CompanySummary>?> GetCompanySummariesByUserId(string userId)
+    {
+        var filter = Builders<Company>.Filter.AnyEq(c => c.Admins, userId);
+
+        var projection = Builders<Company>.Projection
+            .Include(c => c.Id)
+            .Include(c => c.Name)
+            .Include(c => c.LogoUrl);
+
+        var result = await _companyRepository.Find(filter).Project<CompanySummary>(projection).ToListAsync();
+        return result;
+    }
 }

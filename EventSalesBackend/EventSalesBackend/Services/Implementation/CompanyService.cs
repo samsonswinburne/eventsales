@@ -182,4 +182,15 @@ public class CompanyService : ICompanyService
     {
         return await _companyRepository.UpdateOwnerIdProtectedAsync(companyId, requestSenderId, newAdminId);
     }
+
+    public async Task<List<CompanySummaryJson>?> GetCompanySummariesByUserId(string userId)
+    {
+        var result = await _companyRepository.GetCompanySummariesByUserId(userId);
+        return result.ConvertAll(c => new CompanySummaryJson
+        {
+            CompanyId = c.CompanyId.ToString(),
+            CompanyName = c.CompanyName,
+            CompanyImageUrl = c.CompanyImageUrl
+        });
+    }
 }
