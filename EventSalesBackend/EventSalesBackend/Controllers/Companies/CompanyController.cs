@@ -55,31 +55,7 @@ public class CompanyController : ControllerBase
         if (result is null) return NotFound();
         return Ok(result);
     }
-    [Authorize]
-    [HttpPost("{companyId}/admins")]
-    public async Task<ActionResult<RequestCompanyAdminPublic>> RequestCompanyAdminAsync([FromBody] RequestCompanyAdminRequest request,
-        [FromRoute] string companyId, [FromServices] IValidator<RequestCompanyAdminRequest> validator)
-    {
-
-        var userId = _userClaimsService.GetUserId();
-        if (userId is null) return Unauthorized();
-        if (!ObjectId.TryParse(companyId, out var validatedCompanyId)) return BadRequest("CompanyId is invalid");
-        var validatorResult = await validator.ValidateAsync(request);
-        if (!validatorResult.IsValid) return BadRequest(validatorResult.ToErrorResponse());
-
-        try
-        {
-            var result =
-                await _companyService.InviteAdminAsync(userId, validatedCompanyId, request.AdminRequestReceiverEmail);
-            if (result is null) return BadRequest();
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            if (ex is BaseException bex) return BadRequest(bex.ToErrorResponse());
-            return BadRequest("Unspecified error: " + ex.Message);
-        }
-    }
+    
     [Authorize]
     [HttpGet("me")]
     public async Task<ActionResult<List<CompanySummaryJson>>> GetMyCompanies()
