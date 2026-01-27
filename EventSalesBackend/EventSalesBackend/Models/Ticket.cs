@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using EventSalesBackend.Models.DTOs.Request.Tickets;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace EventSalesBackend.Models;
@@ -44,4 +45,22 @@ public class Ticket
     [BsonIgnoreIfNull]
     [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
     public DateTime? OrderDeliveryDate { get; set; } = null;
+}
+public static class TicketExtensions
+{
+    public static TicketPublic ToPublic(this Ticket ticket)
+    {
+        return new TicketPublic
+        {
+            Id = ticket.Id.ToString(),
+            EventId = ticket.EventId.ToString(),
+            CustomerId = ticket.CustomerId?.ToString(),
+            CustomerEmail = ticket.CustomerEmail,
+            CustomerName = ticket.CustomerName,
+            CustomerPhone = ticket.CustomerPhone,
+            PurchaseTime = ticket.PurchaseTime,
+            OrderDelivered = ticket.OrderDelivered,
+            OrderDeliveryDate = ticket.OrderDeliveryDate
+        };
+    }
 }
