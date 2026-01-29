@@ -31,6 +31,7 @@ public class MongoDbContext : IMongoDbContext
 
     private void CreateIndexes()
     {
+        return;
         // need more indexes for different queries that need more
         var eventIndexes = new[]
         {

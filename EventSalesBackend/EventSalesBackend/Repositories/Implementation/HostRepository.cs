@@ -19,9 +19,9 @@ public class HostRepository : IHostRepository
         await _hosts.InsertOneAsync(host);
     }
 
-    public async Task<EventHost?> GetAsync(string hostId)
+    public async Task<EventHost?> GetAsync(string hostId, CancellationToken ct)
     {
-        return await _hosts.Find(x => x.Id == hostId).FirstOrDefaultAsync();
+        return await _hosts.Find(x => x.Id == hostId).FirstOrDefaultAsync(ct);
     }
 
     public async Task<EventHost?> GetByEmailAsync(string email)

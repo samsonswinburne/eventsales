@@ -1,6 +1,8 @@
 using Auth0.AspNetCore.Authentication;
 using EventSalesBackend.Data;
 using EventSalesBackend.Exceptions.Configuration;
+using EventSalesBackend.Pipelines.Implementation;
+using EventSalesBackend.Pipelines.Interfaces;
 using EventSalesBackend.Repositories.Implementation;
 using EventSalesBackend.Repositories.Interfaces;
 using EventSalesBackend.Services.Implementation;
@@ -49,17 +51,19 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
 
 // data
 builder.Services.AddSingleton<IMongoDbContext, MongoDbContext>();
-
+builder.Services.AddSingleton<IMongoResiliencePipelineProvider, MongoResiliencePipelineProvider>();
 // repositories
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<IHostRepository, HostRepository>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 // services
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IRequestCompanyAdminRepository, RequestCompanyAdminRepository>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IHostService, HostService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
+builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<IUserClaimsService, UserClaimsService>();
 builder.Services.AddScoped<IGeocodeService, GeocodeService>();
 var app = builder.Build();

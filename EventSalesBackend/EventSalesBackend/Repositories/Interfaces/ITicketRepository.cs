@@ -8,7 +8,7 @@ namespace EventSalesBackend.Repositories.Interfaces
         Task<Ticket?> Get(ObjectId id);
         Task<bool> Insert(Ticket ticket);
         Task<bool> SetStatus(ObjectId ticketId, TicketStatus status);
-        Task<TicketStatus?> GetStatusFromScan(string key, string scannerId);
+        Task<TicketStatus> GetStatusFromKeyProtected(string key, string scannerId, CancellationToken cancellationToken);
         Task<bool> UpdateStatusGivenCurrentStatus(string key, string scannerId, TicketStatus statusToSet, TicketStatus? statusRequired);
         
     }

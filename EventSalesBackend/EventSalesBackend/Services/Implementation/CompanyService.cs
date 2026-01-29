@@ -6,6 +6,7 @@ using EventSalesBackend.Models;
 using EventSalesBackend.Models.DTOs.Data;
 using EventSalesBackend.Models.DTOs.Response;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
+using EventSalesBackend.Pipelines.Interfaces;
 using EventSalesBackend.Repositories.Interfaces;
 using EventSalesBackend.Services.Interfaces;
 using MongoDB.Bson;
@@ -18,14 +19,16 @@ public class CompanyService : ICompanyService
     private readonly IRequestCompanyAdminRepository _requestCompanyAdminRepository;
     private readonly IHostRepository _hostRepository;
     private readonly IEventRepository _eventRepository;
-    
+    private readonly IMongoResiliencePipelineProvider _pipelines;
 
-    public CompanyService(ICompanyRepository repository, IHostRepository hostService, IRequestCompanyAdminRepository requestCompanyAdminRepository, IEventRepository eventRepository)
+    public CompanyService(ICompanyRepository repository, IHostRepository hostService, IRequestCompanyAdminRepository requestCompanyAdminRepository, 
+        IEventRepository eventRepository, IMongoResiliencePipelineProvider  pipelines)
     {
         _companyRepository = repository;
         _hostRepository = hostService;
         _requestCompanyAdminRepository = requestCompanyAdminRepository;
         _eventRepository = eventRepository;
+        _pipelines = pipelines;
     }
 
     public async Task<CompanyPublic?> GetPublicAsync(ObjectId id)
@@ -43,7 +46,11 @@ public class CompanyService : ICompanyService
 
     public async Task<CreateCompanyResponse?> CreateAsync(Company company)
     {
-        var host = await _hostRepository.GetAsync(company.OwnerId);
+        var host = await _pipelines.Read.ExecuteAsync(async ct =>
+        {
+            return await _hostRepository.GetAsync(company.OwnerId, ct);
+        });
+        
         if(host?.Id is null)
         {
             throw new HostNotFoundException(null, company.OwnerId);

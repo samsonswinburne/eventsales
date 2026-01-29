@@ -8,6 +8,7 @@ using EventSalesBackend.Services.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Diagnostics.Metrics;
+using EventSalesBackend.Pipelines.Interfaces;
 
 namespace EventSalesBackend.Services.Implementation;
 
@@ -17,18 +18,21 @@ public class HostService : IHostService
     private readonly ICompanyRepository _companyRepository;
     private readonly IRequestCompanyAdminRepository _requestCompanyAdminRepository;
     private readonly IEventRepository _eventRepository;
+    private readonly IMongoResiliencePipelineProvider _pipelines;
 
-    public HostService(IHostRepository hostRepository, ICompanyRepository companyService, IRequestCompanyAdminRepository requestCompanyAdminRepository, IEventRepository eventService)
+    public HostService(IHostRepository hostRepository, ICompanyRepository companyService, IRequestCompanyAdminRepository requestCompanyAdminRepository, 
+        IEventRepository eventService, IMongoResiliencePipelineProvider pipelines)
     {
         _hostRepository = hostRepository;
         _companyRepository = companyService;
         _requestCompanyAdminRepository = requestCompanyAdminRepository;
         _eventRepository = eventService;
+        _pipelines = pipelines;
     }
 
     public async Task<bool> CreateHost(CreateHostRequest request, string userId, string email)
     {
-
+        Console.WriteLine("called");
         if (email is null || email.Length < 3)
         {
             throw new ArgumentException("email, this shouldn't occur. It should be validated in the controller");
@@ -42,12 +46,19 @@ public class HostService : IHostService
             OnBoardingCompleted = false,
             Email = email
         };
+        Console.WriteLine("host created");
         try
         {
             await _hostRepository.CreateAsync(host); // i couldnt get output from this
         }
-        catch (MongoWriteException)
+        catch (MongoDuplicateKeyException ex)
         {
+            // duplicate key exception this doesn't currently have handling but means that they already have an account
+            return true;
+        }
+        catch (MongoWriteException ex)
+        {
+            Console.WriteLine("mongowrite exception");
             // update this it doesn't tell the user why their request failed, just that it failed
             return false;
         }
@@ -57,7 +68,11 @@ public class HostService : IHostService
 
     public async Task<HostPublic?> GetPublicAsync(string hostId)
     {
-        var result = await _hostRepository.GetAsync(hostId);
+        var result = await _pipelines.Read.ExecuteAsync(async ct =>
+        {
+            return await _hostRepository.GetAsync(hostId, ct);
+        });
+        
         if (result is null) return null;
 
         var host = new HostPublic
@@ -67,9 +82,12 @@ public class HostService : IHostService
         return host;
     }
 
-    public Task<EventHost?> GetAsync(string hostId, string userId)
+    public async Task<EventHost?> GetAsync(string hostId, string userId)
     {
-        return _hostRepository.GetAsync(hostId);
+        return await _pipelines.Read.ExecuteAsync(async ct =>
+        {
+            return await _hostRepository.GetAsync(hostId, ct);
+        });
     }
 
     public Task<EventHost?> GetByEmailAsync(string email)

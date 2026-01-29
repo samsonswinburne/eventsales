@@ -34,7 +34,7 @@ public class TicketRepository : ITicketRepository
         return result.IsAcknowledged && result.ModifiedCount > 0;
     }
 
-    public async Task<TicketStatus?> GetStatusFromScan(string key, string scannerId)
+    public async Task<TicketStatus> GetStatusFromKeyProtected(string key, string scannerId, CancellationToken ct)
     {
         // ticket.EventId => lookup eventId => lookup admins
         var scannerIdFilter = Builders<Event>.Filter.AnyEq(e => e.Admins, scannerId);
@@ -48,7 +48,7 @@ public class TicketRepository : ITicketRepository
             ).Match(scannerIdFilter)
             .As<Ticket>()
             .Project(t => t.Status)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(ct);
         
         return result;
     }
