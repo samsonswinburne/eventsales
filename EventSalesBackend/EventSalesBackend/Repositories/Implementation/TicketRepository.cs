@@ -31,7 +31,7 @@ public class TicketRepository : ITicketRepository
     {
         var update =  Builders<Ticket>.Update.Set(x => x.Status, status);
         var filter = Builders<Ticket>.Filter.Eq(t => t.Id, ticketId);
-        var result = await _tickets.UpdateOneAsync(filter, update, new UpdateOptions(), ct);
+        var result = await _tickets.UpdateOneAsync(filter, update, cancellationToken:ct);
         return result.IsAcknowledged && result.ModifiedCount > 0;
     }
 
