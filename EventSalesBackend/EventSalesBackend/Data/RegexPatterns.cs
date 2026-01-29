@@ -4,7 +4,7 @@ public class RegexPatterns
 {
     public const string NamePattern = @"^[\p{L}\p{N}\p{M}\p{S}\p{P}\p{Zs}]+$";
     public const string SlugPattern = @"^[a-z0-9-]+$";
-    public const string AlNumPattern = @"^[a-zA-Z]+$";
+    public const string AlNumPattern = @"^[a-zA-Z0-9]+$";
 }
 public class RegexValidationMessages
 {

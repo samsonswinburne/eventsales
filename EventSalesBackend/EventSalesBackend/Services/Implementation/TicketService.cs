@@ -46,6 +46,8 @@ public class TicketService : ITicketService
             Key = crypto.GenerateKey(),
             OrderDelivered = false
         };
-        throw new NotImplementedException();
+        
+        await _ticketRepository.Insert(ticket, cancellationToken);
+        return ticket.ToPublic();
     }
 }

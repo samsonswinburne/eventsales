@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using EventSalesBackend.Services.Interfaces;
+using MongoDB.Bson;
 
 namespace EventSalesBackend.Controllers;
 
@@ -32,5 +33,13 @@ public class TestController : ControllerBase
         });
 
         return Ok(claims);
+    }
+
+    [HttpGet("writeTicket")]
+    public async Task<IActionResult> WriteTicket(ITicketService ticketService, ICryptoService cryptoService, CancellationToken cancellationToken)
+    {
+        var x = await ticketService.CreateTicket(new ObjectId("697b442f905b02f231d2f2a3"), new ObjectId("697b448f905b02f231d2f2a4"), null, "testemail@gmail.com", "johnny smith", null,
+            cryptoService, cancellationToken);
+        return Ok(x);
     }
 }

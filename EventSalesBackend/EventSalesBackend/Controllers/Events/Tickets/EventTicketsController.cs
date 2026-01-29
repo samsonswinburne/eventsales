@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using EventSalesBackend.Data;
 using EventSalesBackend.Models;
+using EventSalesBackend.Models.DTOs.Response.AdminView.Tickets;
 using EventSalesBackend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -23,7 +24,7 @@ public class EventTicketsController : ControllerBase
     
     [Authorize]
     [HttpGet("{ticketKey}")]
-    public async Task<ActionResult<TicketStatus>> GetStatus([FromRoute] string ticketKey, CancellationToken cancellationToken)
+    public async Task<ActionResult<TicketStatusResponse>> GetStatus([FromRoute] string ticketKey, CancellationToken cancellationToken)
     {
         var userId = _userClaimService.GetUserId();
         if (userId is null) 
@@ -38,7 +39,7 @@ public class EventTicketsController : ControllerBase
         try
         {
             var result = await _ticketService.GetTicketStatusFromKey(ticketKey, userId, cancellationToken);
-            return Ok(result);
+            return Ok(new TicketStatusResponse(result));
         }
         catch (Exception ex)
         {
