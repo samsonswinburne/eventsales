@@ -89,6 +89,7 @@ public static class TicketExtensions
 
 public enum TicketScanAction
 {
+    None,
     ValidateStatus,
     ValidateApproveEntry,
     ValidateDenyEntry

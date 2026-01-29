@@ -182,11 +182,7 @@ public class EventService : IEventService
     public async Task<EventPublic?> GetBySlugPublicProtected(string slug)
     {
         var result = await _eventRepository.GetBySlugProtected(slug);
-        if(result is null)
-        {
-            throw new SlugNotFoundException(slug);
-        }
-        return result.ToPublic();
+        return result?.ToPublic();
     }
 
     public async Task<bool> GetSlugAvailable(string slug)
