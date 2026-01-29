@@ -52,6 +52,7 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
 // data
 builder.Services.AddSingleton<IMongoDbContext, MongoDbContext>();
 builder.Services.AddSingleton<IMongoResiliencePipelineProvider, MongoResiliencePipelineProvider>();
+builder.Services.AddTransient<ICryptoService, CryptoService>();
 // repositories
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<IHostRepository, HostRepository>();

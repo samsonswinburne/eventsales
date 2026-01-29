@@ -1,4 +1,5 @@
 ﻿using EventSalesBackend.Models;
+using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 using EventSalesBackend.Pipelines.Interfaces;
 using EventSalesBackend.Repositories.Interfaces;
 using EventSalesBackend.Services.Interfaces;
@@ -27,6 +28,24 @@ public class TicketService : ITicketService
 
     public async Task Get(ObjectId id, CancellationToken cancellationToken)
     {
+        throw new NotImplementedException();
+    }
+
+    public async Task<TicketPublic> CreateTicket(ObjectId eventId, ObjectId ticketTypeId, ObjectId? customerId,
+        string customerEmail, string customerName, string? customerPhone, ICryptoService crypto)
+    {
+        var ticket = new Ticket
+        {
+            EventId = eventId,
+            TicketTypeId = ticketTypeId,
+            CustomerId = customerId,
+            CustomerEmail = customerEmail,
+            CustomerName = customerName,
+            CustomerPhone = customerPhone,
+            PurchaseTime = DateTime.UtcNow,
+            Key = crypto.GenerateKey(),
+            OrderDelivered = false
+        };
         throw new NotImplementedException();
     }
 }
