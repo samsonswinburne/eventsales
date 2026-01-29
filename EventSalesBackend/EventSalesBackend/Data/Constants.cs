@@ -2,5 +2,5 @@
 
 public class Constants
 {
-    public const int EventKeyLength = 64;
+    public const int EventKeyLength = 32;
 }
