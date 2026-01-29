@@ -32,7 +32,7 @@ public class TicketService : ITicketService
     }
 
     public async Task<TicketPublic> CreateTicket(ObjectId eventId, ObjectId ticketTypeId, ObjectId? customerId,
-        string customerEmail, string customerName, string? customerPhone, ICryptoService crypto)
+        string customerEmail, string customerName, string? customerPhone, ICryptoService crypto, CancellationToken cancellationToken)
     {
         var ticket = new Ticket
         {

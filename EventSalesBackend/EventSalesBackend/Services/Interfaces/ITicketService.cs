@@ -10,5 +10,5 @@ public interface ITicketService
     Task Get(ObjectId id, CancellationToken cancellationToken);
 
     Task<TicketPublic> CreateTicket(ObjectId eventId, ObjectId ticketTypeId, ObjectId? customerId,
-        string customerEmail, string customerName, string? customerPhone, ICryptoService crypto);
+        string customerEmail, string customerName, string? customerPhone, ICryptoService crypto, CancellationToken cancellationToken);
 }
