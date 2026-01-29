@@ -16,21 +16,22 @@ public class TicketRepository : ITicketRepository
     }
 
 
-    public async Task<Ticket?> Get(ObjectId id)
+    public async Task<Ticket?> Get(ObjectId id, CancellationToken ct)
     {
-        return await _tickets.Find(x => x.Id == id).FirstOrDefaultAsync();
+        return await _tickets.Find(x => x.Id == id).FirstOrDefaultAsync(ct);
     }
 
-    public async Task<bool> Insert(Ticket ticket)
+    public async Task<bool> Insert(Ticket ticket, CancellationToken ct)
     {
-        await _tickets.InsertOneAsync(ticket);
+        await _tickets.InsertOneAsync(ticket, ct);
         return ticket.Id != null;
     }
 
-    public async Task<bool> SetStatus(ObjectId ticketId, TicketStatus status)
+    public async Task<bool> SetStatus(ObjectId ticketId, TicketStatus status, CancellationToken ct)
     {
         var update =  Builders<Ticket>.Update.Set(x => x.Status, status);
-        var result = await _tickets.UpdateOneAsync(ticket => ticket.Id == ticketId, update);
+        var filter = Builders<Ticket>.Filter.Eq(t => t.Id, ticketId);
+        var result = await _tickets.UpdateOneAsync(filter, update, new UpdateOptions(), ct);
         return result.IsAcknowledged && result.ModifiedCount > 0;
     }
 
@@ -53,7 +54,7 @@ public class TicketRepository : ITicketRepository
         return result;
     }
 
-    public async Task<bool> UpdateStatusGivenCurrentStatus(string key, string scannerId, TicketStatus statusToSet, TicketStatus? statusRequired)
+    public async Task<bool> UpdateStatusGivenCurrentStatus(string key, string scannerId, TicketStatus statusToSet, TicketStatus? statusRequired, CancellationToken ct)
     {
         throw new NotImplementedException();
     }
