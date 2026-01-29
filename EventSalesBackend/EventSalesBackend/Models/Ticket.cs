@@ -1,7 +1,8 @@
-﻿using EventSalesBackend.Models.DTOs.Request.Tickets;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Diagnostics.CodeAnalysis;
+using EventSalesBackend.Models.DTOs.Response.AdminView.Tickets;
+using EventSalesBackend.Models.DTOs.Response.PublicInfo;
 
 namespace EventSalesBackend.Models;
 
@@ -23,7 +24,10 @@ public class Ticket
     [BsonRepresentation(BsonType.ObjectId)]
     [BsonRequired]
     public required ObjectId EventId { get; set; }
-
+    [BsonElement("ticketTypeId")]
+    [BsonRepresentation(BsonType.ObjectId)]
+    [BsonRequired]
+    public required ObjectId TicketTypeId { get; set; }
     [BsonElement("customerId")]
     [BsonRepresentation(BsonType.ObjectId)]
     [BsonIgnoreIfNull]
@@ -76,13 +80,35 @@ public static class TicketExtensions
         {
             Id = ticket.Id.ToString(),
             EventId = ticket.EventId.ToString(),
+            TicketTypeId = ticket.TicketTypeId.ToString(),
             CustomerId = ticket.CustomerId?.ToString(),
             CustomerEmail = ticket.CustomerEmail,
             CustomerName = ticket.CustomerName,
             CustomerPhone = ticket.CustomerPhone,
             PurchaseTime = ticket.PurchaseTime,
             OrderDelivered = ticket.OrderDelivered,
-            OrderDeliveryDate = ticket.OrderDeliveryDate
+            OrderDeliveryDate = ticket.OrderDeliveryDate,
+            Key = ticket.Key,
+            Status = ticket.Status,
+        };
+    }
+
+    public static TicketAdminView ToAdminView(this Ticket ticket)
+    {
+        return new TicketAdminView
+        {
+            Id = ticket.Id.ToString(),
+            EventId = ticket.EventId.ToString(),
+            TicketTypeId = ticket.TicketTypeId.ToString(),
+            CustomerId = ticket.CustomerId?.ToString(),
+            CustomerEmail = ticket.CustomerEmail,
+            CustomerName = ticket.CustomerName,
+            CustomerPhone = ticket.CustomerPhone,
+            PurchaseTime = ticket.PurchaseTime,
+            OrderDelivered = ticket.OrderDelivered,
+            OrderDeliveryDate = ticket.OrderDeliveryDate,
+            Status = ticket.Status,
+            ScanHistory = ticket.ScanHistory.ConvertAll(ts => ts.ToJsonFormat())
         };
     }
 }
@@ -111,4 +137,18 @@ public class TicketScan
     public string? ScannerUserId { get; set; } // not entirely sure what this will look like right now
     public required TicketScanAction Action { get; set; }
 
+}
+
+public static class TicketScanExtensions
+{
+    public static TicketScanJson ToJsonFormat(this TicketScan scan)
+    {
+        return new TicketScanJson
+        {
+            Id = scan.Id.ToString(),
+            ScannerUserId = scan.ScannerUserId,
+            ScanTime =  scan.ScanTime,
+            Action = scan.Action
+        };
+    }
 }

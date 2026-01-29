@@ -16,16 +16,16 @@ public class TicketService : ITicketService
         _ticketRepository = ticketRepository;
         _pipelines = pipelineProvider;
     }
-    public async Task<TicketStatus> GetTicketStatusFromKey(string key, string scannerId)
+    public async Task<TicketStatus> GetTicketStatusFromKey(string key, string scannerId, CancellationToken cancellationToken)
     {
         return await _pipelines.Read.ExecuteAsync(async ct =>
             {
                 return await _ticketRepository.GetStatusFromKeyProtected(key, scannerId, ct);
-            }
+            }, cancellationToken
         );
     }
 
-    public async Task Get(ObjectId id)
+    public async Task Get(ObjectId id, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
