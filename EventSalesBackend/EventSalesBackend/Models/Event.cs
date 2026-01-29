@@ -144,6 +144,7 @@ public static class EventExtensions
 
 public enum EventStatus
 {
+    NotFound,
     Draft,
     Published,
     Cancelled,

@@ -7,6 +7,7 @@ namespace EventSalesBackend.Models;
 
 public enum TicketStatus
 {
+    NotFound,
     Pending,
     Active,
     GrantedEntry,
@@ -61,6 +62,9 @@ public class Ticket
     [BsonRequired]
     public List<TicketScan> ScanHistory { get; set; } = [];
 
+    [BsonElement("key")]
+    [BsonRequired]
+    public required string Key { get; set; }
 }
 
 
