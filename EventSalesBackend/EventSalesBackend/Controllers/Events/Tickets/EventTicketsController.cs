@@ -43,7 +43,7 @@ public class EventTicketsController : ControllerBase
         }
         catch (Exception ex)
         {
-            throw new NotImplementedException();
+            
             return BadRequest(ex.Message);
         }
     }
