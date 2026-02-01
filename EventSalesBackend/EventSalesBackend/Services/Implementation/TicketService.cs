@@ -61,12 +61,8 @@ public class TicketService : ITicketService
             if (fetchedStatus == TicketStatus.Active || overrideLogic)
             {
                 var successfulUpdate = await _ticketRepository.UpdateStatusByKey(key, status, ct);
-                if (successfulUpdate)
-                {
-                    return status;
-                }
-
-                throw new NotImplementedException(); // got ticket but failed to update it.
+                if (successfulUpdate) return status;
+                throw new NotImplementedException("Got Ticket But Failed to update it"); // got ticket but failed to update it.
             }
             return fetchedStatus;
         }, cancellationToken);
