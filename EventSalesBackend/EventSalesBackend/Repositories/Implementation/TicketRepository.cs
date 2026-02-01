@@ -4,6 +4,7 @@ using EventSalesBackend.Models;
 using EventSalesBackend.Repositories.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace EventSalesBackend.Repositories.Implementation;
 
@@ -25,9 +26,20 @@ public class TicketRepository : ITicketRepository
     public async Task<bool> Insert(Ticket ticket, CancellationToken ct)
     {
         await _tickets.InsertOneAsync(ticket, ct);
-        return ticket.Id != null;
+        return ticket.Id != null && ticket.Id != ObjectId.Empty;
     }
 
+    public async Task<bool> UpdateStatusByKey(string key, TicketStatus status,
+        CancellationToken ct)
+    {
+        var ticketKeyFilter = Builders<Ticket>.Filter.Eq(t => t.Key, key);
+        var update = Builders<Ticket>.Update.Set(t => t.Status, status);
+        
+        var result = await _tickets.UpdateOneAsync(ticketKeyFilter, update, cancellationToken:ct);
+        return (result.IsAcknowledged && result.ModifiedCount > 0) ? true : throw new NotImplementedException("ticket didn't update");
+        
+    }
+    
     public async Task<bool> SetStatus(ObjectId ticketId, TicketStatus status, CancellationToken ct)
     {
         var update =  Builders<Ticket>.Update.Set(x => x.Status, status);
@@ -41,7 +53,7 @@ public class TicketRepository : ITicketRepository
         // ticket.EventId => lookup eventId => lookup admins
         var ticketKeyFilter = Builders<Ticket>.Filter.Eq(t => t.Key, key);
         
-
+        
         var result = await _tickets.Aggregate()
             .Match(ticketKeyFilter).Limit(1)
             .Lookup<Ticket, Event>(
@@ -61,6 +73,7 @@ public class TicketRepository : ITicketRepository
             throw new NotImplementedException();
         }
 
+        
         using (var adminsEnumerator =
                adminsBson.AsBsonArray.GetEnumerator() ?? throw new EventNotFoundException(ObjectId.Empty))
         {

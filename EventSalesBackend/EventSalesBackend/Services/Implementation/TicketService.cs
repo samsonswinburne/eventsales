@@ -50,4 +50,25 @@ public class TicketService : ITicketService
         await _ticketRepository.Insert(ticket, cancellationToken);
         return ticket.ToPublic();
     }
+
+    public async Task<TicketStatus> UpdateStatusByKeyProtected(string key, TicketStatus status, string scannerId, bool overrideLogic,
+        CancellationToken cancellationToken)
+    {
+        return await _pipelines.Write.ExecuteAsync(async ct =>
+        {
+            var fetchedStatus = await _ticketRepository.GetStatusFromKeyProtected(key, scannerId, ct);
+            if (fetchedStatus == TicketStatus.NotFound) return TicketStatus.NotFound;
+            if (fetchedStatus == TicketStatus.Active || overrideLogic)
+            {
+                var successfulUpdate = await _ticketRepository.UpdateStatusByKey(key, status, ct);
+                if (successfulUpdate)
+                {
+                    return status;
+                }
+
+                throw new NotImplementedException(); // got ticket but failed to update it.
+            }
+            return fetchedStatus;
+        }, cancellationToken);
+    }
 }

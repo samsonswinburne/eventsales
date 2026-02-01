@@ -11,4 +11,7 @@ public interface ITicketService
 
     Task<TicketPublic> CreateTicket(ObjectId eventId, ObjectId ticketTypeId, ObjectId? customerId,
         string customerEmail, string customerName, string? customerPhone, ICryptoService crypto, CancellationToken cancellationToken);
+
+    Task<TicketStatus> UpdateStatusByKeyProtected(string key, TicketStatus status, string scannerId, bool overrideLogic,
+        CancellationToken cancellationToken);
 }

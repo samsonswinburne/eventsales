@@ -18,9 +18,4 @@
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Models\DTOs\Request\Tickets\" />
-        <Folder Include="Validators\Tickets\" />
-    </ItemGroup>
-
 </Project>

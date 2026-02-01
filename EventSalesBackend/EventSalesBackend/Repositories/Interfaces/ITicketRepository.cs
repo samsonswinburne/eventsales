@@ -10,6 +10,9 @@ namespace EventSalesBackend.Repositories.Interfaces
         Task<bool> SetStatus(ObjectId ticketId, TicketStatus status, CancellationToken cancellationToken);
         Task<TicketStatus> GetStatusFromKeyProtected(string key, string scannerId, CancellationToken cancellationToken);
         Task<bool> UpdateStatusGivenCurrentStatus(string key, string scannerId, TicketStatus statusToSet, TicketStatus? statusRequired, CancellationToken cancellationToken);
-        
+
+        Task<bool> UpdateStatusByKey(string key, TicketStatus status,
+            CancellationToken ct);
+
     }
 }
