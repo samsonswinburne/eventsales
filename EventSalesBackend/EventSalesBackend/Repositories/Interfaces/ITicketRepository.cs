@@ -14,5 +14,6 @@ namespace EventSalesBackend.Repositories.Interfaces
         Task<bool> UpdateStatusByKey(string key, TicketStatus status,
             CancellationToken ct);
 
+        Task<bool> CreateTicketScan(string key, string scannerId, TicketScanAction action, CancellationToken ct);
     }
 }

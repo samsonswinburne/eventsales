@@ -94,4 +94,13 @@ public class TicketRepository : ITicketRepository
     {
         throw new NotImplementedException();
     }
+
+    public async Task<bool> CreateTicketScan(string key, string scannerId, TicketScanAction action, CancellationToken ct)
+    {
+        var ticketScan = new TicketScan(scannerId, action);
+        var filter = Builders<Ticket>.Filter.Eq(t => t.Key, key);
+        var update = Builders<Ticket>.Update.Push(t => t.ScanHistory, ticketScan);
+        var result = await _tickets.UpdateOneAsync(filter, update, cancellationToken: ct);
+        return result.IsAcknowledged && result.ModifiedCount > 0;
+    }
 }
