@@ -20,3 +20,10 @@ public class SeatHold
     [BsonElement("expiresAt")]
     public required DateTime ExpiresAt { get; set; }
 }
+
+public enum SeatHoldStatus
+{
+    Expired,
+    Active,
+    InCheckout,
+}
