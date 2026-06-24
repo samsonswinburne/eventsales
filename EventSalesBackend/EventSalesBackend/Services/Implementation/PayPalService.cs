@@ -18,12 +18,12 @@ public class PayPalService : IPayPalService
         {
             Body = new OrderRequest
             {
-                Intent = CheckoutPaymentIntent.Capture,
+                Intent = CheckoutPaymentIntent.Authorize, // authorise instead of capture so we can reject payments that take too long
                 PurchaseUnits = tickets.ConvertAll(t => t.ToPurchaseUnitRequest()),
-
             }
         };
         var response = await _client.OrdersController.CreateOrderAsync(order, ct);
+        
         if (response.StatusCode == 200)
         {
             return response.Data.Id;
