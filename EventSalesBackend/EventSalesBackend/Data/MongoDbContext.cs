@@ -28,6 +28,9 @@ public class MongoDbContext : IMongoDbContext
 
     public IMongoCollection<Ticket> Tickets => _database.GetCollection<Ticket>("tickets");
     public IMongoCollection<RequestCompanyAdmin> CompanyAdminRequests => _database.GetCollection<RequestCompanyAdmin>("companyAdminRequests");
+    public IMongoCollection<Discount> Discounts => _database.GetCollection<Discount>("discounts");
+    public IMongoCollection<Venue> Venues => _database.GetCollection<Venue>("venues");
+    public IMongoCollection<SeatHold> SeatHolds => _database.GetCollection<SeatHold>("seatHolds");
 
     private void CreateIndexes()
     {

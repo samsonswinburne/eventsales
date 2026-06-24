@@ -10,4 +10,7 @@ public interface IMongoDbContext
     IMongoCollection<Company> Companies { get; }
     IMongoCollection<Ticket> Tickets { get; }
     IMongoCollection<RequestCompanyAdmin> CompanyAdminRequests { get; }
+    IMongoCollection<Discount> Discounts { get; }
+    IMongoCollection<Venue>  Venues { get; }
+    IMongoCollection<SeatHold>  SeatHolds { get; }
 }
