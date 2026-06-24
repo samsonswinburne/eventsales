@@ -172,7 +172,7 @@ public enum EventStatus
 
 public class TicketType
 {
-    [BsonElement("id")]
+    [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public ObjectId Id { get; set; }
 
