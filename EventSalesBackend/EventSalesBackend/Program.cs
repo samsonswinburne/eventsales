@@ -8,7 +8,7 @@ using EventSalesBackend.Repositories.Interfaces;
 using EventSalesBackend.Services.Implementation;
 using EventSalesBackend.Services.Interfaces;
 using FluentValidation;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using MongoDB.Bson;
 using MongoDB.Driver.GeoJsonObjectModel;
 
@@ -24,16 +24,17 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     // Map ObjectId to string in Swagger
-    c.MapType<ObjectId>(() => new OpenApiSchema { Type = "string" });
+    c.MapType<ObjectId>(() => new OpenApiSchema { Type = Microsoft.OpenApi.JsonSchemaType.String });
 
     // Map GeoJsonPoint to a simple object
     c.MapType<GeoJsonPoint<GeoJson2DGeographicCoordinates>>(() => new OpenApiSchema
     {
-        Type = "object",
-        Properties = new Dictionary<string, OpenApiSchema>
+        Type = JsonSchemaType.Object,
+
+        Properties = new Dictionary<string, IOpenApiSchema>
         {
-            ["latitude"] = new() { Type = "number", Format = "double" },
-            ["longitude"] = new() { Type = "number", Format = "double" }
+            ["latitude"] = new OpenApiSchema { Type = JsonSchemaType.Number, Format = "double" },
+            ["longitude"] = new OpenApiSchema { Type = JsonSchemaType.Number, Format = "double" }
         }
     });
 });
