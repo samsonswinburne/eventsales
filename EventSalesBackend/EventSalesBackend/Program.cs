@@ -1,6 +1,7 @@
 using Auth0.AspNetCore.Authentication;
 using EventSalesBackend.Data;
 using EventSalesBackend.Exceptions.Configuration;
+using EventSalesBackend.Options;
 using EventSalesBackend.Pipelines.Implementation;
 using EventSalesBackend.Pipelines.Interfaces;
 using EventSalesBackend.Repositories.Implementation;
@@ -8,9 +9,11 @@ using EventSalesBackend.Repositories.Interfaces;
 using EventSalesBackend.Services.Implementation;
 using EventSalesBackend.Services.Interfaces;
 using FluentValidation;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 using MongoDB.Bson;
 using MongoDB.Driver.GeoJsonObjectModel;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,7 +53,14 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
     options.ClientId = requiredOptions["ClientId"] ?? throw new EventSalesMongoConfigurationException("ClientId");
 });
 
+builder.Services.Configure<RedisOptions>(options => 
+        builder.Configuration.GetSection("Redis"));
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    var options = sp.GetRequiredService<IOptions<RedisOptions>>().Value;
 
+    return ConnectionMultiplexer.Connect(options.ConnectionString);
+});
 // data
 builder.Services.AddSingleton<IMongoDbContext, MongoDbContext>();
 builder.Services.AddSingleton<IMongoResiliencePipelineProvider, MongoResiliencePipelineProvider>();
