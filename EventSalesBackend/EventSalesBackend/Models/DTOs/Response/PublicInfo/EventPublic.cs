@@ -45,18 +45,12 @@ public class EventPublic
     public required EventStatus Status { get; set; }
 
 
-    public required DateTime StartDate { get; init; }
+    public DateTime? StartDate { get; init; }
 
 
-    public required DateTime EndDate { get; init; }
+    public DateTime? EndDate { get; init; }
 }
 
-public class JsonVenueLocation
-{
-    [Required] [Range(-180, 180)] public required double Latitude { get; set; }
-
-    [Required] [Range(-90, 90)] public required double Longitude { get; set; }
-}
 
 public class TicketTypePublic
 {

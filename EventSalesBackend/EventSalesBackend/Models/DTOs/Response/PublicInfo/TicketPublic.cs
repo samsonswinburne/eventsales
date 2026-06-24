@@ -24,6 +24,9 @@
         
         public required string Key { get; init; }
         public required TicketStatus Status { get; init; }
+        public required decimal PurchasePrice { get; set; }
+        public required decimal OriginalPrice { get; set; }
+        public DiscountJson? Discount { get; set; }
     }
 
 }

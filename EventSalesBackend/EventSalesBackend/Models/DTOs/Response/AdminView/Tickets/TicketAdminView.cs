@@ -14,7 +14,9 @@ public class TicketAdminView
     public DateTime? OrderDeliveryDate { get; init; }// both could be helpful to the event organiser in the event of a bug
     public required List<TicketScanJson> ScanHistory { get; init; }
     public required TicketStatus Status { get; init; }
-    
+    public required decimal PurchasePrice { get; set; }
+    public required decimal OriginalPrice { get; set; }
+    public DiscountJson? Discount { get; set; }
 } // difference between this and a customer copy would be scanhistory, key, possibly Id
 
 public class TicketScanJson

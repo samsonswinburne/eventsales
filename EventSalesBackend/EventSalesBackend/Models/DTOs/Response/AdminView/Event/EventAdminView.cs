@@ -41,11 +41,11 @@ public class
 
     public EventStatus Status { get; set; } = EventStatus.Draft;
 
-    public DateTime StartDate { get; set; }
+    public DateTime? StartDate { get; set; }
 
-    public DateTime EndDate { get; set; }
+    public DateTime? EndDate { get; set; }
 
-    public DateTime Created { get; set; } = DateTime.UtcNow;
+    public required DateTime Created { get; set; }
 
     public required List<string> Admins { get; set; }
 }

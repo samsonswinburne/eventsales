@@ -29,10 +29,9 @@ public static class CreateTicketTypeRequestExtensions
         return new TicketType
         {
             Description = request.Description,
-            DiscountedPrice = null,
             Enabled = request.Enabled,
             Name = request.TicketName,
-            Price = request.Price,
+            TotalPrice = request.Price,
             Sold = request.Sold,
             TotalAvaliable = request.TotalAvailable
         };

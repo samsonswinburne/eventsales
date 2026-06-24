@@ -57,8 +57,15 @@ public class EventService : IEventService
         if (eventToSet.Description is null)
             // should probably change this to a custom exception
             throw new InvalidOperationException("The event does not have a description");
-
-        if (eventToSet.EndDate.CompareTo(DateTime.UtcNow) >= 0)
+        if (eventToSet.StartDate is null )
+        {
+            throw new InvalidOperationException("This event doesn't have an start date");
+        }
+        if (eventToSet.EndDate is null )
+        {
+            throw new InvalidOperationException("This event doesn't have an end date");
+        }
+        if (eventToSet.EndDate?.CompareTo(DateTime.UtcNow) >= 0)
             throw new InvalidOperationException("This event has already occured");
 
         if (eventToSet.TicketTypes.Count == 0)
@@ -182,6 +189,13 @@ public class EventService : IEventService
     public async Task<EventPublic?> GetBySlugPublicProtected(string slug)
     {
         var result = await _eventRepository.GetBySlugProtected(slug);
+        if (result is not null && result.Status == EventStatus.Published && DateTime.UtcNow > result.EndDate)
+        {
+            // this shouldn't occur in production there should be something to sweep this!
+            var success = await _eventRepository.UpdateStatusAsync(result.Id, EventStatus.Completed);
+            result.Status = EventStatus.Completed;
+            return result.ToPublic();
+        }
         return result?.ToPublic();
     }
 

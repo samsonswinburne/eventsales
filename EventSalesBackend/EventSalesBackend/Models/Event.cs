@@ -57,20 +57,40 @@ public class Event // event should be split up into in person event and digital 
     public EventStatus Status { get; set; } = EventStatus.Draft;
 
     [BsonElement("startDate")]
-    [BsonRequired]
-    public DateTime StartDate { get; set; }
+    public DateTime? StartDate { get; set; }
 
     [BsonElement("endDate")]
-    [BsonRequired]
-    public DateTime EndDate { get; set; }
+    public DateTime? EndDate { get; set; }
 
     [BsonElement("created")]
     [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
     public DateTime Created { get; set; } = DateTime.UtcNow;
 
     [BsonElement("admins")] [BsonRequired] public required List<string> Admins { get; set; }
+    
 }
 
+public class Seat
+{
+    [BsonElement("number")]
+    public required string Number { get; set; }
+    [BsonElement("row")]
+    public string? Row { get; set; }
+}
+public class Section
+{
+    public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
+    [BsonElement("name")]
+    public required string Name { get; set; }
+    [BsonElement("type")]
+    public required SectionType Type { get; set; }
+    [BsonElement("seats")]
+    public List<Seat>? Seats { get; set; }
+    [BsonElement("capacity")]
+    public int? Capacity { get; set; }
+
+    [BsonElement("ticketTypeId")] public ObjectId TicketTypeId { get; set; } = ObjectId.GenerateNewId();
+}
 public static class EventExtensions
 {
     public static EventPublic ToPublic(this Event eventToConvert)
@@ -117,8 +137,7 @@ public static class EventExtensions
                 TotalAvaliable = tt.TotalAvaliable,
                 Sold = tt.Sold,
                 Enabled = tt.Enabled,
-                Price = tt.Price,
-                DiscountedPrice = tt.DiscountedPrice
+                Price = tt.TotalPrice,
             }).ToList(),
             Summary = eventToConvert.Summary,
             Photo = eventToConvert.Photo,
@@ -180,13 +199,8 @@ public class TicketType
     [BsonElement("price")]
     [BsonRequired]
     [BsonRepresentation(BsonType.Decimal128)]
-    public required decimal Price { get; set; }
-
-    [BsonElement("discountedPrice")]
-    [BsonRepresentation(BsonType.Decimal128)]
-    public decimal? DiscountedPrice { get; set; }
-    public DateTime? DiscountStarts { get; set; }
-    public DateTime? DiscountEnds { get; set; }
+    public required decimal TotalPrice { get; set; }
+    // for now we will use discount codes
 }
 
 public static class TicketTypeExtensions
@@ -200,8 +214,7 @@ public static class TicketTypeExtensions
             Description = ticketTypeToConvert.Description,
             TotalAvaliable = ticketTypeToConvert.TotalAvaliable,
             Sold = ticketTypeToConvert.Sold,
-            Price = ticketTypeToConvert.Price,
-            DiscountedPrice = ticketTypeToConvert.DiscountedPrice
+            Price = ticketTypeToConvert.TotalPrice,
         };
     }
 }

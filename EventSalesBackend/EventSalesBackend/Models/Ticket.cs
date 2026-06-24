@@ -1,8 +1,10 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using EventSalesBackend.Models.DTOs.Response.AdminView.Tickets;
 using EventSalesBackend.Models.DTOs.Response.PublicInfo;
+using PaypalServerSdk.Standard.Models;
 
 namespace EventSalesBackend.Models;
 
@@ -69,11 +71,51 @@ public class Ticket
     [BsonElement("key")]
     [BsonRequired]
     public required string Key { get; set; }
+    
+    [BsonElement("discount")]
+    [BsonIgnoreIfNull]
+    public Discount? Discount { get; set; }
+    
+    [BsonElement("purchasePrice")]
+    [BsonRequired]
+    public required decimal PurchasePrice { get; set; }
+    
+    [BsonElement("originalPrice")]
+    [BsonRequired]
+    public required decimal OriginalPrice { get; set; }
+    
 }
 
 
 public static class TicketExtensions
 {
+    public static PurchaseUnitRequest ToPurchaseUnitRequest(this Ticket ticket)
+    {
+        decimal discountValue = ticket.Discount?.DiscountAmount ?? 0m;
+        return new PurchaseUnitRequest
+        {
+            ReferenceId = ticket.Id.ToString(),
+            Amount = new AmountWithBreakdown
+            {
+                CurrencyCode = "AUD",
+                MValue = ticket.PurchasePrice.ToString(CultureInfo.InvariantCulture),
+                Breakdown = new AmountBreakdown
+                {
+                    Discount = new Money
+                    {
+                        MValue = discountValue.ToString(CultureInfo.InvariantCulture),
+                        CurrencyCode = "AUD"
+                    }
+                }
+            },
+            Shipping = new ShippingDetails
+            {
+                EmailAddress = ticket.CustomerEmail,
+                Name = new ShippingName{FullName = ticket.CustomerName},
+                PhoneNumber = new PhoneNumberWithCountryCode{CountryCode = "61", NationalNumber = ticket.CustomerPhone},
+            }
+        };
+    }
     public static TicketPublic ToPublic(this Ticket ticket)
     {
         return new TicketPublic
@@ -90,6 +132,11 @@ public static class TicketExtensions
             OrderDeliveryDate = ticket.OrderDeliveryDate,
             Key = ticket.Key,
             Status = ticket.Status,
+
+            // NEW FIELDS
+            PurchasePrice = ticket.PurchasePrice,
+            OriginalPrice = ticket.OriginalPrice,
+            Discount = ticket.Discount?.ToJsonFormat()
         };
     }
 
@@ -108,7 +155,12 @@ public static class TicketExtensions
             OrderDelivered = ticket.OrderDelivered,
             OrderDeliveryDate = ticket.OrderDeliveryDate,
             Status = ticket.Status,
-            ScanHistory = ticket.ScanHistory.ConvertAll(ts => ts.ToJsonFormat())
+            ScanHistory = ticket.ScanHistory.ConvertAll(ts => ts.ToJsonFormat()),
+
+            // NEW FIELDS
+            PurchasePrice = ticket.PurchasePrice,
+            OriginalPrice = ticket.OriginalPrice,
+            Discount = ticket.Discount?.ToJsonFormat()
         };
     }
 }

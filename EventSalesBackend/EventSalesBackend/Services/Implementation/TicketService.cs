@@ -44,7 +44,10 @@ public class TicketService : ITicketService
             CustomerPhone = customerPhone,
             PurchaseTime = DateTime.UtcNow,
             Key = crypto.GenerateKey(),
-            OrderDelivered = false
+            OrderDelivered = false,
+            Discount = null,
+            OriginalPrice = 10,
+            PurchasePrice = 10
         };
         
         await _ticketRepository.Insert(ticket, cancellationToken);

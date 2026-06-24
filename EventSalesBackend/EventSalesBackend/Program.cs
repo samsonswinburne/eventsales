@@ -49,6 +49,7 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
     options.ClientId = requiredOptions["ClientId"] ?? throw new EventSalesMongoConfigurationException("ClientId");
 });
 
+
 // data
 builder.Services.AddSingleton<IMongoDbContext, MongoDbContext>();
 builder.Services.AddSingleton<IMongoResiliencePipelineProvider, MongoResiliencePipelineProvider>();
@@ -67,6 +68,8 @@ builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<IUserClaimsService, UserClaimsService>();
 builder.Services.AddScoped<IGeocodeService, GeocodeService>();
+
+builder.Services.AddSingleton<IPayPalClientService, PayPalClientService>();
 var app = builder.Build();
 
 

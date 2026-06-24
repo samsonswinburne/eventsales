@@ -26,6 +26,15 @@ public class EventTicketsController : ControllerBase
     }
 
     [Authorize]
+    [HttpPost]
+    public async Task<ActionResult<CreateTicketsResponse>> CreateTickets([FromBody] CreateTicketsRequest request,
+        IValidator<CreateTicketsRequest> validator, CancellationToken cancellationToken)
+    {
+        var userId = _userClaimService.GetUserId();
+        return BadRequest("not yet implemented");
+    }
+    
+    [Authorize]
     [HttpPatch("{ticketKey}")]
     public async Task<ActionResult<UpdateTicketStatusResponse>> UpdateTicketStatus([FromRoute] string ticketKey,
         [FromBody] UpdateTicketStatusRequest request, IValidator<UpdateTicketStatusRequest> validator, CancellationToken cancellationToken)
