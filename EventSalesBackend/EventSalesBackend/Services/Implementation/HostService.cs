@@ -19,15 +19,17 @@ public class HostService : IHostService
     private readonly IRequestCompanyAdminRepository _requestCompanyAdminRepository;
     private readonly IEventRepository _eventRepository;
     private readonly IMongoResiliencePipelineProvider _pipelines;
+    private readonly IUserService _userService;
 
     public HostService(IHostRepository hostRepository, ICompanyRepository companyService, IRequestCompanyAdminRepository requestCompanyAdminRepository, 
-        IEventRepository eventService, IMongoResiliencePipelineProvider pipelines)
+        IEventRepository eventService, IMongoResiliencePipelineProvider pipelines, IUserService userService)
     {
         _hostRepository = hostRepository;
         _companyRepository = companyService;
         _requestCompanyAdminRepository = requestCompanyAdminRepository;
         _eventRepository = eventService;
         _pipelines = pipelines;
+        _userService = userService;
     }
 
     public async Task<bool> CreateHost(CreateHostRequest request, string userId, string email)
@@ -36,6 +38,12 @@ public class HostService : IHostService
         if (email is null || email.Length < 3)
         {
             throw new ArgumentException("email, this shouldn't occur. It should be validated in the controller");
+        }
+        var ct = CancellationToken.None;
+        var userProfile = await _userService.GetByIdOrEmailAsync(userId, email, ct);
+        if (userProfile is not null)
+        {
+            throw new InvalidOperationException("An account can only be either a user or a host account");
         }
         var host = new EventHost
         {
