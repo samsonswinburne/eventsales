@@ -31,6 +31,7 @@ public class MongoDbContext : IMongoDbContext
     public IMongoCollection<Discount> Discounts => _database.GetCollection<Discount>("discounts");
     public IMongoCollection<Venue> Venues => _database.GetCollection<Venue>("venues");
     public IMongoCollection<SeatHold> SeatHolds => _database.GetCollection<SeatHold>("seatHolds");
+    public IMongoCollection<User> Users => _database.GetCollection<User>("users");
     public async Task<IClientSessionHandle> StartSessionAsync(CancellationToken cancellationToken = default)
     {
         
@@ -151,5 +152,13 @@ public class MongoDbContext : IMongoDbContext
         {
             Console.WriteLine(index.ToJson());
         }
+
+        var userIndexes = new[]
+        {
+            new CreateIndexModel<User>(
+                Builders<User>.IndexKeys.Ascending(u => u.Email)
+            )
+        };
+        Users.Indexes.CreateMany(userIndexes);
     }
 }

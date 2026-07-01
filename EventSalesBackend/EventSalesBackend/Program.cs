@@ -78,6 +78,7 @@ builder.Services.AddScoped<IHostRepository, HostRepository>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<ISeatHoldRepository, SeatHoldRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 // services
 builder.Services.AddHttpClient();
 builder.Services.AddTransient<ISessionProvider, SessionProvider>();
