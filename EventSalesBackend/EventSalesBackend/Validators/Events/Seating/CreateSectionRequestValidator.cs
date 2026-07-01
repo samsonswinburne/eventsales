@@ -42,6 +42,7 @@ public class CreateSectionRequestValidator : AbstractValidator<CreateSectionVali
                 return; // Stop early if we cannot pass a valid ID to the database lookup
             }
             Console.WriteLine(request.EventId);
+            // THIS IS PRINTING TWICE IT MEANS THE VALIDATOR IS GETTING CALLED TWICE WHICH ISN't GOOD 
             if (!ObjectId.TryParse(request.EventId, out var eventId))
             {
                 context.AddFailure("EventId", "Invalid event id");
