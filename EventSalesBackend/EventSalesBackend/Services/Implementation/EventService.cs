@@ -15,11 +15,13 @@ public class EventService : IEventService
 {
     private readonly IEventRepository _eventRepository;
     private readonly IGeocodeService _geocodeService;
+    private readonly IHostRepository _hostRepository;
 
-    public EventService(IEventRepository eventRepository, IGeocodeService geocodeService)
+    public EventService(IEventRepository eventRepository, IGeocodeService geocodeService, IHostRepository hostRepository)
     {
         _eventRepository = eventRepository;
         _geocodeService = geocodeService;
+        _hostRepository = hostRepository;
     }
 
     public async Task<Event> CreateAsync(Event eventToCreate)
@@ -45,8 +47,19 @@ public class EventService : IEventService
         var eventIdFilter = Builders<Event>.Filter.Eq(e => e.Id, eventId);
         var eventToSet = await _eventRepository.GetByIdAsync(eventId);
 
-        
+        CancellationToken ct = CancellationToken.None;
 
+        var creator = await _hostRepository.GetAsync(userId, ct);
+        if (creator is null)
+        {
+            throw new Exception($"User {userId} does not have a creator");
+        }
+
+        if (creator.OnBoardingCompleted == false || String.IsNullOrWhiteSpace(creator.PayPalEmail))
+        {
+            throw new InvalidOperationException("To publish an event you must have completed onboarding");
+        }
+        
         if (!eventToSet.Admins.Contains(userId))
             throw new UnauthorizedAccessException("You don't have permission to view this draft event");
         if (eventToSet.Status != EventStatus.Draft) throw new InvalidOperationException("You cannot publish an event that isn't a draft");

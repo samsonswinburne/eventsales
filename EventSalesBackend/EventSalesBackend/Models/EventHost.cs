@@ -23,9 +23,14 @@ public class EventHost
     public DateOnly BirthDate { get; set; }
 
     public bool OnBoardingCompleted { get; set; } = false;
-
+    
     [JsonIgnore]
     [BsonElement("email")]
     [BsonRequired]
     public required string Email { get; init; }
+
+    [BsonElement("email")]
+    public string? PayPalEmail { get; set; }
+
+    
 }
