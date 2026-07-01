@@ -34,7 +34,14 @@ public class MongoDbContext : IMongoDbContext
 
     private void CreateIndexes()
     {
-        return;
+        try
+        {
+            Events.Indexes.DropOne("slug_1");
+        }
+        catch (MongoDB.Driver.MongoCommandException)
+        {
+            // Safe to ignore if the index doesn't exist yet in the database environment
+        }
         // need more indexes for different queries that need more
         var eventIndexes = new[]
         {
@@ -114,5 +121,24 @@ public class MongoDbContext : IMongoDbContext
                 )
         };
         CompanyAdminRequests.Indexes.CreateMany(rcaIndexes);
+        var seatHoldIndexes = new[]
+        {
+            new CreateIndexModel<SeatHold>(
+                Builders<SeatHold>.IndexKeys
+                    .Ascending(sh => sh.SectionId)
+                    .Ascending(sh => sh.Row)
+                    .Ascending(sh => sh.SeatNumber)
+                    .Ascending(sh => sh.EventId),
+                new CreateIndexOptions { Unique = true }
+            ),
+            new CreateIndexModel<SeatHold>(
+                Builders<SeatHold>.IndexKeys.Ascending(sh => sh.ExpiresAt), new CreateIndexOptions{ ExpireAfter = TimeSpan.Zero})
+        };
+        SeatHolds.Indexes.CreateMany(seatHoldIndexes);
+        var seatIndexes = SeatHolds.Indexes.List().ToListAsync();
+        foreach (var index in seatIndexes.Result)
+        {
+            Console.WriteLine(index.ToJson());
+        }
     }
 }
