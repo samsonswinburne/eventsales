@@ -63,4 +63,10 @@ public class SeatHoldService : ISeatHoldService
     {
         throw new NotImplementedException();
     }
+
+    public async Task<bool> Remove(string userId, SeatHoldIdentifier seatHoldIdentifier,
+        CancellationToken cancellationToken)
+    {
+        return await _seatHoldRepository.Remove(userId, seatHoldIdentifier, cancellationToken);
+    }
 }
