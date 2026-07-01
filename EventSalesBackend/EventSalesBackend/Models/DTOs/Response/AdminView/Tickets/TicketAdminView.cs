@@ -9,7 +9,7 @@ public class TicketAdminView
     public required string CustomerEmail { get; init; } // for now you can view customer emails who have purchased your tickets, i think this will stay
     public required string CustomerName { get; init; }
     public string? CustomerPhone  { get; init; }
-    public required DateTime PurchaseTime { get; init; }
+    public DateTime? PurchaseTime { get; init; }
     public required bool OrderDelivered { get; init; } // both could be helpful to the event organiser in the event of a bug
     public DateTime? OrderDeliveryDate { get; init; }// both could be helpful to the event organiser in the event of a bug
     public required List<TicketScanJson> ScanHistory { get; init; }
@@ -17,6 +17,7 @@ public class TicketAdminView
     public required decimal PurchasePrice { get; set; }
     public required decimal OriginalPrice { get; set; }
     public DiscountJson? Discount { get; set; }
+    public Seat Seat { get; set; }
 } // difference between this and a customer copy would be scanhistory, key, possibly Id
 
 public class TicketScanJson

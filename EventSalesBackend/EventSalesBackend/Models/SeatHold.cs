@@ -11,6 +11,9 @@ public class SeatHold
     public required ObjectId EventId { get; set; }
     [BsonElement("sectionId")]
     public required ObjectId SectionId { get; set; }
+    [BsonElement("ticketTypeId")]
+    [BsonRequired]
+    public required ObjectId TicketTypeId { get; set; }
     [BsonElement("userId")]
     public required string UserId { get; set; }
     [BsonElement("seatNumber")]

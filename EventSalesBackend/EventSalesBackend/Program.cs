@@ -9,6 +9,8 @@ using EventSalesBackend.Repositories.Interfaces;
 using EventSalesBackend.Services.Implementation;
 using EventSalesBackend.Services.Interfaces;
 using FluentValidation;
+using Medallion.Threading;
+using Medallion.Threading.Redis;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 using MongoDB.Bson;
@@ -53,13 +55,18 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
     options.ClientId = requiredOptions["ClientId"] ?? throw new EventSalesMongoConfigurationException("ClientId");
 });
 
-builder.Services.Configure<RedisOptions>(options => 
-        builder.Configuration.GetSection("Redis"));
+builder.Services.Configure<RedisOptions>(
+    builder.Configuration.GetSection("Redis"));
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var options = sp.GetRequiredService<IOptions<RedisOptions>>().Value;
 
     return ConnectionMultiplexer.Connect(options.ConnectionString);
+});
+builder.Services.AddSingleton<IDistributedLockProvider>(sp =>
+{
+    var multiplexer = sp.GetRequiredService<IConnectionMultiplexer>();
+    return new RedisDistributedSynchronizationProvider(multiplexer.GetDatabase());
 });
 // data
 builder.Services.AddSingleton<IMongoDbContext, MongoDbContext>();
@@ -70,8 +77,10 @@ builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<IHostRepository, HostRepository>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+builder.Services.AddScoped<ISeatHoldRepository, SeatHoldRepository>();
 // services
 builder.Services.AddHttpClient();
+builder.Services.AddTransient<ISessionProvider, SessionProvider>();
 builder.Services.AddScoped<IRequestCompanyAdminRepository, RequestCompanyAdminRepository>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IHostService, HostService>();
@@ -79,8 +88,12 @@ builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<IUserClaimsService, UserClaimsService>();
 builder.Services.AddScoped<IGeocodeService, GeocodeService>();
+builder.Services.AddScoped<ISeatHoldService, SeatHoldService>();
+builder.Services.AddScoped<ICheckoutService, CheckoutService>();
+builder.Services.AddScoped<ISeatLockService, SeatLockService>();
 
 builder.Services.AddSingleton<IPayPalClientService, PayPalClientService>();
+builder.Services.AddScoped<IPayPalService, PayPalService>();
 var app = builder.Build();
 
 

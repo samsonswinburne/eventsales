@@ -130,4 +130,10 @@ public class EventRepository : IEventRepository
         var result =  await _events.Find(filter).Limit(1).AnyAsync();
         return !result; // should be reversed because if a document is found it means that the slug is not available
     }
+
+    public async Task<Event?> FindOneAndUpdateAsync(FilterDefinition<Event> filter, UpdateDefinition<Event> update, CancellationToken cancellationToken)
+    {
+        return await _events.FindOneAndUpdateAsync(filter, update, 
+            new FindOneAndUpdateOptions<Event>{ReturnDocument = ReturnDocument.After}, cancellationToken);
+    }
 }

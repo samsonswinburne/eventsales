@@ -103,4 +103,18 @@ public class TicketRepository : ITicketRepository
         var result = await _tickets.UpdateOneAsync(filter, update, cancellationToken: ct);
         return result.IsAcknowledged && result.ModifiedCount > 0;
     }
+
+    public async Task<bool> InsertMany(List<Ticket> tickets, IClientSessionHandle handle, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _tickets.InsertManyAsync(handle, tickets, cancellationToken: cancellationToken);
+        }
+        catch (MongoWriteException ex)
+        {
+            return false;
+        }
+
+        return true;
+    }
 }

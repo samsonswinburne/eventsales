@@ -4,6 +4,7 @@ using EventSalesBackend.Pipelines.Interfaces;
 using EventSalesBackend.Repositories.Interfaces;
 using EventSalesBackend.Services.Interfaces;
 using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace EventSalesBackend.Services.Implementation;
 
@@ -31,27 +32,9 @@ public class TicketService : ITicketService
         throw new NotImplementedException();
     }
 
-    public async Task<TicketPublic> CreateTicket(ObjectId eventId, ObjectId ticketTypeId, ObjectId? customerId,
-        string customerEmail, string customerName, string? customerPhone, ICryptoService crypto, CancellationToken cancellationToken)
+    public async Task<bool> InsertMany(List<Ticket> tickets, IClientSessionHandle handle, CancellationToken cancellationToken)
     {
-        var ticket = new Ticket
-        {
-            EventId = eventId,
-            TicketTypeId = ticketTypeId,
-            CustomerId = customerId,
-            CustomerEmail = customerEmail,
-            CustomerName = customerName,
-            CustomerPhone = customerPhone,
-            PurchaseTime = DateTime.UtcNow,
-            Key = crypto.GenerateKey(),
-            OrderDelivered = false,
-            Discount = null,
-            OriginalPrice = 10,
-            PurchasePrice = 10
-        };
-        
-        await _ticketRepository.Insert(ticket, cancellationToken);
-        return ticket.ToPublic();
+        return await _ticketRepository.InsertMany(tickets, handle, cancellationToken);
     }
 
     public async Task<TicketStatus> UpdateStatusByKeyProtected(string key, TicketStatus status, string scannerId, bool overrideLogic,

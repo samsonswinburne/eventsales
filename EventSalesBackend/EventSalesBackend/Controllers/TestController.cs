@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using EventSalesBackend.Models;
+using EventSalesBackend.Services.Implementation;
 using EventSalesBackend.Services.Interfaces;
 using MongoDB.Bson;
 
@@ -11,10 +13,11 @@ namespace EventSalesBackend.Controllers;
 public class TestController : ControllerBase
 {
     private readonly IUserClaimsService _userClaimService;
-
-    public TestController(IUserClaimsService userClaimService)
+    private readonly ISeatLockService _seatLockService;
+    public TestController(IUserClaimsService userClaimService, ISeatLockService seatLockService)
     {
         _userClaimService = userClaimService;
+        _seatLockService = seatLockService;
     }
     [HttpGet]
     [Authorize]
@@ -35,11 +38,10 @@ public class TestController : ControllerBase
         return Ok(claims);
     }
 
-    [HttpGet("writeTicket")]
-    public async Task<IActionResult> WriteTicket(ITicketService ticketService, ICryptoService cryptoService, CancellationToken cancellationToken)
+    [HttpPost]
+    [Authorize]
+    public async Task<List<Ticket>> Post()
     {
-        var x = await ticketService.CreateTicket(new ObjectId("697b442f905b02f231d2f2a3"), new ObjectId("697b448f905b02f231d2f2a4"), null, "testemail@gmail.com", "johnny smith", null,
-            cryptoService, cancellationToken);
-        return Ok(x);
+        return new List<Ticket>();
     }
 }

@@ -23,5 +23,5 @@ public interface IEventRepository
     Task<bool> RemoveAdminFromEvents(ObjectId companyId, string userId);
     Task<Event?> GetBySlugProtected(string slug);
     Task<bool> GetSlugAvailable(string slug);
-
+    Task<Event?> FindOneAndUpdateAsync(FilterDefinition<Event> filter,UpdateDefinition<Event> update,CancellationToken cancellationToken);
 }

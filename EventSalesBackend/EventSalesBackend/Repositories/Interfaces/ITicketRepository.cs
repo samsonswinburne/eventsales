@@ -1,5 +1,6 @@
 ﻿using EventSalesBackend.Models;
 using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace EventSalesBackend.Repositories.Interfaces
 {
@@ -15,5 +16,9 @@ namespace EventSalesBackend.Repositories.Interfaces
             CancellationToken ct);
 
         Task<bool> CreateTicketScan(string key, string scannerId, TicketScanAction action, CancellationToken ct);
+
+        Task<bool> InsertMany(List<Ticket> tickets, IClientSessionHandle handle, CancellationToken cancellationToken);
+
+
     }
 }

@@ -104,11 +104,9 @@ public class EventService : IEventService
         return @event.ToPublic();
     }
 
-    public async Task<Event> GetById(ObjectId id, string userId)
+    public async Task<Event> GetById(ObjectId id)
     {
         var @event = await _eventRepository.GetByIdAsync(id);
-        if (@event.Status == EventStatus.Draft && !@event.Admins.Contains(userId))
-            throw new UnauthorizedAccessException("You don't have permission to view this draft event");
         return @event;
     }
 
@@ -202,5 +200,15 @@ public class EventService : IEventService
     public async Task<bool> GetSlugAvailable(string slug)
     {
         return await _eventRepository.GetSlugAvailable(slug);
+    }
+
+    public async Task<List<Section>> AddSectionProtectedAsync(string userId, ObjectId eventId, Section section, CancellationToken cancellationToken)
+    {
+        var update = Builders<Event>.Update.AddToSet(x => x.Sections, section);
+        var filter = Builders<Event>.Filter.And(
+            Builders<Event>.Filter.Eq(x => x.Id, eventId),
+            Builders<Event>.Filter.AnyEq(x => x.Admins, userId)
+            );
+        return (await _eventRepository.FindOneAndUpdateAsync(filter, update, cancellationToken))?.Sections ?? [];
     }
 }

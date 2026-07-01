@@ -16,7 +16,7 @@
 
         public string? CustomerPhone { get; init; }
 
-        public required DateTime PurchaseTime { get; init; }
+        public DateTime? PurchaseTime { get; init; }
 
         public bool OrderDelivered { get; init; } = false;
 
@@ -27,6 +27,7 @@
         public required decimal PurchasePrice { get; set; }
         public required decimal OriginalPrice { get; set; }
         public DiscountJson? Discount { get; set; }
+        public Seat Seat { get; set; }
     }
 
 }

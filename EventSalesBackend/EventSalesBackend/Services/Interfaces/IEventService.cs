@@ -9,7 +9,7 @@ public interface IEventService
 {
     Task<List<Event>> GetEventsAsync(int page = 0, int pageSize = 10);
     Task<EventPublic> GetByIdPublicAsync(ObjectId id, string userId);
-    Task<Event> GetById(ObjectId id, string userId);
+    Task<Event> GetById(ObjectId id);
     Task<List<Event>> GetByHost(ObjectId hostId, string userId);
     Task<List<EventPublic>> GetByHostPublic(ObjectId hostId);
     Task<bool> UpdateStatusAsync(ObjectId id, EventStatus status);
@@ -28,4 +28,5 @@ public interface IEventService
     Task<bool> RemoveAdminFromEvents(ObjectId companyId, string userId);
     Task<EventPublic?> GetBySlugPublicProtected(string slug);
     Task<bool> GetSlugAvailable(string slug);
+    Task<List<Section>>AddSectionProtectedAsync(string userId,ObjectId eventId,Section section,CancellationToken cancellationToken);
 }

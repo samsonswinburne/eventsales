@@ -33,7 +33,7 @@ public class Ticket
     [BsonElement("customerId")]
     [BsonRepresentation(BsonType.ObjectId)]
     [BsonIgnoreIfNull]
-    public ObjectId? CustomerId { get; set; }
+    public required string CustomerId { get; set; }
 
     [BsonElement("customerEmail")]
     [BsonRequired]
@@ -48,9 +48,8 @@ public class Ticket
     public string? CustomerPhone { get; set; } = null;
 
     [BsonElement("purchaseTime")]
-    [BsonRequired]
     [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
-    public required DateTime PurchaseTime { get; set; }
+    public DateTime? PurchaseTime { get; set; }
 
     [BsonElement("orderDelivered")]
     [BsonRequired]
@@ -83,6 +82,9 @@ public class Ticket
     [BsonElement("originalPrice")]
     [BsonRequired]
     public required decimal OriginalPrice { get; set; }
+    [BsonElement("seat")]
+    [BsonRequired]
+    public required Seat Seat { get; set; }
     
 }
 
@@ -123,7 +125,7 @@ public static class TicketExtensions
             Id = ticket.Id.ToString(),
             EventId = ticket.EventId.ToString(),
             TicketTypeId = ticket.TicketTypeId.ToString(),
-            CustomerId = ticket.CustomerId?.ToString(),
+            CustomerId = ticket.CustomerId,
             CustomerEmail = ticket.CustomerEmail,
             CustomerName = ticket.CustomerName,
             CustomerPhone = ticket.CustomerPhone,
@@ -132,6 +134,7 @@ public static class TicketExtensions
             OrderDeliveryDate = ticket.OrderDeliveryDate,
             Key = ticket.Key,
             Status = ticket.Status,
+            Seat = ticket.Seat,
 
             // NEW FIELDS
             PurchasePrice = ticket.PurchasePrice,
@@ -147,7 +150,7 @@ public static class TicketExtensions
             Id = ticket.Id.ToString(),
             EventId = ticket.EventId.ToString(),
             TicketTypeId = ticket.TicketTypeId.ToString(),
-            CustomerId = ticket.CustomerId?.ToString(),
+            CustomerId = ticket.CustomerId,
             CustomerEmail = ticket.CustomerEmail,
             CustomerName = ticket.CustomerName,
             CustomerPhone = ticket.CustomerPhone,
@@ -160,7 +163,8 @@ public static class TicketExtensions
             // NEW FIELDS
             PurchasePrice = ticket.PurchasePrice,
             OriginalPrice = ticket.OriginalPrice,
-            Discount = ticket.Discount?.ToJsonFormat()
+            Discount = ticket.Discount?.ToJsonFormat(),
+            Seat = ticket.Seat
         };
     }
 }

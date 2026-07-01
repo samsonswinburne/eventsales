@@ -68,29 +68,11 @@ public class Event // event should be split up into in person event and digital 
 
     [BsonElement("admins")] [BsonRequired] public required List<string> Admins { get; set; }
     
+    [BsonElement("sections")]
+    public List<Section> Sections { get; set; }
 }
 
-public class Seat
-{
-    [BsonElement("number")]
-    public required string Number { get; set; }
-    [BsonElement("row")]
-    public string? Row { get; set; }
-}
-public class Section
-{
-    public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
-    [BsonElement("name")]
-    public required string Name { get; set; }
-    [BsonElement("type")]
-    public required SectionType Type { get; set; }
-    [BsonElement("seats")]
-    public List<Seat>? Seats { get; set; }
-    [BsonElement("capacity")]
-    public int? Capacity { get; set; }
 
-    [BsonElement("ticketTypeId")] public ObjectId TicketTypeId { get; set; } = ObjectId.GenerateNewId();
-}
 public static class EventExtensions
 {
     public static EventPublic ToPublic(this Event eventToConvert)

@@ -7,7 +7,7 @@ namespace EventSalesBackend.Data;
 public class MongoDbContext : IMongoDbContext
 {
     private readonly IMongoDatabase _database;
-
+    private readonly IMongoClient _client;
     public MongoDbContext(IConfiguration configuration)
     {
         var mongoDbSettings = configuration.GetRequiredSection("MongoDb");
@@ -15,8 +15,8 @@ public class MongoDbContext : IMongoDbContext
         var databaseName = mongoDbSettings["DatabaseName"];
 
         var client = new MongoClient(connectionString);
+        _client = client;
         _database = client.GetDatabase(databaseName);
-
         CreateIndexes();
     }
 
@@ -31,6 +31,11 @@ public class MongoDbContext : IMongoDbContext
     public IMongoCollection<Discount> Discounts => _database.GetCollection<Discount>("discounts");
     public IMongoCollection<Venue> Venues => _database.GetCollection<Venue>("venues");
     public IMongoCollection<SeatHold> SeatHolds => _database.GetCollection<SeatHold>("seatHolds");
+    public async Task<IClientSessionHandle> StartSessionAsync(CancellationToken cancellationToken = default)
+    {
+        
+        return await _client.StartSessionAsync(cancellationToken: cancellationToken);
+    }
 
     private void CreateIndexes()
     {
@@ -101,7 +106,13 @@ public class MongoDbContext : IMongoDbContext
             new CreateIndexModel<Ticket>(
                 Builders<Ticket>.IndexKeys.Ascending(t => t.EventId)),
             new CreateIndexModel<Ticket>(
-                Builders<Ticket>.IndexKeys.Ascending(t => t.CustomerId))
+                Builders<Ticket>.IndexKeys.Ascending(t => t.CustomerId)),
+            /*new CreateIndexModel<Ticket>(
+                Builders<Ticket>
+                    .IndexKeys.Ascending(t => t.Seat)
+                    .Ascending(t => t.Status),
+                new CreateIndexOptions { Unique = true }
+                )* no unique index for now */
         };
         Tickets.Indexes.CreateMany(ticketIndexes);
         var hostIndexes = new[]
