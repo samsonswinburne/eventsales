@@ -4,5 +4,5 @@ namespace EventSalesBackend.Repositories.Interfaces;
 
 public interface IUserRepository
 {
-    Task<User?> GetByIdOrEmailAsync(string userId, string email);
+    Task<User?> GetByIdOrEmailAsync(string userId, string email, CancellationToken cancellationToken);
 }

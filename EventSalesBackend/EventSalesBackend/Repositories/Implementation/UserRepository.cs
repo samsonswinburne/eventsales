@@ -13,12 +13,12 @@ public class UserRepository : IUserRepository
     {
         _users = mongoDbContext.Users;
     }
-    public async Task<User?> GetByIdOrEmailAsync(string userId, string email)
+    public async Task<User?> GetByIdOrEmailAsync(string userId, string email, CancellationToken cancellationToken)
     {
         var filter = Builders<User>.Filter.Or(
             Builders<User>.Filter.Eq("_id", userId),
             Builders<User>.Filter.Eq(u => u.Email, email)
         );
-        return await _users.Find(filter).FirstOrDefaultAsync();
+        return await _users.Find(filter).FirstOrDefaultAsync(cancellationToken);
     }
 }
