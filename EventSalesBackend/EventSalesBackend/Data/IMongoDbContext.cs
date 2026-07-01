@@ -13,5 +13,6 @@ public interface IMongoDbContext
     IMongoCollection<Discount> Discounts { get; }
     IMongoCollection<Venue>  Venues { get; }
     IMongoCollection<SeatHold>  SeatHolds { get; }
+    IMongoCollection<User>  Users { get; }
     Task<IClientSessionHandle> StartSessionAsync(CancellationToken cancellationToken = default);
 }
