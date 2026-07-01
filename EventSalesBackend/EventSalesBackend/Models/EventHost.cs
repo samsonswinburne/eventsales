@@ -29,7 +29,7 @@ public class EventHost
     [BsonRequired]
     public required string Email { get; init; }
 
-    [BsonElement("email")]
+    [BsonElement("payPalEmail")]
     public string? PayPalEmail { get; set; }
 
     

@@ -92,6 +92,7 @@ builder.Services.AddScoped<IGeocodeService, GeocodeService>();
 builder.Services.AddScoped<ISeatHoldService, SeatHoldService>();
 builder.Services.AddScoped<ICheckoutService, CheckoutService>();
 builder.Services.AddScoped<ISeatLockService, SeatLockService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddSingleton<IPayPalClientService, PayPalClientService>();
 builder.Services.AddScoped<IPayPalService, PayPalService>();
