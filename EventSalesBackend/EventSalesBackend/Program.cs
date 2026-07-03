@@ -98,9 +98,12 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddSingleton<IPayPalClientService, PayPalClientService>();
 builder.Services.AddScoped<IPayPalService, PayPalService>();
 
+//realtime services
+builder.Services.AddSingleton<ISeatUpdateHub, SeatUpdateHub>();
+// background services
 builder.Services.AddHostedService<MongoExpiryWatcher>();
 
-// background services
+
 
 var app = builder.Build();
 // Force MongoDbContext to initialize

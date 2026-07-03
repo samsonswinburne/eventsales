@@ -1,4 +1,6 @@
-﻿using EventSalesBackend.Models.DTOs.Data.Seat;
+﻿using EventSalesBackend.Models;
+using EventSalesBackend.Models.DTOs.Data.Seat;
+using EventSalesBackend.Realtime.Seating;
 using EventSalesBackend.Services.Interfaces;
 using Medallion.Threading;
 using MongoDB.Bson;
@@ -9,10 +11,12 @@ public class SeatLockService : ISeatLockService
 {
     private readonly IDistributedLockProvider _lockProvider;
     private readonly ISeatHoldService _seatHoldService;
-    public SeatLockService(IDistributedLockProvider distributedLockProvider, ISeatHoldService seatHoldService)
+    private readonly ISeatUpdateHub _seatUpdateHub;
+    public SeatLockService(IDistributedLockProvider distributedLockProvider, ISeatHoldService seatHoldService, ISeatUpdateHub seatUpdateHub)
     {
         _lockProvider = distributedLockProvider;
         _seatHoldService = seatHoldService;
+        _seatUpdateHub = seatUpdateHub;
     }
     
     public async Task<SeatHoldData> AcquireLockAsync(string userId, SeatHoldIdentifier seatHoldIdentifier,
@@ -28,6 +32,16 @@ public class SeatLockService : ISeatLockService
         if (handle is not null)
         {
             var result = await _seatHoldService.Create(userId, seatHoldIdentifier, cancellationToken);
+            // may need a pipeline, also i should really be using value tasks for other stuff in this
+             await _seatUpdateHub.PublishAsync(seatHoldIdentifier.EventId,
+                new SeatUpdate
+                {
+                    SectionId = seatHoldIdentifier.SectionId,
+                    Row = seatHoldIdentifier.Row,
+                    SeatNumber = seatHoldIdentifier.SeatNumber,
+                    Status = SeatHoldStatus.Active
+                }, cancellationToken
+            );
             return result;
         }
         return new SeatHoldData

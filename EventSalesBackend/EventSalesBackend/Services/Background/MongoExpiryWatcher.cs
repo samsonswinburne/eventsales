@@ -1,5 +1,7 @@
 ﻿using EventSalesBackend.Data;
 using EventSalesBackend.Models;
+using EventSalesBackend.Realtime.Seating;
+using EventSalesBackend.Services.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -10,11 +12,12 @@ public class MongoExpiryWatcher : BackgroundService
     private const string WatcherName = "MongoExpiryWatcher";
     private readonly IMongoCollection<SeatHold> _seatHolds;
     private readonly IMongoCollection<StreamCheckpoint> _streamCheckpoints;
-    public MongoExpiryWatcher(IMongoDbContext mongoDbContext)
+    private readonly ISeatUpdateHub _seatUpdateHub;
+    public MongoExpiryWatcher(IMongoDbContext mongoDbContext, ISeatUpdateHub hub)
     {
         _seatHolds = mongoDbContext.SeatHolds;
         _streamCheckpoints = mongoDbContext.StreamCheckpoints;
-        // still need the publisher
+        _seatUpdateHub = hub;
     }
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -34,8 +37,15 @@ public class MongoExpiryWatcher : BackgroundService
         {
             var seatHold = change.FullDocumentBeforeChange;
             
-            
             Console.WriteLine(seatHold);
+            _seatUpdateHub.PublishAsync(seatHold.EventId, new SeatUpdate
+            {
+                SeatNumber = seatHold.SeatNumber,
+                SectionId =  seatHold.SectionId,
+                Row = seatHold.Row,
+                Status = SeatHoldStatus.Expired
+            });
+            
             
             await _streamCheckpoints.ReplaceOneAsync(
                 c => c.WatcherName == WatcherName,
