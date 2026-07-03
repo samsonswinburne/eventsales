@@ -6,6 +6,7 @@ using EventSalesBackend.Pipelines.Implementation;
 using EventSalesBackend.Pipelines.Interfaces;
 using EventSalesBackend.Repositories.Implementation;
 using EventSalesBackend.Repositories.Interfaces;
+using EventSalesBackend.Services.Background;
 using EventSalesBackend.Services.Implementation;
 using EventSalesBackend.Services.Interfaces;
 using FluentValidation;
@@ -96,10 +97,12 @@ builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddSingleton<IPayPalClientService, PayPalClientService>();
 builder.Services.AddScoped<IPayPalService, PayPalService>();
+
+builder.Services.AddHostedService<MongoExpiryWatcher>();
+
+// background services
+
 var app = builder.Build();
-
-
-
 // Force MongoDbContext to initialize
 using (var scope = app.Services.CreateScope())
 {

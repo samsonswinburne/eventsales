@@ -7,6 +7,8 @@ namespace EventSalesBackend.Models;
 
 public class SeatHold
 {
+    [BsonId]
+    public ObjectId Id { get; set; }
     [BsonElement("eventId")]
     public required ObjectId EventId { get; set; }
     [BsonElement("sectionId")]

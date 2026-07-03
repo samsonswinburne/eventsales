@@ -32,6 +32,7 @@ public class MongoDbContext : IMongoDbContext
     public IMongoCollection<Venue> Venues => _database.GetCollection<Venue>("venues");
     public IMongoCollection<SeatHold> SeatHolds => _database.GetCollection<SeatHold>("seatHolds");
     public IMongoCollection<User> Users => _database.GetCollection<User>("users");
+    public IMongoCollection<StreamCheckpoint> StreamCheckpoints => _database.GetCollection<StreamCheckpoint>("streamCheckpoints");
     public async Task<IClientSessionHandle> StartSessionAsync(CancellationToken cancellationToken = default)
     {
         
@@ -160,5 +161,14 @@ public class MongoDbContext : IMongoDbContext
             )
         };
         Users.Indexes.CreateMany(userIndexes);
+        var streamCheckpointIndexes = new[]
+        {
+            new CreateIndexModel<StreamCheckpoint>(
+                Builders<StreamCheckpoint>.IndexKeys
+                .Ascending(c => c.WatcherName)
+                .Ascending(c => c.InstanceId)
+                )
+        };
+        StreamCheckpoints.Indexes.CreateMany(streamCheckpointIndexes);
     }
 }

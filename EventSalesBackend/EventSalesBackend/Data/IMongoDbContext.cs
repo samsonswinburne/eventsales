@@ -14,5 +14,6 @@ public interface IMongoDbContext
     IMongoCollection<Venue>  Venues { get; }
     IMongoCollection<SeatHold>  SeatHolds { get; }
     IMongoCollection<User>  Users { get; }
+    IMongoCollection<StreamCheckpoint>  StreamCheckpoints { get; }
     Task<IClientSessionHandle> StartSessionAsync(CancellationToken cancellationToken = default);
 }
