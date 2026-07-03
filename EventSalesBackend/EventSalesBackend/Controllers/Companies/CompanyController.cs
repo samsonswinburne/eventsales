@@ -12,7 +12,7 @@ using MongoDB.Bson;
 namespace EventSalesBackend.Controllers.Companies;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/company")]
 public class CompanyController : ControllerBase
 {
     private readonly ICompanyService _companyService;

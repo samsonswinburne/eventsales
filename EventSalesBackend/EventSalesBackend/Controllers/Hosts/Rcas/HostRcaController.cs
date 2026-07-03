@@ -10,7 +10,7 @@ using MongoDB.Bson;
 
 namespace EventSalesBackend.Controllers.Hosts.Rcas
 {
-    [Route("me/rca")]
+    [Route("api/me/rca")]
     [ApiController]
     public class HostRcaController : ControllerBase
     {

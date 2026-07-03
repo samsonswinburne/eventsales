@@ -10,7 +10,7 @@ using MongoDB.Bson;
 namespace EventSalesBackend.Controllers.Events.TicketTypes;
 
 [ApiController]
-[Route("event/{eventId}/ticket-types")]
+[Route("api/event/{eventId}/ticket-types")]
 public class TicketTypesController : ControllerBase
 {
     private readonly IEventService _eventService;

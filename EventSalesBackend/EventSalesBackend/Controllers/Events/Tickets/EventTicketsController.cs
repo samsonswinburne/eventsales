@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EventSalesBackend.Controllers.Events.Tickets;
 
-[Route("events/tickets")]
+[Route("api/event/tickets")]
 [ApiController]
 public class EventTicketsController : ControllerBase
 {

@@ -11,7 +11,7 @@ namespace EventSalesBackend.Controllers.Companies.Admins
 {
     [Authorize]
     [ApiController]
-    [Route("company/{companyId}/admins")]
+    [Route("api/company/{companyId}/admins")]
     public class CompanyAdminController : ControllerBase
     {
         private readonly IUserClaimsService _userClaimsService;

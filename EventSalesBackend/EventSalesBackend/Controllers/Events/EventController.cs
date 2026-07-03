@@ -17,7 +17,7 @@ using System.Text.RegularExpressions;
 namespace EventSalesBackend.Controllers.Events;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/event")]
 public class EventController : ControllerBase
 {
     private readonly ICompanyService _companyService;

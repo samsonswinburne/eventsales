@@ -10,7 +10,7 @@ using MongoDB.Bson;
 namespace EventSalesBackend.Controllers.Events.Seating;
 
 [ApiController]
-[Route("{EventId}/seating")]
+[Route("api/event/{EventId}/seating")]
 public class EventSeatingController : ControllerBase
 {
     private readonly IEventService _eventService;

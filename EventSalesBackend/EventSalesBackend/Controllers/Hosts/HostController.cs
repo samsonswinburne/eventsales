@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace EventSalesBackend.Controllers.Hosts;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/host")]
 public class HostController : ControllerBase
 {
     private readonly IHostService _hostService;
