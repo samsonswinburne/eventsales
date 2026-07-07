@@ -93,6 +93,10 @@ public class CompanyService : ICompanyService
         {
             throw new HostNotCompletedOnboardingException(userToInvite.Id);
         }
+        if (userToInvite.AccountType != AccountType.EventHost)
+        {
+            throw new IncorrectUserAccountTypeException(AccountType.EventHost, userToInvite.AccountType);
+        }
 
         if (adminSummary?.Admins is null)
         {
