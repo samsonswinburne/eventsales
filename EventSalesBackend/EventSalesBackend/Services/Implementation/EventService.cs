@@ -55,9 +55,9 @@ public class EventService : IEventService
             throw new Exception($"User {userId} does not have a creator");
         }
 
-        if (creator.OnBoardingCompleted == false || String.IsNullOrWhiteSpace(creator.PayPalEmail))
+        if (creator.OnBoardingCompleted == false || String.IsNullOrWhiteSpace(creator.PayPalEmail) || creator.AccountType != AccountType.EventHost)
         {
-            throw new InvalidOperationException("To publish an event you must have completed onboarding");
+            throw new InvalidOperationException("To publish an event you must have completed onboarding, and have an account type of EventHost");
         }
         
         if (!eventToSet.Admins.Contains(userId))
