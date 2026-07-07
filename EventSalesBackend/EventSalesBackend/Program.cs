@@ -79,7 +79,6 @@ builder.Services.AddScoped<IHostRepository, HostRepository>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<ISeatHoldRepository, SeatHoldRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
 // services
 builder.Services.AddHttpClient();
 builder.Services.AddTransient<ISessionProvider, SessionProvider>();
@@ -93,7 +92,6 @@ builder.Services.AddScoped<IGeocodeService, GeocodeService>();
 builder.Services.AddScoped<ISeatHoldService, SeatHoldService>();
 builder.Services.AddScoped<ICheckoutService, CheckoutService>();
 builder.Services.AddScoped<ISeatLockService, SeatLockService>();
-builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddSingleton<IPayPalClientService, PayPalClientService>();
 builder.Services.AddScoped<IPayPalService, PayPalService>();

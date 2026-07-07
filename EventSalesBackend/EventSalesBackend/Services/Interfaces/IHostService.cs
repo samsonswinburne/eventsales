@@ -9,8 +9,8 @@ public interface IHostService
 {
     Task<bool> CreateHost(CreateHostRequest request, string userId, string email);
     Task<HostPublic?> GetPublicAsync(string hostId);
-    Task<EventHost?> GetAsync(string hostId, string userId);
-    Task<EventHost?> GetByEmailAsync(string email);
+    Task<User?> GetAsync(string hostId, string userId);
+    Task<User?> GetByEmailAsync(string email);
     Task<bool> AcceptRcaAsync(ObjectId rcaId, string userId);
     Task<bool> DeclineRcaAsync(ObjectId rcaId, string userId);
     Task<RequestCompanyAdminPublic> GetRcaByIdAsyncProtected(ObjectId id, string hostId);

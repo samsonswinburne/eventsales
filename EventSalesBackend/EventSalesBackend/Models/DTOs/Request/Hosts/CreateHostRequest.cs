@@ -9,4 +9,5 @@ public class CreateHostRequest
     [Required] public required string LastName { get; set; }
 
     [Required] public required DateOnly BirthDate { get; set; }
+    [Required] public required AccountType AccountType { get; set; }
 }

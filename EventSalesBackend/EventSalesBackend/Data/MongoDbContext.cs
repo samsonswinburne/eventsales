@@ -22,7 +22,7 @@ public class MongoDbContext : IMongoDbContext
 
     public IMongoCollection<Event> Events => _database.GetCollection<Event>("events");
 
-    public IMongoCollection<EventHost> Hosts => _database.GetCollection<EventHost>("hosts");
+    public IMongoCollection<User> Users => _database.GetCollection<User>("users");
 
     public IMongoCollection<Company> Companies => _database.GetCollection<Company>("companies");
 
@@ -31,7 +31,6 @@ public class MongoDbContext : IMongoDbContext
     public IMongoCollection<Discount> Discounts => _database.GetCollection<Discount>("discounts");
     public IMongoCollection<Venue> Venues => _database.GetCollection<Venue>("venues");
     public IMongoCollection<SeatHold> SeatHolds => _database.GetCollection<SeatHold>("seatHolds");
-    public IMongoCollection<User> Users => _database.GetCollection<User>("users");
     public IMongoCollection<StreamCheckpoint> StreamCheckpoints => _database.GetCollection<StreamCheckpoint>("streamCheckpoints");
     public async Task<IClientSessionHandle> StartSessionAsync(CancellationToken cancellationToken = default)
     {
@@ -119,11 +118,11 @@ public class MongoDbContext : IMongoDbContext
         Tickets.Indexes.CreateMany(ticketIndexes);
         var hostIndexes = new[]
         {
-            new CreateIndexModel<EventHost>(
-                Builders<EventHost>.IndexKeys.Ascending(h => h.Email)
+            new CreateIndexModel<User>(
+                Builders<User>.IndexKeys.Ascending(h => h.Email)
                 )
         };
-        Hosts.Indexes.CreateMany(hostIndexes);
+        Users.Indexes.CreateMany(hostIndexes);
         var rcaIndexes = new[]
         {
             new CreateIndexModel<RequestCompanyAdmin>(
@@ -154,13 +153,6 @@ public class MongoDbContext : IMongoDbContext
             Console.WriteLine(index.ToJson());
         }
 
-        var userIndexes = new[]
-        {
-            new CreateIndexModel<User>(
-                Builders<User>.IndexKeys.Ascending(u => u.Email)
-            )
-        };
-        Users.Indexes.CreateMany(userIndexes);
         var streamCheckpointIndexes = new[]
         {
             new CreateIndexModel<StreamCheckpoint>(

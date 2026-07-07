@@ -7,24 +7,24 @@ namespace EventSalesBackend.Repositories.Implementation;
 
 public class HostRepository : IHostRepository
 {
-    private readonly IMongoCollection<EventHost> _hosts;
+    private readonly IMongoCollection<User> _hosts;
 
     public HostRepository(IMongoDbContext context)
     {
-        _hosts = context.Hosts;
+        _hosts = context.Users;
     }
 
-    public async Task CreateAsync(EventHost host)
+    public async Task CreateAsync(User host)
     {
         await _hosts.InsertOneAsync(host);
     }
 
-    public async Task<EventHost?> GetAsync(string hostId, CancellationToken ct)
+    public async Task<User?> GetAsync(string hostId, CancellationToken ct)
     {
         return await _hosts.Find(x => x.Id == hostId).FirstOrDefaultAsync(ct);
     }
 
-    public async Task<EventHost?> GetByEmailAsync(string email)
+    public async Task<User?> GetByEmailAsync(string email)
     {
         return await _hosts.Find(x => x.Email == email).FirstOrDefaultAsync();
     }

@@ -4,7 +4,7 @@ namespace EventSalesBackend.Repositories.Interfaces;
 
 public interface IHostRepository
 {
-    Task CreateAsync(EventHost host);
-    Task<EventHost?> GetAsync(string hostId, CancellationToken cancellationToken);
-    Task<EventHost?> GetByEmailAsync(string email);
+    Task CreateAsync(User host);
+    Task<User?> GetAsync(string hostId, CancellationToken cancellationToken);
+    Task<User?> GetByEmailAsync(string email);
 }

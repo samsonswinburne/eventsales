@@ -19,17 +19,15 @@ public class HostService : IHostService
     private readonly IRequestCompanyAdminRepository _requestCompanyAdminRepository;
     private readonly IEventRepository _eventRepository;
     private readonly IMongoResiliencePipelineProvider _pipelines;
-    private readonly IUserService _userService;
 
     public HostService(IHostRepository hostRepository, ICompanyRepository companyService, IRequestCompanyAdminRepository requestCompanyAdminRepository, 
-        IEventRepository eventService, IMongoResiliencePipelineProvider pipelines, IUserService userService)
+        IEventRepository eventService, IMongoResiliencePipelineProvider pipelines)
     {
         _hostRepository = hostRepository;
         _companyRepository = companyService;
         _requestCompanyAdminRepository = requestCompanyAdminRepository;
         _eventRepository = eventService;
         _pipelines = pipelines;
-        _userService = userService;
     }
 
     public async Task<bool> CreateHost(CreateHostRequest request, string userId, string email)
@@ -40,19 +38,15 @@ public class HostService : IHostService
             throw new ArgumentException("email, this shouldn't occur. It should be validated in the controller");
         }
         var ct = CancellationToken.None;
-        var userProfile = await _userService.GetByIdOrEmailAsync(userId, email, ct);
-        if (userProfile is not null)
-        {
-            throw new InvalidOperationException("An account can only be either a user or a host account");
-        }
-        var host = new EventHost
+        var host = new User
         {
             Id = userId,
             FirstName = request.FirstName,
             LastName = request.LastName,
             BirthDate = request.BirthDate,
             OnBoardingCompleted = false,
-            Email = email
+            Email = email,
+            AccountType = request.AccountType
         };
         Console.WriteLine("host created");
         try
@@ -90,7 +84,7 @@ public class HostService : IHostService
         return host;
     }
 
-    public async Task<EventHost?> GetAsync(string hostId, string userId)
+    public async Task<User?> GetAsync(string hostId, string userId)
     {
         return await _pipelines.Read.ExecuteAsync(async ct =>
         {
@@ -98,7 +92,7 @@ public class HostService : IHostService
         });
     }
 
-    public Task<EventHost?> GetByEmailAsync(string email)
+    public Task<User?> GetByEmailAsync(string email)
     {
         return _hostRepository.GetByEmailAsync(email);
     }
